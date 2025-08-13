@@ -1,6 +1,6 @@
 export default function Header() {
   return (
-    <header className="sticky top-0 z-50 bg-none supports-[backdrop-filter]:bg-none backdrop-blur font-sans text-sm text-white p-4 shadow-lg ">
+    <header className=" top-0 z-50 bg-black  supports-[backdrop-filter]:bg-none backdrop-blur font-sans text-sm text-white p-4 shadow-lg ">
       <div className="container mx-auto flex justify-between items-center">
         {/* logo */}
         <div className="w-2/5 ">

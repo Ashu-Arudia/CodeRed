@@ -10,58 +10,58 @@ CREATE TABLE users (
     user_id SERIAL PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
     email VARCHAR(100) NOT NULL UNIQUE,
-    
+
     -- Authentication & Security
     password_hash VARCHAR(255) NOT NULL,
-    
+
     -- Profile Information
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
     profile_picture VARCHAR(255) DEFAULT NULL,
     country VARCHAR(100) DEFAULT NULL,
     timezone VARCHAR(50) DEFAULT 'UTC',
-    
+
     -- Rating & Performance Metrics
     current_rating INTEGER DEFAULT 1000,                    -- Starting rating
     peak_rating INTEGER DEFAULT 1000,                       -- Highest rating achieved
     current_rank_id INTEGER NOT NULL DEFAULT 6,             -- References user_ranks (Sixth rank)
-    
+
     -- Match Statistics
     total_matches INTEGER DEFAULT 0,
     matches_won INTEGER DEFAULT 0,
     win_rate DECIMAL(5,2) DEFAULT 0.00,                    -- Percentage (0.00 to 100.00)
     problems_solved INTEGER DEFAULT 0,
-    
+
     -- Preferences
     preferred_language_id INTEGER DEFAULT NULL,             -- References languages table
-    
+
     -- Account Status
     is_active BOOLEAN DEFAULT TRUE,
     is_verified BOOLEAN DEFAULT FALSE,
-    
+
     -- Timestamps
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     last_login TIMESTAMP DEFAULT NULL,
-    
+
     -- Foreign Key Constraints
-    CONSTRAINT fk_users_rank 
-        FOREIGN KEY (current_rank_id) 
+    CONSTRAINT fk_users_rank
+        FOREIGN KEY (current_rank_id)
         REFERENCES user_ranks(rank_id)
         ON DELETE SET DEFAULT,                              -- If rank deleted, set to default
-        
+
     -- Note: preferred_language_id FK will be added after languages table exists
-    
+
     -- Check Constraints
-    CONSTRAINT chk_rating_positive 
+    CONSTRAINT chk_rating_positive
         CHECK (current_rating >= 0),
-    CONSTRAINT chk_peak_rating_valid 
+    CONSTRAINT chk_peak_rating_valid
         CHECK (peak_rating >= current_rating),
-    CONSTRAINT chk_win_rate_valid 
+    CONSTRAINT chk_win_rate_valid
         CHECK (win_rate >= 0 AND win_rate <= 100),
-    CONSTRAINT chk_matches_valid 
+    CONSTRAINT chk_matches_valid
         CHECK (total_matches >= 0 AND matches_won >= 0 AND matches_won <= total_matches),
-    CONSTRAINT chk_email_format 
+    CONSTRAINT chk_email_format
         CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$')
 );
 
@@ -99,7 +99,7 @@ COMMENT ON COLUMN users.is_verified IS 'Email verification status';
 COMMENT ON COLUMN users.timezone IS 'User timezone for scheduling matches';
 
 -- Sample data for testing (optional - remove in production)
--- INSERT INTO users (username, email, password_hash, first_name, last_name, current_rating, current_rank_id) 
--- VALUES 
+-- INSERT INTO users (username, email, password_hash, first_name, last_name, current_rating, current_rank_id)
+-- VALUES
 --     ('johndoe', 'john@example.com', '$2b$10$hash123', 'John', 'Doe', 1200, 4),
 --     ('alice_coder', 'alice@example.com', '$2b$10$hash456', 'Alice', 'Smith', 1800, 2);

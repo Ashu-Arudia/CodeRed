@@ -1,17 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import {
-  FaChevronLeft,
-  FaChevronRight,
-  FaFire,
-  FaGamepad,
-  FaMedal,
-  FaPlay,
-  FaTrophy,
-  FaUsers,
-} from "react-icons/fa";
-import { FaShield, FaBullseye as FaTarget } from "react-icons/fa6";
+import { FaChevronLeft, FaChevronRight, FaFire, FaUsers } from "react-icons/fa";
 
 export default function Home() {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
@@ -86,7 +76,7 @@ export default function Home() {
       img: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=600&auto=format&fit=crop",
       participants: 100,
       prize: "30 Pts",
-      tier: "LEGENDARY",
+      tier: "EXPERT",
       timeLeft: "3 days",
       difficulty: 5,
     },
@@ -96,7 +86,7 @@ export default function Home() {
       img: "https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=600&auto=format&fit=crop",
       participants: 150,
       prize: "40 Pts",
-      tier: "MASTER",
+      tier: "MEDIUM",
       timeLeft: "12 hours",
       difficulty: 4,
     },
@@ -116,7 +106,7 @@ export default function Home() {
       img: "https://images.unsplash.com/photo-1560253023-3ec5d502959f?q=80&w=600&auto=format&fit=crop",
       participants: 20,
       prize: "100",
-      tier: "ROOKIE",
+      tier: "EASY",
       timeLeft: "6 hours",
       difficulty: 2,
     },
@@ -124,7 +114,7 @@ export default function Home() {
 
   const friends = [
     {
-      name: "SHADOW_VIPER",
+      name: "Shadow_Viper",
       status: "In Match",
       rank: "Supreme",
       img: "https://randomuser.me/api/portraits/men/32.jpg",
@@ -132,7 +122,7 @@ export default function Home() {
       game: "de_dust2",
     },
     {
-      name: "NIGHT_HAWK",
+      name: "Night_Hawk",
       status: "Lobby",
       rank: "Global Elite",
       img: "https://randomuser.me/api/portraits/women/45.jpg",
@@ -140,7 +130,7 @@ export default function Home() {
       game: "Waiting",
     },
     {
-      name: "STORM_RIDER",
+      name: "Storm_Rider",
       status: "Offline",
       rank: "Legendary Eagle",
       img: "https://randomuser.me/api/portraits/men/67.jpg",
@@ -148,7 +138,7 @@ export default function Home() {
       game: "Last seen 2h",
     },
     {
-      name: "FROST_BITE",
+      name: "Frost_Bite",
       status: "In Match",
       rank: "Master Guardian",
       img: "https://randomuser.me/api/portraits/women/23.jpg",
@@ -207,81 +197,110 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-black text-white relative">
-      {/* Animated Background */}
-      <div className="fixed inset-0 bg-gradient-to-br from-gray-900 via-black to-gray-900">
-        <div className="absolute top-1/4 left-1/3 w-2 h-2 bg-orange-500 rounded-full animate-ping"></div>
-        <div className="absolute bottom-1/3 right-1/4 w-1 h-1 bg-blue-500 rounded-full animate-ping animation-delay-1000"></div>
-        <div className="absolute top-2/3 left-1/5 w-1.5 h-1.5 bg-green-500 rounded-full animate-ping animation-delay-2000"></div>
-      </div>
-
-      <div className="relative z-10 grid grid-cols-[220px_1fr_280px] min-h-screen">
-        {/* LEFT SIDEBAR - Military Style */}
-        <aside className="bg-gradient-to-b from-gray-900/95 to-black/95 backdrop-blur-xl border-r border-orange-500/30 shadow-2xl h-screen overflow-y-auto scrollbar-hide">
-          {/* Header */}
-          {/* <div className="p-6 border-b border-gray-700/50">
-
-            <div className="grid grid-cols-2 gap-3">
-              {gameStats.map((stat, idx) => (
-                <div
-                  key={idx}
-                  className="bg-black/60 p-1 rounded-lg border border-gray-700/50"
-                >
-                  <div className="text-xs text-gray-400 font-mono">
-                    {stat.label}
-                  </div>
-                  <div className={`text-xs font-bold ${stat.color}`}>
-                    {stat.value}
-                  </div>
-                </div>
-              ))}
+      <div className="relative grid grid-cols-[50px_1fr_250px] min-h-full">
+        {/* LEFT SIDEBAR */}
+        {/* for drawer */}
+        <div>
+          <div className="drawer">
+            <input id="my-drawer" type="checkbox" className="drawer-toggle" />
+            <div className="drawer-content">{/* Page content here */}</div>
+            <div className="drawer-side">
+              <label
+                htmlFor="my-drawer"
+                aria-label="close sidebar"
+                className="drawer-overlay"
+              ></label>
+              <ul className="menu bg-base-200 text-base-content min-h-screen w-60 p-4">
+                {/* Sidebar content here */}
+                <li>
+                  <a>ACCOUNT</a>
+                </li>
+                <li>
+                  <a>FRIENDS</a>
+                </li>
+              </ul>
             </div>
-          </div> */}
+          </div>
 
-          {/* Navigation */}
-          <nav className="p-2 space-y-2">
-            {[
-              { icon: FaTarget, label: "GAMEATHONS", active: true, badge: "3" },
-              { icon: FaTrophy, label: "TOURNAMENTS", badge: "12" },
-              { icon: FaGamepad, label: "QUICK MATCH" },
-              { icon: FaShield, label: "ONLINE", badge: "NEW" },
-              { icon: FaUsers, label: "SQUAD", badge: "4" },
-              { icon: FaMedal, label: "ACHIEVEMENTS" },
-            ].map((item, idx) => (
-              <div
-                key={idx}
-                className={`flex items-center justify-between p-3 rounded-lg transition-all duration-300 cursor-pointer group ${
-                  item.active
-                    ? "bg-gradient-to-r from-orange-600/20 to-red-600/20 border border-orange-500/50"
-                    : "hover:bg-gray-800/50"
-                }`}
+          <ul className="menu bg-base-200 rounded-box h-screen">
+            <li>
+              <label
+                htmlFor="my-drawer"
+                className="tooltip tooltip-right cursor-pointer btn btn-circle swap swap-rotate"
+                data-tip="Menu"
               >
-                <div className="flex items-center gap-3">
-                  <item.icon
-                    className={`text-lg ${
-                      item.active
-                        ? "text-orange-400"
-                        : "text-gray-400 group-hover:text-white"
-                    }`}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  fill="currentColor"
+                  viewBox="0 0 512 512"
+                >
+                  <path d="M64,384H448V341.33H64Zm0-106.67H448V234.67H64ZM64,128v42.67H448V128Z" />
+                </svg>
+              </label>
+            </li>
+
+            <li className="indicator mt-3">
+              <span className="indicator-item badge badge-secondary text-xs">
+                12
+              </span>
+              <a className="tooltip tooltip-right" data-tip="Leaderboard">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
                   />
-                  <span
-                    className={`font-mono font-semibold text-sm ${
-                      item.active
-                        ? "text-white"
-                        : "text-gray-400 group-hover:text-white"
-                    }`}
-                  >
-                    {item.label}
-                  </span>
-                </div>
-                {item.badge && (
-                  <span className="bg-red-600 text-xs px-2 py-1 rounded font-mono font-bold">
-                    {item.badge}
-                  </span>
-                )}
-              </div>
-            ))}
-          </nav>
-        </aside>
+                </svg>
+              </a>
+            </li>
+
+            <li className="mt-3">
+              <a className="tooltip tooltip-right" data-tip="About Us">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </a>
+            </li>
+
+            <li className="mt-3">
+              <a className="tooltip tooltip-right" data-tip="Settings">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M11.983 13.977a2.993 2.993 0 110-5.986 2.993 2.993 0 010 5.986zM19.428 12.593a7.948 7.948 0 000-1.186l2.078-1.602a.5.5 0 00.12-.65l-1.97-3.414a.5.5 0 00-.607-.22l-2.449.98a7.963 7.963 0 00-1.027-.594l-.37-2.6a.5.5 0 00-.496-.424h-3.94a.5.5 0 00-.496.424l-.37 2.6c-.36.168-.703.365-1.027.594l-2.449-.98a.5.5 0 00-.607.22L2.374 9.155a.5.5 0 00.12.65l2.078 1.602a7.948 7.948 0 000 1.186l-2.078 1.602a.5.5 0 00-.12.65l1.97 3.414a.5.5 0 00.607.22l2.449-.98c.324.229.667.426 1.027.594l.37 2.6a.5.5 0 00.496.424h3.94a.5.5 0 00.496-.424l.37-2.6c.36-.168.703-.365 1.027-.594l2.449.98a.5.5 0 00.607-.22l1.97-3.414a.5.5 0 00-.12-.65l-2.078-1.602z"
+                  />
+                </svg>
+              </a>
+            </li>
+          </ul>
+        </div>
 
         {/* MAIN CONTENT */}
         <main
@@ -316,20 +335,6 @@ export default function Home() {
 
                   <div className="relative z-10 h-full flex items-center p-12">
                     <div className="max-w-2xl">
-                      <div className="flex items-center gap-4 mb-4">
-                        <span
-                          className={`px-3 py-1 text-xs font-black font-mono rounded ${
-                            match.status === "LIVE"
-                              ? "bg-red-600 animate-pulse"
-                              : match.status === "STARTING"
-                              ? "bg-yellow-600"
-                              : "bg-blue-600"
-                          }`}
-                        >
-                          {match.status}
-                        </span>
-                      </div>
-
                       <h1 className="text-5xl font-black mb-6 text-white tracking-wider">
                         {match.title}
                       </h1>
@@ -338,28 +343,28 @@ export default function Home() {
                       </h2>
                       <div className="flex items-center gap-8 mb-8">
                         <div className="flex items-center gap-2">
-                          <FaTrophy className="text-yellow-400" />
-                          <span className="font-mono font-bold text-xl text-yellow-400">
+                          {/* <FaTrophy className="text-yellow-400" /> */}
+                          <span className="font-mono font-bold text-lg text-white">
                             {match.prize}
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <FaUsers className="text-blue-400" />
-                          <span className="font-mono text-blue-400">
+                          <FaUsers className="text-white-400 border-2" />
+                          <span className="font-mono text-white-400">
                             {match.participants.toLocaleString()}
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <FaFire className="text-orange-400" />
-                          <span className="font-mono text-orange-400">
+                          <FaFire className="border-2 " />
+                          <span className="font-mono text-white">
                             {match.timeLeft}
                           </span>
                         </div>
                       </div>
 
                       <div className="flex gap-4">
-                        <button className="px-8 py-3 bg-gradient-to-r from-pink-600 to-red-700 rounded-lg font-black font-mono tracking-wider hover:from-orange-700 hover:to-red-800 transform hover:scale-105 transition-all duration-300 shadow-lg shadow-orange-600/25">
-                          JOIN BATTLE
+                        <button className="btn btn-outline btn-warning rounded-sm">
+                          Register
                         </button>
                       </div>
                     </div>
@@ -371,15 +376,15 @@ export default function Home() {
             {/* Carousel Controls */}
             <button
               onClick={prevSlide}
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-black/60 hover:bg-black/80 border border-orange-500/50 rounded-lg flex items-center justify-center transition-all duration-300"
+              className="absolute left-2 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-none hover:bg-gray-500  hover:rounded-3xl flex items-center justify-center transition-all duration-300"
             >
-              <FaChevronLeft className="text-orange-400" />
+              <FaChevronLeft className="text-white font-bold" />
             </button>
             <button
               onClick={nextSlide}
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-black/60 hover:bg-black/80 border border-orange-500/50 rounded-lg flex items-center justify-center transition-all duration-300"
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-none hover:bg-gray-500  hover:rounded-3xl flex items-center justify-center transition-all duration-300"
             >
-              <FaChevronRight className="text-orange-400" />
+              <FaChevronRight className="text-white font-bold" />
             </button>
 
             {/* Carousel Indicators */}
@@ -390,7 +395,7 @@ export default function Home() {
                   onClick={() => setCurrentSlide(idx)}
                   className={`w-3 h-3 rounded-full transition-all duration-300 ${
                     idx === currentSlide
-                      ? "bg-orange-500 w-8"
+                      ? "bg-white w-8"
                       : "bg-gray-600 hover:bg-gray-500"
                   }`}
                 />
@@ -403,19 +408,17 @@ export default function Home() {
             <div className="flex items-center justify-between mb-8">
               <div>
                 <h2 className="text-3xl font-black tracking-wider text-white mb-2">
-                  ONLINE RANKED GAMES
+                  AVAILABLE ARENAS
                 </h2>
-                <p className="text-gray-400 font-mono">Select your Category</p>
+                <p className="text-gray-400 font-sans">Select your Category</p>
               </div>
-              <div className="flex gap-2">
-                {["ALL", "RANKED", "NO RANKED"].map((filter) => (
-                  <button
-                    key={filter}
-                    className="px-4 py-2 font-mono text-sm font-bold bg-gray-800 hover:bg-orange-600 transition-colors duration-300 rounded"
-                  >
-                    {filter}
-                  </button>
-                ))}
+              <div role="tablist" className="tabs tabs-border">
+                <a role="tab" className="tab tab-active">
+                  RANKED
+                </a>
+                <a role="tab" className="tab mx-4 ">
+                  NORMAL
+                </a>
               </div>
             </div>
 
@@ -428,97 +431,91 @@ export default function Home() {
                   onMouseLeave={() => setHoveredCard(null)}
                 >
                   <div
-                    className={`bg-gradient-to-br from-gray-900/90 to-black/90 backdrop-blur-xl rounded-xl overflow-hidden border-2 transition-all duration-500 ${
+                    className={`card relative h-80 rounded-2xl overflow-hidden border transition-all duration-500 shadow-2xl ${
                       hoveredCard === idx
-                        ? "border-orange-500 shadow-2xl shadow-orange-500/20 transform scale-105"
-                        : "border-gray-700/50"
+                        ? "border-black  transform scale-105"
+                        : "border-gray-800"
                     }`}
                   >
-                    <div className="relative h-48 overflow-hidden">
+                    {/* Full background image */}
+                    <div className="absolute inset-0">
                       <img
                         src={tournament.img}
                         alt={tournament.title}
                         className={`w-full h-full object-cover transition-all duration-700 ${
                           hoveredCard === idx
-                            ? "scale-110 brightness-110"
-                            : "scale-100"
+                            ? "scale-110 brightness-75"
+                            : "scale-100 brightness-60"
                         }`}
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent" />
 
-                      {/* Tier Badge */}
-                      <div
-                        className={`absolute top-4 left-4 px-3 py-1 font-mono font-black text-xs rounded ${
-                          tournament.tier === "LEGENDARY"
-                            ? "bg-gradient-to-r from-yellow-600 to-orange-600"
-                            : tournament.tier === "MASTER"
-                            ? "bg-gradient-to-r from-purple-600 to-blue-600"
-                            : tournament.tier === "EXPERT"
-                            ? "bg-gradient-to-r from-green-600 to-teal-600"
-                            : "bg-gradient-to-r from-gray-600 to-gray-700"
-                        }`}
-                      >
-                        {tournament.tier}
-                      </div>
-
-                      {/* Difficulty Stars */}
-                      <div className="absolute top-4 right-4 flex gap-1">
-                        {[...Array(5)].map((_, i) => (
-                          <div
-                            key={i}
-                            className={`w-2 h-2 rounded-full ${
-                              i < tournament.difficulty
-                                ? "bg-orange-500"
-                                : "bg-gray-600"
-                            }`}
-                          />
-                        ))}
-                      </div>
+                      {/* Luxury dark overlay with subtle gold tint */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/70 to-black/40"></div>
                     </div>
 
-                    <div className="p-6">
-                      <div className="mb-4">
-                        <h3 className="text-xl font-black text-white mb-3 tracking-wider">
-                          {tournament.title}
-                        </h3>
-                        <p className="text-orange-400 font-mono text-sm">
-                          {tournament.mode}
-                        </p>
+                    {/* Content overlay */}
+                    <div className="card-body relative z-10 p-6 h-full flex flex-col justify-between">
+                      {/* Top section - Title and Badge */}
+                      <div className="flex flex-col gap-3">
+                        <div className="flex items-start justify-between">
+                          <h3 className="text-2xl font-bold text-white drop-shadow-2xl leading-tight tracking-wide">
+                            {tournament.title}
+                          </h3>
+                        </div>
                       </div>
 
-                      <div className="grid grid-cols-3 gap-4 mb-6 text-sm">
-                        <div>
-                          <div className="text-gray-400 font-mono text-xs">
-                            PRIZE POOL
+                      {/* Middle section - Stats with luxury glass effect */}
+                      <div className="grid grid-cols-2 gap-4 p-5 rounded-xl bg-none shadow-xl">
+                        <div className="text-center">
+                          <div className="text-yellow-200/80 font-mono text-xs uppercase tracking-widest mb-2 font-semibold">
+                            MIN. POINTS
                           </div>
-                          <div className="text-yellow-400 font-bold">
+                          <div className="text-2xl font-bold text-yellow-300 drop-shadow-lg">
                             {tournament.prize}
                           </div>
                         </div>
-                        <div>
-                          <div className="text-gray-400 font-mono text-xs">
-                            ONLINE PLAYERS
+                        <div className="text-center border-l border-yellow-300/20 pl-4">
+                          <div className="text-yellow-200/80 font-mono text-xs uppercase tracking-widest mb-2 font-semibold">
+                            Players Online
                           </div>
-                          <div className="text-blue-400 font-bold">
+                          <div className="text-2xl font-bold text-white drop-shadow-lg">
                             {tournament.participants.toLocaleString()}
                           </div>
                         </div>
-                        <div>
-                          {/* <div className="text-gray-400 font-mono text-xs">
-                            TIME LEFT
-                          </div>
-                          <div className="text-green-400 font-bold">
-                            {tournament.timeLeft}
-                          </div> */}
-                        </div>
                       </div>
 
-                      <div className="flex gap-3">
-                        <button className="flex-1 py-3 bg-gradient-to-r from-orange-600 to-red-700 rounded-lg font-mono font-black text-sm hover:from-orange-700 hover:to-red-800 transition-all duration-300 transform hover:scale-105">
+                      {/* Bottom section - Luxury action buttons */}
+                      <div className="card-actions justify-between gap-4">
+                        <button
+                          className={`btn flex-1 font-bold transition-all duration-300 shadow-xl border-0 tracking-wide
+                              bg-white text-black shadow-black/50"
+                          `}
+                        >
+                          <svg
+                            className="w-4 h-4 mr-2"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+                          </svg>
                           START MATCH
                         </button>
-                        <button className="px-6 py-3 border border-orange-500 rounded-lg font-mono font-bold text-orange-400 hover:bg-orange-500 hover:text-black transition-all duration-300">
-                          INFO
+                        <button
+                          className={`btn backdrop-blur-sm bg-black/50 border-2 border-white/80 text-white hover:bg-white hover:text-black hover:border-white transition-all duration-300 shadow-lg `}
+                        >
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                          </svg>
                         </button>
                       </div>
                     </div>
@@ -530,64 +527,12 @@ export default function Home() {
         </main>
 
         {/* RIGHT SIDEBAR */}
-        <aside className="bg-gradient-to-b from-gray-900/95 to-black/95 backdrop-blur-xl border-l border-orange-500/30 p-6 overflow-y-auto h-screen scrollbar-hide">
-          {/* Leaderboard */}
-          <div className="mb-8 border-b border-yellow-400">
-            <div className="flex items-center gap-2 mb-4 border-b border-yellow-400">
-              {/* <FaTrophy className="text-yellow-400 text-lg" /> */}
-              <h3 className="font-mono font-black text-lg tracking-wider">
-                GLOBAL RANKINGS
-              </h3>
-            </div>
-
-            <div className="space-y-3">
-              {leaderboard.map((player, idx) => (
-                <div
-                  key={idx}
-                  className={`flex items-center gap-3 p-1 rounded-lg transition-all duration-300 cursor-pointer ${
-                    idx < 3
-                      ? "bg-gradient-to-r from-yellow-600/20 to-orange-600/20 border border-yellow-500/30"
-                      : "bg-black/40 hover:bg-gray-800/50"
-                  }`}
-                >
-                  <div className="flex items-center">
-                    <span className="font-mono font-black text-lg">
-                      {player.rank}
-                    </span>
-                  </div>
-
-                  <div className="w-6 h-6 rounded-lg overflow-hidden border-2 border-orange-500/50">
-                    <img
-                      src={player.img}
-                      alt={player.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-
-                  <div className="flex-1">
-                    <div className="font-mono font-bold text-sm text-white">
-                      {player.name}
-                    </div>
-                    <div className="font-mono text-xs text-orange-400">
-                      {player.points.toLocaleString()} Pts
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
+        <aside className="bg-[#191E24]  rounded-tl-2xl rounded-bl-2xl p-6 overflow-y-auto h-screen scrollbar-hide">
           {/* Squad Members */}
           <div>
-            <div className="flex items-center justify-between mb-4 ">
+            <div className="flex items-center justify-between mb-4  ">
               <div className="flex items-center gap-2 ">
-                {/* <FaUsers className="text-blue-400 text-lg" /> */}
-                <h3 className="font-mono font-black text-lg tracking-wider">
-                  FRIENDS
-                </h3>
-              </div>
-              <div className="bg-green-600/20 text-green-400 px-2 py-1 rounded font-mono text-xs font-bold">
-                {friends.filter((f) => f.online).length} ONLINE
+                <h3 className="font-black text-md tracking-wider">FRIENDS</h3>
               </div>
             </div>
 
@@ -595,46 +540,47 @@ export default function Home() {
               {friends.map((friend, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center gap-3 p-1 bg-black/40 rounded-lg hover:bg-gray-800/50 transition-all duration-300 cursor-pointer group"
+                  className="flex items-center gap-3 p-1 bg-none cursor-pointer group rounded-tl-2xl rounded-bl-2xl"
                 >
                   <div className="relative">
-                    <div className="w-12 h-12 rounded-lg overflow-hidden border-2 border-gray-600">
-                      <img
-                        src={friend.img}
-                        alt={friend.name}
-                        className="w-full h-full object-cover"
-                      />
+                    <div className="avatar avatar-online">
+                      <div className="w-11 rounded-full">
+                        <img src="https://img.daisyui.com/images/profile/demo/gordon@192.webp" />
+                      </div>
                     </div>
-                    <div
-                      className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-black ${
-                        friend.online
-                          ? "bg-green-500 animate-pulse"
-                          : "bg-gray-500"
-                      }`}
-                    />
                   </div>
 
                   <div className="flex-1">
-                    <div className="font-mono font-bold text-sm text-white">
+                    <div className="font-[var(--font-poppins)] text-xs text-white">
                       {friend.name}
                     </div>
-                    <div className="font-mono text-xs text-gray-400">
+                    <div className="font-light italic text-xs text-gray-400">
                       {friend.rank}
-                    </div>
-                    <div
-                      className={`font-mono text-xs ${
-                        friend.online ? "text-green-400" : "text-red-400"
-                      }`}
-                    >
-                      {friend.game}
                     </div>
                   </div>
 
-                  {friend.online && (
-                    <button className="w-8 h-8 bg-orange-600 hover:bg-orange-700 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-                      <FaPlay className="text-xs" />
-                    </button>
-                  )}
+                  {
+                    <div className="dropdown dropdown-bottom dropdown-end">
+                      <div
+                        tabIndex={0}
+                        role="button"
+                        className="btn-ghost p-1  font-bold"
+                      >
+                        :
+                      </div>
+                      <ul
+                        tabIndex={0}
+                        className="dropdown-content menu rounded-box z-1 w-52 p-2 shadow-sm bg-black"
+                      >
+                        <li>
+                          <a>Invite</a>
+                        </li>
+                        <li>
+                          <a>Delete User</a>
+                        </li>
+                      </ul>
+                    </div>
+                  }
                 </div>
               ))}
             </div>

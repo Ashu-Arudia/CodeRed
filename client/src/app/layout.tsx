@@ -1,11 +1,16 @@
-import Header from "@/components/header";
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Poppins } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+});
+
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  variable: "--font-poppins",
 });
 
 const geistMono = Geist_Mono({
@@ -20,17 +25,21 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} antialiased`}
       >
-        <Header />
-        {children}
-        {/* <Footer /> */}
+        {/* <Header /> */}
+        <main
+          className=""
+          style={{ minHeight: "calc(100vh - 64px)" }} // 64px = h-16
+        >
+          {children}
+        </main>
       </body>
     </html>
   );
