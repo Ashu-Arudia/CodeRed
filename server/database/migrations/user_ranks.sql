@@ -41,23 +41,9 @@ CREATE TABLE user_ranks (
 CREATE INDEX idx_user_ranks_order ON user_ranks(rank_order);
 CREATE INDEX idx_user_ranks_rating_range ON user_ranks(min_rating, max_rating);
 
--- Insert the 6 default ranks (from lowest to highest skill)
-INSERT INTO user_ranks (rank_name, rank_order, min_rating, max_rating, rank_color, promotion_bonus) VALUES
-    ('Sixth',  6, 0,    400,  '#8B4513', 0),      -- Brown - Beginner
-    ('Fifth',  5, 400,  800,  '#C0C0C0', 50),     -- Silver - Basic  
-    ('Fourth', 4, 800,  1200, '#FFD700', 100),    -- Gold - Intermediate
-    ('Third',  3, 1200, 1600, '#40E0D0', 200),    -- Turquoise - Advanced
-    ('Second', 2, 1600, 2000, '#9370DB', 300),    -- Purple - Expert
-    ('First',  1, 2000, 9999, '#FF4500', 500);    -- Orange-Red - Master
-
 -- Add documentation comments
 COMMENT ON TABLE user_ranks IS 'Defines the 6 skill-based ranking system for CodeForge users';
 COMMENT ON COLUMN user_ranks.rank_order IS 'Rank hierarchy: 1=First (highest skill), 6=Sixth (lowest skill)';
 COMMENT ON COLUMN user_ranks.min_rating IS 'Minimum rating points required for this rank';
 COMMENT ON COLUMN user_ranks.max_rating IS 'Maximum rating points for this rank (exclusive upper bound)';
 COMMENT ON COLUMN user_ranks.promotion_bonus IS 'Bonus points awarded when user reaches this rank';
-
--- Verify the data
-SELECT rank_name, rank_order, min_rating, max_rating, rank_color 
-FROM user_ranks 
-ORDER BY rank_order;
