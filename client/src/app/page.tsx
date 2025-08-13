@@ -422,7 +422,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-3 gap-6">
               {tournaments.map((tournament, idx) => (
                 <div
                   key={idx}
