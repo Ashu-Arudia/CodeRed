@@ -31,6 +31,15 @@
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .parallax-disable *,
+  .parallax-disable *::before,
+  .parallax-disable *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
 @layer utilities {
   .scrollbar-hide {
     -ms-overflow-style: none; /* IE and Edge */
