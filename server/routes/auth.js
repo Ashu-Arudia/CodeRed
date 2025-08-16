@@ -40,9 +40,9 @@ router.get(
         const insertUserResult = await pool.query(
           `INSERT INTO users
            (google_id, email, first_name, last_name, is_verified)
-           VALUES ($1, $2, $3, $4, TRUE)
+           VALUES ($1, $2, $3, $4, $5)
            RETURNING *`,
-          [googleId, email, firstName, lastName]
+          [googleId, email, firstName, lastName,false]
         );
 
         user = insertUserResult.rows[0];
