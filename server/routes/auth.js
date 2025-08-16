@@ -56,8 +56,8 @@ router.get(
       // Redirect based on profile completion
       let redirectUrl;
 
-      if (!user.is_profile_complete) {
-        redirectUrl = `http://localhost:3000/signup?token=${token}`;
+      if (!user.is_verified) {
+        redirectUrl = `http://localhost:3000/home?token=${token}`;
       } else {
         redirectUrl = `http://localhost:3000/home?token=${token}`;
       }
