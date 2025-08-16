@@ -4,6 +4,7 @@ const app = express();
 const passport = require("passport");
 const authRoutes = require("./routes/auth");
 require("dotenv").config();
+require("./middleware/passport");
 
 app.use(cors());
 

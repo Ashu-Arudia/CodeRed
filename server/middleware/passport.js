@@ -8,7 +8,7 @@ passport.use(
     {
       clientID: process.env.CLIENT_ID,
       clientSecret: process.env.CLIENT_SECRET,
-      callbackURL: "http://localhost/3000",
+      callbackURL: "/api/auth/google/callback",
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
@@ -16,14 +16,13 @@ passport.use(
           "SELECT * FROM users WHERE google_id = $1",
           [profile.id]
         );
-
         if (rows.length > 0) {
           return done(null, rows[0]); // user exists
         }
 
         const insertResult = await pool.query(
           `INSERT INTO users (google_id, email, is_verified, first_name, second_name, profile_picture)
-           VALUES ($1, $2, $3, $4)
+           VALUES ($1, $2, $3, $4, $5, $6)
            RETURNING *`,
           [
             profile.id,

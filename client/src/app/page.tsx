@@ -74,7 +74,7 @@ const Hero: React.FC = () => {
   return (
     <section className="relative bg-gray-800 text-white">
       <video
-        className="w-full h-screen object-cover"
+        className="w-full h-screen object-cover opacity-50"
         loop
         autoPlay
         muted
@@ -89,7 +89,7 @@ const Hero: React.FC = () => {
         </h1>
         <Link
           href="/login"
-          className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-red-500 to-blue-500 text-white rounded hover:bg-blue-700"
+          className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-red-600 to-blue-600 text-white rounded hover:bg-blue-700"
         >
           Get Started
         </Link>
