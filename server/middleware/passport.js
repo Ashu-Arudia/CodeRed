@@ -21,16 +21,17 @@ passport.use(
         }
 
         const insertResult = await pool.query(
-          `INSERT INTO users (google_id, email, is_verified, first_name, last_name, profile_image_url)
+          `INSERT INTO users (google_id, email, is_verified, first_name, second_name, profile_picture)
            VALUES ($1, $2, $3, $4, $5, $6)
            RETURNING *`,
           [
-            profile.id,
-            profile.emails[0].value,
-            false,
-            profile.name.givenName,
-            profile.name.familyName,
-            profile.photos[0].value,
+            profile.id, // google_id
+            profile.emails[0].value, // email
+            profile.name.givenName || null, // first_name
+            profile.name.familyName || null, // last_name
+            profile.photos?.[0]?.value || null, // profile_picture
+            false, // is_verified (new Google accounts start unverified)
+            "online", // status (enum: online/offline/in_match)
           ]
         );
 
