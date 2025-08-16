@@ -46,25 +46,16 @@ const Header: React.FC = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   return (
-    <header className="absolute backdrop-blur-sm top-0 z-50 bg-transparent text-white w-full">
+    <header className="absolute backdrop-blur-lg top-0 z-50 bg-transparent text-white w-full sticky-header">
       <div className="container mx-auto px-4">
         <div className="items-center justify-between py-4 grid grid-cols-[290px_1fr] gap-5 w-full">
           <div className="flex items-center">
-            <button
-              className="mr-4 md:hidden"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              aria-label="Navigation Menu"
-            >
-              <span aria-hidden="true" className="text-2xl leading-none">
-                ☰
-              </span>
-            </button>
             <Link
               href="/"
-              className="text-2xl font-bold"
+              className="text-2xl font-bold border-2 flex"
               aria-label="Company Home"
             >
-              BATTLECODE
+              CODE<p className="ml-2 text-red-800 font-bold text-4xl">RED</p>
             </Link>
           </div>
 
@@ -89,24 +80,18 @@ const Hero: React.FC = () => {
         muted
         playsInline
       >
-        <source
-          src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"
-          type="video/mp4"
-        />
+        <source src="/video/vid.mp4" type="video/mp4" />
       </video>
       <div className="absolute inset-0 z-0 bg-gradient-to-b from-transparent to-black opacity-60 pointer-events-none" />
       <div className="absolute inset-0 z-10 flex flex-col items-center justify-center px-4 text-center">
         <h1 className="text-3xl md:text-5xl font-bold mb-6">
-          Your Journey Starts Here!
+          Coders Your Journey Starts Here!
         </h1>
         <Link
           href="/login"
-          className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700"
+          className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-red-500 to-blue-500 text-white rounded hover:bg-blue-700"
         >
           Get Started
-          <span aria-hidden="true" className="ml-2">
-            ➔
-          </span>
         </Link>
       </div>
     </section>
@@ -201,15 +186,19 @@ const Home: React.FC = () => {
             linkText="The next major innovation lever"
             imageSrc="Programmer"
           />
-          <div className="grid grid-cols-[800px_1fr]">
+          <div className="grid grid-cols-[800px_1fr] mt-40">
             <div>
-              <div className="md:w-1/2 p-4 flex flex-col justify-center">
+              <div className="md:w-[75%] p-4 flex flex-col justify-center">
                 <h3 className="text-6xl font-bold mb-4 text-black font-[Times_New_Roman]">
-                  Practice On Your Language
+                  Language Based Questions
                 </h3>
                 <p className="mb-4 text-black text-lg font-sans">
-                  Our platform ensures user having different programming
-                  language compete with same programing language.
+                  Our platform brings together coders from diverse programming
+                  backgrounds and ensures fair competition by having all
+                  participants solve challenges using the same programming
+                  language. This creates a level playing field, encourages
+                  adaptability, and helps programmers expand their skill set
+                  while competing.
                 </p>
               </div>
             </div>

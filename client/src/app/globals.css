@@ -49,6 +49,11 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none; /* Chrome, Safari, Edge */
   }
+
+  .sticky-header {
+    /* position: sticky; */
+    position: -webkit-sticky;
+  }
 }
 
 body {
