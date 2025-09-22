@@ -3,6 +3,7 @@ const cors = require("cors");
 const app = express();
 const passport = require("passport");
 const authRoutes = require("./routes/auth");
+const userRoutes = require("./routes/user");
 require("dotenv").config();
 require("./middleware/passport");
 
@@ -15,6 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 
 //routes
 app.use("/api/auth", authRoutes);
+app.use("/api/user", userRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log("Server Started!!");

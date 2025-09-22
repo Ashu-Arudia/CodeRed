@@ -18,7 +18,6 @@ interface LottieType {
   destroy: () => void;
 }
 
-// Dynamically import lottie-web with proper typing
 const useLottie = () => {
   const [lottie, setLottie] = useState<LottieType | null>(null);
 
@@ -40,7 +39,7 @@ const useLottie = () => {
   return lottie;
 };
 
-const Header: React.FC = () => {
+const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isIndustriesOpen, setIsIndustriesOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -70,11 +69,11 @@ const Header: React.FC = () => {
   );
 };
 
-const Hero: React.FC = () => {
+const Hero = () => {
   return (
     <section className="relative bg-gray-800 text-white">
       <video
-        className="w-full h-screen object-cover opacity-50"
+        className="w-full h-screen object-cover opacity-30"
         loop
         autoPlay
         muted
@@ -84,12 +83,12 @@ const Hero: React.FC = () => {
       </video>
       <div className="absolute inset-0 z-0 bg-gradient-to-b from-transparent to-black opacity-60 pointer-events-none" />
       <div className="absolute inset-0 z-10 flex flex-col items-center justify-center px-4 text-center">
-        <h1 className="text-3xl md:text-5xl font-bold mb-6">
-          Coders Your Journey Starts Here!
+        <h1 className="text-3xl md:text-5xl font-bold mb-6 bg-gradient-to-b from-white to-transparent bg-clip-text text-transparent">
+          Coders Your <br /> Journey Starts Here!
         </h1>
         <Link
           href="/login"
-          className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-red-600 to-blue-600 text-white rounded hover:bg-blue-700"
+          className="shadow-[0_-8px_12px_rgba(0,0,0,0.1)] inline-flex items-center px-6 py-3 bg-gradient-to-r from-red-600 to-blue-600 text-white rounded hover:bg-blue-700"
         >
           Get Started
         </Link>
@@ -151,7 +150,7 @@ const TwoUpSection: React.FC<{
         <div ref={containerRef}></div>
       </div>
       <div className="md:w-1/2 p-4 flex flex-col justify-center">
-        <h3 className="text-6xl font-bold mb-4 text-black font-[Times_New_Roman]">
+        <h3 className="text-6xl font-bold mb-4 text-red-700 font-[Times_New_Roman]">
           {title}
         </h3>
         <p className="mb-4 text-black text-lg font-sans">{description}</p>
@@ -160,7 +159,7 @@ const TwoUpSection: React.FC<{
   );
 };
 
-const Home: React.FC = () => {
+const Home = () => {
   return (
     <div id="__next">
       <Header />
@@ -182,14 +181,14 @@ const Home: React.FC = () => {
           />
           <TwoUpSection
             title="Battles That Test Your Skills"
-            description="Whether you’re sharpening your skills or proving you’re the best, our platform adapts to your level and keeps the challenge alive"
+            description="Whether you’re sharpening your skills or proving you’re the best, our platform adapts to your level and keeps the challenge alive."
             linkText="The next major innovation lever"
             imageSrc="Programmer"
           />
           <div className="grid grid-cols-[800px_1fr] mt-40">
             <div>
               <div className="md:w-[75%] p-4 flex flex-col justify-center">
-                <h3 className="text-6xl font-bold mb-4 text-black font-[Times_New_Roman]">
+                <h3 className="text-6xl font-bold mb-4 text-red-600 font-[Times_New_Roman]">
                   Language Based Questions
                 </h3>
                 <p className="mb-4 text-black text-lg font-sans">
