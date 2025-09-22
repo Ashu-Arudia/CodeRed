@@ -7,7 +7,6 @@ const fs = require("fs");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-// expect to be passed a pg Pool and BASE_URL when mounting
 module.exports = function makeUserDetailsRoute(
   pool,
   baseUrl = process.env.BASE_URL || "http://localhost:8000"
@@ -39,7 +38,6 @@ module.exports = function makeUserDetailsRoute(
     "/user-details",
     upload.single("profileImage"),
     async (req, res) => {
-      // get JWT from Authorization: Bearer <token> OR ?token=... (to match your redirect style)
       const authHeader = req.headers.authorization || "";
       const bearer = authHeader.startsWith("Bearer ")
         ? authHeader.slice(7)
@@ -56,7 +54,7 @@ module.exports = function makeUserDetailsRoute(
       let userId;
       try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        userId = decoded.id; // you sign { id: user.user_id }
+        userId = decoded.id;
       } catch (_e) {
         if (req.file)
           try {
@@ -70,7 +68,7 @@ module.exports = function makeUserDetailsRoute(
       try {
         const {
           username = "",
-          password = "", // optional: if provided, we hash & set; if empty, keep old
+          password = "",
           bio = "",
           preferredLanguage = "",
           dateOfBirth = "",

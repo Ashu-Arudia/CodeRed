@@ -18,7 +18,6 @@ interface LottieType {
   destroy: () => void;
 }
 
-// Dynamically import lottie-web with proper typing
 const useLottie = () => {
   const [lottie, setLottie] = useState<LottieType | null>(null);
 

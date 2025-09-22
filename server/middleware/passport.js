@@ -17,7 +17,7 @@ passport.use(
           [profile.id]
         );
         if (rows.length > 0) {
-          return done(null, rows[0]); // user exists
+          return done(null, rows[0]);
         }
 
         const insertResult = await pool.query(
@@ -25,11 +25,11 @@ passport.use(
            VALUES ($1, $2, $3, $4, $5, false)
            RETURNING *`,
           [
-            profile.id, // google_id
-            profile.emails[0].value, // email
-            profile.name.givenName || null, // first_name
-            profile.name.familyName || null, // last_name
-            profile.photos?.[0]?.value || null, // profile_picture
+            profile.id,
+            profile.emails[0].value,
+            profile.name.givenName || null,
+            profile.name.familyName || null,
+            profile.photos?.[0]?.value || null,
           ]
         );
 

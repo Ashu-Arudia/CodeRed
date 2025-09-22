@@ -5,6 +5,7 @@
 :root {
   --background: #ffffff;
   --foreground: #ffffff;
+  overscroll-behavior: none;
 }
 
 @theme inline {

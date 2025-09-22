@@ -33,7 +33,6 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} antialiased`}
       >
-        {/* <Header /> */}
         <main
           className=""
           style={{ minHeight: "calc(100vh - 64px)" }} // 64px = h-16

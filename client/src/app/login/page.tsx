@@ -53,7 +53,6 @@ export default function LoginForm() {
       const data = await response.json();
 
       if (response.ok) {
-        // Store token in state instead of localStorage for artifact compatibility
         setTimeout(() => {
           // router.push("/home");
           alert(isLogin ? "Login successful!" : "Signup successful!");
