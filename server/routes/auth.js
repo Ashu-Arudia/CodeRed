@@ -54,9 +54,9 @@ router.get(
       let redirectUrl;
 
       if (!user.is_verified) {
-        redirectUrl = `http://localhost:3000/profile?token=${token}`;
+        redirectUrl = `http://localhost:3000/home?token=${token}&verified=false`;
       } else {
-        redirectUrl = `http://localhost:3000/home?token=${token}`;
+        redirectUrl = `http://localhost:3000/home?token=${token}&verified=true`;
       }
 
       res.redirect(redirectUrl);

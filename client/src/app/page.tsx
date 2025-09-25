@@ -5,7 +5,7 @@ import React, { useEffect, useRef, useState } from "react";
 import img from "../../public/assets/c++.png";
 import img3 from "../../public/assets/java.png";
 import img2 from "../../public/assets/python.png";
-
+import Header from "./component/header";
 // Proper type definition for Lottie
 interface LottieType {
   loadAnimation: (params: {
@@ -39,35 +39,35 @@ const useLottie = () => {
   return lottie;
 };
 
-const Header = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isIndustriesOpen, setIsIndustriesOpen] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
+// const Header = () => {
+//   const [isMenuOpen, setIsMenuOpen] = useState(false);
+//   const [isIndustriesOpen, setIsIndustriesOpen] = useState(false);
+//   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
-  return (
-    <header className="absolute backdrop-blur-lg top-0 z-50 bg-transparent text-white w-full sticky-header">
-      <div className="container mx-auto px-4">
-        <div className="items-center justify-between py-4 grid grid-cols-[290px_1fr] gap-5 w-full">
-          <div className="flex items-center">
-            <Link
-              href="/"
-              className="text-2xl font-bold border-2 flex"
-              aria-label="Company Home"
-            >
-              CODE<p className="ml-2 text-red-800 font-bold text-4xl">RED</p>
-            </Link>
-          </div>
+//   return (
+//     <header className="absolute backdrop-blur-lg top-0 z-50 bg-transparent text-white w-full sticky-header">
+//       <div className="container mx-auto px-4">
+//         <div className="items-center justify-between py-4 grid grid-cols-[290px_1fr] gap-5 w-full">
+//           <div className="flex items-center">
+//             <Link
+//               href="/"
+//               className="text-2xl font-bold border-2 flex"
+//               aria-label="Company Home"
+//             >
+//               CODE<p className="ml-2 text-red-800 font-bold text-4xl">RED</p>
+//             </Link>
+//           </div>
 
-          <div className="flex items-center justify-end space-x-4">
-            <Link href="/login" className="hover:underline">
-              Sign In
-            </Link>
-          </div>
-        </div>
-      </div>
-    </header>
-  );
-};
+//           <div className="flex items-center justify-end space-x-4">
+//             <Link href="/login" className="hover:underline">
+//               Sign In
+//             </Link>
+//           </div>
+//         </div>
+//       </div>
+//     </header>
+//   );
+// };
 
 const Hero = () => {
   return (
@@ -131,7 +131,6 @@ const TwoUpSection: React.FC<{
       }
     }
 
-    // Cleanup function
     return () => {
       if (animationRef.current) {
         animationRef.current.destroy();

@@ -1,7 +1,7 @@
 "use client";
-
 import { useEffect, useRef, useState } from "react";
 import { FaChevronLeft, FaChevronRight, FaFire, FaUsers } from "react-icons/fa";
+import Card from "../component/login-card";
 
 export default function Home() {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
@@ -9,6 +9,19 @@ export default function Home() {
   const [scrollY, setScrollY] = useState(0);
   const carouselRef = useRef<HTMLDivElement | null>(null);
   const mainRef = useRef<HTMLDivElement | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+  const [verified, setVerified] = useState<string | null>(null);
+
+  useEffect(() => {
+    const { searchParams } = new URL(window.location.href);
+    const tokenParam = searchParams.get("token");
+    const verifiedParam = searchParams.get("verified");
+    setVerified(verifiedParam);
+    if (tokenParam) {
+      setToken(tokenParam);
+      localStorage.setItem("token", tokenParam);
+    }
+  }, []);
 
   // Parallax scroll effect
   useEffect(() => {
@@ -197,6 +210,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-black text-white relative">
+      {verified && <Card />}
       <div className="relative grid grid-cols-[50px_1fr_250px] min-h-full">
         {/* LEFT SIDEBAR */}
         {/* for drawer */}
