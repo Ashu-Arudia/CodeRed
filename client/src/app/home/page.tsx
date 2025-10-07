@@ -1,7 +1,8 @@
 "use client";
+import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { FaChevronLeft, FaChevronRight, FaFire, FaUsers } from "react-icons/fa";
-import Card from "../component/login-card";
+import Logo from "../component/logo";
 
 export default function Home() {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
@@ -11,6 +12,17 @@ export default function Home() {
   const mainRef = useRef<HTMLDivElement | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [verified, setVerified] = useState<string | null>(null);
+  const [username, setUsername] = useState<string>("");
+  const [bio, setBio] = useState<string>("");
+  const [dob, setDob] = useState<string>("");
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const [img, setImg] = useState<File | null>(null);
+  const [imgbase64, setImgbase64] = useState<string | ArrayBuffer | null>(null);
+
+  const inputclick = () => {
+    inputRef.current?.click();
+  };
 
   useEffect(() => {
     const { searchParams } = new URL(window.location.href);
@@ -208,9 +220,154 @@ export default function Home() {
     );
   };
 
+  const validate = () => {
+    if (!username.trim()) return "Username required";
+    if (!dob) return "Date of birth required";
+    // optionally validate file type/size
+    if (img && img.size > 5 * 1024 * 1024) return "Image must be < 5MB";
+    return null;
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImg(file);
+      const imageUrl = URL.createObjectURL(file);
+      setPreview(imageUrl);
+    }
+  };
+
+  const createprofile = async () => {
+    try {
+      const error = validate();
+      if (error) return alert(error);
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImgbase64(reader.result);
+      };
+
+      const formData = new FormData();
+      formData.append("username", username);
+      formData.append("bio", bio);
+      formData.append("dob", dob);
+      if (img) formData.append("image", imgbase64 as string);
+
+      const res = await axios.post(
+        "hhtp://localhost:8000/api/user/create-profile",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log("response from creating profile: ", res);
+    } catch (err) {
+      console.log("Error in creating profile : ", err);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-black text-white relative">
-      {verified && <Card />}
+      {/* Create Profile card  */}
+      {!verified && (
+        <div className="min-h-screen absolute w-full z-10 bg-black/60 flex flex-col">
+          {/* login card  */}
+          <div className="flex-1 flex w-full items-center justify-center p-2">
+            <div className="w-1/3  justify-center z-20 ml-20 bg-white/20 backdrop-blur-xl opacity-90 shadow-2xl  rounded-2xl">
+              <div className="!p-10  !h-auto rounded-2xl gap-5 flex flex-col z-20">
+                <div className="text-white text-2xl text-bold text-center">
+                  CREATE YOUR ACCOUNT
+                </div>
+
+                {/* logo  */}
+                <div className="w-full justify-center flex">
+                  <div
+                    onClick={inputclick}
+                    className="w-30 h-30 cursor-pointer"
+                  >
+                    {preview ? (
+                      <img
+                        src={preview}
+                        alt="preview"
+                        className="object-cover rounded-full w-28 h-28"
+                      />
+                    ) : (
+                      <Logo />
+                    )}
+                  </div>
+
+                  <input
+                    onChange={handleFileChange}
+                    type="file"
+                    accept="image/"
+                    ref={inputRef}
+                    className="hidden"
+                  />
+                </div>
+
+                {/* name  */}
+                <div>
+                  <fieldset className="fieldset">
+                    <legend className="fieldset-legend text-white text-md">
+                      Username
+                    </legend>
+                    <input
+                      onChange={(e) => setUsername(e.target.value)}
+                      type="text"
+                      className="input w-full"
+                      placeholder="Type here"
+                    />
+                  </fieldset>
+                </div>
+
+                {/* Bio  */}
+                <div>
+                  <legend className="fieldset-legend text-white !text-sm">
+                    Bio
+                  </legend>
+                  <textarea
+                    onChange={(e) => setBio(e.target.value)}
+                    className="textarea w-full"
+                    placeholder="Bio"
+                  ></textarea>
+                </div>
+
+                {/* DOB  */}
+                <div>
+                  <legend className="fieldset-legend text-white text-sm">
+                    DOB
+                  </legend>
+                  <input
+                    onChange={(e) => setBio(e.target.value)}
+                    type="date"
+                    className="input validator"
+                    required
+                    placeholder="Pick a date in 2025"
+                    min="1970-01-01"
+                    max="2020-12-31"
+                    title="Must be valid URL"
+                  />
+                  <p className="validator-hint">Must be 2025</p>
+                </div>
+
+                {/* Submit  */}
+                <div className="w-full flex flex-row  justify-end">
+                  <button
+                    onSubmit={createprofile}
+                    className="bg-gray-500 p-2 rounded-md px-8 cursor-pointer hover:scale-103 transition duration-100"
+                  >
+                    Create Profile
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="relative grid grid-cols-[50px_1fr_250px] min-h-full">
         {/* LEFT SIDEBAR */}
         {/* for drawer */}

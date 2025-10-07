@@ -1,7 +1,7 @@
 const express = require("express");
 const passport = require("passport");
 const router = express.Router();
-const pool = require("../database/db");
+const pool = require("../../database/db");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 

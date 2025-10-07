@@ -42,7 +42,6 @@ export default function profile() {
                   className="input w-full"
                   placeholder="Type here"
                 />
-                {/* <p className="label">Optional</p> */}
               </fieldset>
             </div>
 
