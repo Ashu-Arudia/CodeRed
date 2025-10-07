@@ -1,10 +1,27 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Poppins } from "next/font/google";
+import {
+  Geist,
+  Geist_Mono,
+  Metal_Mania,
+  Michroma,
+  Poppins,
+} from "next/font/google";
 import "./global.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+});
+const metalMania = Metal_Mania({
+  subsets: ["latin"], // include only the subsets you need
+  weight: "400", // Metal Mania only has one weight
+  variable: "--font-metal-mania",
+});
+
+const michroma = Michroma({
+  subsets: ["latin"],
+  weight: "400", // Michroma only has one weight
+  variable: "--font-michroma",
 });
 
 const poppins = Poppins({
@@ -29,17 +46,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} antialiased`}
-      >
-        <main
-          className=""
-          style={{ minHeight: "calc(100vh - 64px)" }} // 64px = h-16
-        >
-          {children}
-        </main>
-      </body>
+    <html lang="en" className={metalMania.className}>
+      <body>{children}</body>
     </html>
   );
 }
