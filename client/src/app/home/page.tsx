@@ -344,7 +344,7 @@ export default function Home() {
           viewBox="0 0 24 24"
           className="cursor-pointer hover:scale-105"
         >
-          <g fill="none" fill-rule="evenodd">
+          <g fill="none" fillRule="evenodd">
             <path d="m12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035q-.016-.005-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093q.019.005.029-.008l.004-.014l-.034-.614q-.005-.018-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z" />
             <path
               fill="#4f4d4d"
@@ -359,9 +359,10 @@ export default function Home() {
         className={` ${oswald.className} flex flex-row h-18 w-full  bg-[#121111] items-center`}
       >
         <div
-          className={`w-auto flex gap-2 pr-12 text-2xl px-3 ${metalMania.className} `}
+          className={`w-auto flex gap-2 pr-12 text-2xl px-3 ${metalMania.className} relative`}
         >
           Code <p className="text-red-600">Red </p>
+          <div className="absolute -bottom-7 left-1 w-25 h-3 bg-red-800 rounded-full blur-xl"></div>
         </div>
 
         {/* home  */}
@@ -397,7 +398,7 @@ export default function Home() {
               fill="currentColor"
               fill-rule="evenodd"
               d="M16.377 2.347A26.4 26.4 0 0 0 12 2c-1.783 0-3.253.157-4.377.347c-1.139.192-1.708.288-2.184.874c-.475.586-.45 1.219-.4 2.485c.173 4.348 1.111 9.78 6.211 10.26V19.5H9.82a1 1 0 0 0-.98.804l-.19.946H6a.75.75 0 0 0 0 1.5h12a.75.75 0 0 0 0-1.5h-2.65l-.19-.946a1 1 0 0 0-.98-.804h-1.43v-3.534c5.1-.48 6.039-5.911 6.211-10.26c.05-1.266.076-1.9-.4-2.485c-.476-.586-1.045-.682-2.184-.874"
-              clip-rule="evenodd"
+              clipRule="evenodd"
             />
           </svg>
           <div className="hover:scale-101">Tournaments</div>
@@ -452,18 +453,23 @@ export default function Home() {
           </div>
 
           {/* anouncement  */}
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 1024 1024"
-            className="cursor-pointer hover:scale-105"
-          >
-            <path
-              fill="#4f4d4d"
-              d="M880 112c-3.8 0-7.7.7-11.6 2.3L292 345.9H128c-8.8 0-16 7.4-16 16.6v299c0 9.2 7.2 16.6 16 16.6h101.6c-3.7 11.6-5.6 23.9-5.6 36.4c0 65.9 53.8 119.5 120 119.5c55.4 0 102.1-37.6 115.9-88.4l408.6 164.2c3.9 1.5 7.8 2.3 11.6 2.3c16.9 0 32-14.2 32-33.2V145.2C912 126.2 897 112 880 112M344 762.3c-26.5 0-48-21.4-48-47.8c0-11.2 3.9-21.9 11-30.4l84.9 34.1c-2 24.6-22.7 44.1-47.9 44.1"
-            />
-          </svg>
+          <div className="relative inline-block">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 1024 1024"
+              className="cursor-pointer hover:scale-105 "
+            >
+              <path
+                fill="white"
+                d="M880 112c-3.8 0-7.7.7-11.6 2.3L292 345.9H128c-8.8 0-16 7.4-16 16.6v299c0 9.2 7.2 16.6 16 16.6h101.6c-3.7 11.6-5.6 23.9-5.6 36.4c0 65.9 53.8 119.5 120 119.5c55.4 0 102.1-37.6 115.9-88.4l408.6 164.2c3.9 1.5 7.8 2.3 11.6 2.3c16.9 0 32-14.2 32-33.2V145.2C912 126.2 897 112 880 112M344 762.3c-26.5 0-48-21.4-48-47.8c0-11.2 3.9-21.9 11-30.4l84.9 34.1c-2 24.6-22.7 44.1-47.9 44.1"
+              />
+            </svg>
+            <div className="absolute -top-4 -right-3 bg-red-700 text-white text-sm  p-[3px] rounded-full w-6 h-6 items-center justify-center flex ">
+              10+
+            </div>
+          </div>
 
           {/* settings  */}
           <svg
@@ -474,7 +480,7 @@ export default function Home() {
             className="cursor-pointer hover:scale-103"
           >
             <path
-              fill="#4f4d4d"
+              fill="white"
               d="m12 1l9.5 5.5v11L12 23l-9.5-5.5v-11zm0 14a3 3 0 1 0 0-6a3 3 0 0 0 0 6"
             />
           </svg>
@@ -615,7 +621,8 @@ export default function Home() {
 
             {/* options  */}
             <div className="rounded-lg bg-[#121111] p-4 gap-5 flex flex-col">
-              <div className="w-full h-full cursor-pointer hover:bg-zinc-800 ">
+              <div className="w-full h-full cursor-pointer hover:bg-zinc-800 relative">
+                <div className="absolute top-0 left-0 w-12 h-12 bg-red-800 rounded-full blur-2xl"></div>
                 <div className="flex gap-3 mr-10 items-center">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -643,9 +650,9 @@ export default function Home() {
                     <path
                       fill="none"
                       stroke="currentColor"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
                       d="M7 9V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6m0 0v-6.172a2 2 0 0 0-.586-1.414l-3-3a2 2 0 0 0-2.828 0l-3 3A2 2 0 0 0 3 13.828V18a2 2 0 0 0 2 2h3m5 0H8m0-4v4m9.001-12H17m.002 4H17m.001 4H17"
                     />
                   </svg>
@@ -682,7 +689,7 @@ export default function Home() {
                       fill="currentColor"
                       fill-rule="evenodd"
                       d="M14.279 2.152C13.909 2 13.439 2 12.5 2s-1.408 0-1.779.152a2 2 0 0 0-1.09 1.083c-.094.223-.13.484-.145.863a1.62 1.62 0 0 1-.796 1.353a1.64 1.64 0 0 1-1.579.008c-.338-.178-.583-.276-.825-.308a2.03 2.03 0 0 0-1.49.396c-.318.242-.553.646-1.022 1.453c-.47.807-.704 1.21-.757 1.605c-.07.526.074 1.058.4 1.479c.148.192.357.353.68.555c.477.297.783.803.783 1.361s-.306 1.064-.782 1.36c-.324.203-.533.364-.682.556a2 2 0 0 0-.399 1.479c.053.394.287.798.757 1.605s.704 1.21 1.022 1.453c.424.323.96.465 1.49.396c.242-.032.487-.13.825-.308a1.64 1.64 0 0 1 1.58.008c.486.28.774.795.795 1.353c.015.38.051.64.145.863c.204.49.596.88 1.09 1.083c.37.152.84.152 1.779.152s1.409 0 1.779-.152a2 2 0 0 0 1.09-1.083c.094-.223.13-.483.145-.863c.02-.558.309-1.074.796-1.353a1.64 1.64 0 0 1 1.579-.008c.338.178.583.276.825.308c.53.07 1.066-.073 1.49-.396c.318-.242.553-.646 1.022-1.453c.47-.807.704-1.21.757-1.605a2 2 0 0 0-.4-1.479c-.148-.192-.357-.353-.68-.555c-.477-.297-.783-.803-.783-1.361s.306-1.064.782-1.36c.324-.203.533-.364.682-.556a2 2 0 0 0 .399-1.479c-.053-.394-.287-.798-.757-1.605s-.704-1.21-1.022-1.453a2.03 2.03 0 0 0-1.49-.396c-.242.032-.487.13-.825.308a1.64 1.64 0 0 1-1.58-.008a1.62 1.62 0 0 1-.795-1.353c-.015-.38-.051-.64-.145-.863a2 2 0 0 0-1.09-1.083M12.5 15c1.67 0 3.023-1.343 3.023-3S14.169 9 12.5 9s-3.023 1.343-3.023 3s1.354 3 3.023 3"
-                      clip-rule="evenodd"
+                      clipRule="evenodd"
                     />
                   </svg>
                   Settings
@@ -803,17 +810,17 @@ export default function Home() {
                     Select your Category
                   </p>
                 </div>
-                <div role="tablist" className="tabs tabs-border">
+                {/* <div role="tablist" className="tabs tabs-border">
                   <a role="tab" className="tab tab-active">
                     RANKED
                   </a>
                   <a role="tab" className="tab mx-4 ">
                     NORMAL
                   </a>
-                </div>
+                </div> */}
               </div>
 
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-3 gap-6">
                 {tournaments.map((tournament, idx) => (
                   <div
                     key={idx}
@@ -918,8 +925,13 @@ export default function Home() {
           </main>
 
           {/* RIGHT SIDEBAR */}
-          <aside className="bg-[#191E24]  rounded-2xl p-3">
-            <div className="bg-[#121111] flex flex-col h-56 rounded-lg w-45">
+          <aside className=" rounded-2xl  gap-3 flex flex-col">
+            <div className=" flex flex-col h-56 w-45 rounded-xl  shadow-lg bg-white/20">
+              <h1 className="text-center p-2 font-bold text-white">
+                Top Performers
+              </h1>
+            </div>
+            <div className=" flex flex-col flex-1 bg-white/20 backdrop-blur-2xl rounded-xl  shadow-lg">
               <h1 className="text-center p-2 font-bold">Friends</h1>
             </div>
           </aside>
