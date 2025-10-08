@@ -46,7 +46,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={metalMania.className}>
+    <html lang="en" className={poppins.className}>
       <body>{children}</body>
     </html>
   );

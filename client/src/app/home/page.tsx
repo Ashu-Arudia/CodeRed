@@ -1,8 +1,26 @@
 "use client";
 import axios from "axios";
+import { Metal_Mania, Oswald, Smooch_Sans } from "next/font/google";
 import { useEffect, useRef, useState } from "react";
 import { FaChevronLeft, FaChevronRight, FaFire, FaUsers } from "react-icons/fa";
 import Logo from "../component/logo";
+
+const metalMania = Metal_Mania({
+  subsets: ["latin"],
+  weight: "400",
+});
+
+const smoochSans = Smooch_Sans({
+  subsets: ["latin"], // always include 'latin' for English text
+  weight: ["400", "500", "700"], // available weights: 300–900
+  variable: "--font-smooch-sans",
+});
+
+const oswald = Oswald({
+  subsets: ["latin"], // must include subset
+  weight: ["200", "300", "400", "500", "600", "700"], // choose as needed
+  variable: "--font-oswald",
+});
 
 export default function Home() {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
@@ -270,22 +288,84 @@ export default function Home() {
   };
 
   return (
-    <div className=" flex-1 bg-black p-3">
+    <div
+      className={`flex-1 flex flex-col h-screen bg-black p-3 ${smoochSans.className}`}
+    >
       {/* header1  */}
-      <div className="gap-3 text-xs tracking-widest align-middle p-1 h-8 w-full flex flex-row font-serif">
-        <div className="cursor-pointer">SUPPORT</div>
-        <div className="cursor-pointer">FAIR PLAY</div>
-        <div className="cursor-pointer">POLICIES</div>
+      <div
+        className={`gap-3 text-sm tracking-widest align-middle p-1 h-8 w-full flex flex-row font-bold ${smoochSans.className}`}
+      >
+        <div className="cursor-pointer opacity-80">SUPPORT</div>
+        <div className="cursor-pointer opacity-80">FAIR PLAY</div>
+        <div className="cursor-pointer opacity-80">POLICIES</div>
+
+        <div className="flex-1"></div>
+
+        <div className="flex items-center text-center gap-2 px-2">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 20 20"
+          >
+            <path
+              fill="#cd2e2e"
+              d="M15.9 5.5C15.3 4.5 14.2 4 13 4H7c-1.2 0-2.3.5-2.9 1.5c-2.3 3.5-2.8 8.8-1.2 9.9s5.2-3.7 7.1-3.7s5.4 4.8 7.1 3.7c1.6-1.1 1.1-6.4-1.2-9.9M8 9H7v1H6V9H5V8h1V7h1v1h1zm5.4.5c0 .5-.4.9-.9.9s-.9-.4-.9-.9s.4-.9.9-.9s.9.4.9.9m1.9-2c0 .5-.4.9-.9.9s-.9-.4-.9-.9s.4-.9.9-.9s.9.4.9.9"
+            />
+          </svg>
+          99 <div className="opacity-40">TOTAL MATCHES </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <div className="inline-grid *:[grid-area:1/1]">
+            <div className="status status-success animate-ping"></div>
+            <div className="status status-success"></div>
+          </div>
+          139 <div className="opacity-40">PLAYERS ONLINE </div>
+        </div>
+
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          className="cursor-pointer hover:scale-105"
+        >
+          <path
+            fill="#4f4d4d"
+            d="M21.81 6.227c.058-.08-.028-.185-.12-.149a8.5 8.5 0 0 1-2.05.513a4.13 4.13 0 0 0 1.72-2.02c.034-.086-.06-.163-.14-.118c-.727.401-1.51.69-2.325.857a.1.1 0 0 1-.093-.03a4.1 4.1 0 0 0-6.991 3.65a.102.102 0 0 1-.104.123a11.64 11.64 0 0 1-8.224-4.17a.098.098 0 0 0-.163.015a4.16 4.16 0 0 0-.48 1.943a4.09 4.09 0 0 0 1.82 3.41a4.05 4.05 0 0 1-1.709-.43c-.068-.035-.15.014-.147.09a4.23 4.23 0 0 0 .933 2.468A4.1 4.1 0 0 0 6.1 13.79a4 4 0 0 1-1.1.17a5 5 0 0 1-.606-.045c-.075-.01-.136.06-.11.13A4.11 4.11 0 0 0 8.06 16.73a8.22 8.22 0 0 1-5.625 1.741c-.106-.007-.155.134-.064.188a11.57 11.57 0 0 0 5.919 1.62A11.59 11.59 0 0 0 20 8.6v-.48a.1.1 0 0 1 .04-.08a8.4 8.4 0 0 0 1.77-1.813"
+          />
+        </svg>
+
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          className="cursor-pointer hover:scale-105"
+        >
+          <g fill="none" fill-rule="evenodd">
+            <path d="m12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035q-.016-.005-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093q.019.005.029-.008l.004-.014l-.034-.614q-.005-.018-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z" />
+            <path
+              fill="#4f4d4d"
+              d="M18 3a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3zM8 10a1 1 0 0 0-1 1v5a1 1 0 1 0 2 0v-5a1 1 0 0 0-1-1m3-1a1 1 0 0 0-1 1v6a1 1 0 1 0 2 0v-3.66c.305-.344.82-.748 1.393-.993c.333-.142.834-.2 1.182-.09a.55.55 0 0 1 .293.188c.052.07.132.226.132.555v4a1 1 0 0 0 2 0v-4c0-.67-.17-1.266-.524-1.744a2.54 2.54 0 0 0-1.301-.907c-.902-.283-1.901-.126-2.568.16a6 6 0 0 0-.623.312A1 1 0 0 0 11 9M8 7a1 1 0 1 0 0 2a1 1 0 0 0 0-2"
+            />
+          </g>
+        </svg>
       </div>
 
       {/* header2  */}
-      <div className="flex flex-row h-15 w-full  bg-zinc-900 items-center">
-        <div className="w-auto flex gap-2 pr-12 text-2xl px-3">
+      <div
+        className={` ${oswald.className} flex flex-row h-18 w-full  bg-[#121111] items-center`}
+      >
+        <div
+          className={`w-auto flex gap-2 pr-12 text-2xl px-3 ${metalMania.className} `}
+        >
           Code <p className="text-red-600">Red </p>
         </div>
 
         {/* home  */}
-        <div className="px-3 cursor-pointer font-serif flex items-center  gap-1">
+        <div className="px-3 cursor-pointer  flex items-center  gap-1 ">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="20"
@@ -297,11 +377,11 @@ export default function Home() {
               d="M5 19v-8.692q0-.384.172-.727t.474-.565l5.385-4.078q.423-.323.966-.323t.972.323l5.385 4.077q.303.222.474.566q.172.343.172.727V19q0 .402-.299.701T18 20h-3.384q-.344 0-.576-.232q-.232-.233-.232-.576v-4.769q0-.343-.232-.575q-.233-.233-.576-.233h-2q-.343 0-.575.233q-.233.232-.233.575v4.77q0 .343-.232.575T9.385 20H6q-.402 0-.701-.299T5 19"
             />
           </svg>
-          <div className="hover:scale-101">Home</div>
+          <div className="hover:scale-101 ">Home</div>
         </div>
 
         {/* tournament  */}
-        <div className="px-3 cursor-pointer font-serif flex gap-1 items-center ">
+        <div className="px-3 cursor-pointer flex gap-1 items-center ">
           {" "}
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -324,14 +404,68 @@ export default function Home() {
         </div>
 
         {/* bonuses  */}
-        <div className="px-3 cursor-pointer font-serif hover:scale-101">
-          Bonuses
-        </div>
+        <div className="px-3 cursor-pointer hover:scale-101">Bonuses</div>
 
         <div className="flex-1"></div>
 
         {/* right  */}
-        <div className=" px-3">
+        <div className="gap-5 px-3 flex items-center">
+          {/* Points  */}
+          <div className="stats shadow">
+            <div className="stat flex items-center">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  fill="#efb140"
+                  d="m12 2.6l-3 9.8l-7 7.5l10-2.3L22 20l-7-7.5z"
+                />
+              </svg>
+              <div className="stat-value">1,400</div>
+              <div className="">PTS</div>
+            </div>
+          </div>
+
+          {/* Profile  */}
+          <div className="flex gap-3 items-center p-3">
+            <div className="rounded-full bg-gradient-to-r from-zinc-600 to-gray-600 flex items-center gap-3">
+              <div className="avatar pl-3 py-2">
+                <div className="w-8 rounded-xl">
+                  <img src="https://img.daisyui.com/images/profile/demo/yellingwoman@192.webp" />
+                </div>
+              </div>
+
+              <div className="pr-3">Hunter07</div>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                className="cursor-pointer hover:scale-105"
+              >
+                <path fill="currentColor" d="m7 10l5 5l5-5z" />
+              </svg>
+            </div>
+          </div>
+
+          {/* anouncement  */}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 1024 1024"
+            className="cursor-pointer hover:scale-105"
+          >
+            <path
+              fill="#4f4d4d"
+              d="M880 112c-3.8 0-7.7.7-11.6 2.3L292 345.9H128c-8.8 0-16 7.4-16 16.6v299c0 9.2 7.2 16.6 16 16.6h101.6c-3.7 11.6-5.6 23.9-5.6 36.4c0 65.9 53.8 119.5 120 119.5c55.4 0 102.1-37.6 115.9-88.4l408.6 164.2c3.9 1.5 7.8 2.3 11.6 2.3c16.9 0 32-14.2 32-33.2V145.2C912 126.2 897 112 880 112M344 762.3c-26.5 0-48-21.4-48-47.8c0-11.2 3.9-21.9 11-30.4l84.9 34.1c-2 24.6-22.7 44.1-47.9 44.1"
+            />
+          </svg>
+
+          {/* settings  */}
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"
@@ -340,14 +474,14 @@ export default function Home() {
             className="cursor-pointer hover:scale-103"
           >
             <path
-              fill="currentColor"
+              fill="#4f4d4d"
               d="m12 1l9.5 5.5v11L12 23l-9.5-5.5v-11zm0 14a3 3 0 1 0 0-6a3 3 0 0 0 0 6"
             />
           </svg>
         </div>
       </div>
 
-      <div className="h-full w-full text-white relative">
+      <div className="flex-1 relative overflow-hidden p-2">
         {/* Create Profile card  */}
         {!verified && (
           <div className="min-h-screen absolute w-full z-10 bg-black flex flex-col">
@@ -445,15 +579,122 @@ export default function Home() {
           </div>
         )}
 
-        <div className="relative grid grid-cols-[250px_1fr_250px] min-h-full">
+        <div className="relative flex  h-full gap-3">
           {/* LEFT SIDEBAR */}
-          {/* for drawer */}
-          <div className="h-full w-full bg-black"></div>
+          <div className="h-full flex flex-col p-1 gap-3 text-lg">
+            {/* search  */}
+            <label className="input bg-[#121111]">
+              <svg
+                className="h-[1em] opacity-50"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+              >
+                <g
+                  strokeLinejoin="round"
+                  strokeLinecap="round"
+                  strokeWidth="2.5"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <path d="m21 21-4.3-4.3"></path>
+                </g>
+              </svg>
+              <input type="search" className="grow" placeholder="Search" />
+            </label>
+
+            {/* ranked and unranked  */}
+            <div className="flex gap-3 rounded-lg bg-[#121111] px-4 py-2 justify-between">
+              <div className="bg-red-500 w-full h-full text-center cursor-pointer rounded-lg">
+                RANKED
+              </div>
+              <div className="w-full h-full text-center cursor-pointer">
+                UNRANKED
+              </div>
+            </div>
+
+            {/* options  */}
+            <div className="rounded-lg bg-[#121111] p-4 gap-5 flex flex-col">
+              <div className="w-full h-full cursor-pointer hover:bg-zinc-800 ">
+                <div className="flex gap-3 mr-10 items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 576 512"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M64 128a112 112 0 1 1 224 0a112 112 0 1 1-224 0M0 464c0-97.2 78.8-176 176-176s176 78.8 176 176v6c0 23.2-18.8 42-42 42H42c-23.2 0-42-18.8-42-42zM432 64a96 96 0 1 1 0 192a96 96 0 1 1 0-192m0 240c79.5 0 144 64.5 144 144v22.4c0 23-18.6 41.6-41.6 41.6H389.6c6.6-12.5 10.4-26.8 10.4-42v-6c0-51.5-17.4-98.9-46.5-136.7c22.6-14.7 49.6-23.3 78.5-23.3"
+                    />
+                  </svg>
+                  Friends
+                </div>
+              </div>
+
+              <div className="w-full h-full cursor-pointer hover:bg-zinc-800 ">
+                <div className="flex gap-3 mr-10 cursor-pointer items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M7 9V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6m0 0v-6.172a2 2 0 0 0-.586-1.414l-3-3a2 2 0 0 0-2.828 0l-3 3A2 2 0 0 0 3 13.828V18a2 2 0 0 0 2 2h3m5 0H8m0-4v4m9.001-12H17m.002 4H17m.001 4H17"
+                    />
+                  </svg>
+                  Communities
+                </div>
+              </div>
+
+              <div className="w-full h-full cursor-pointer hover:bg-zinc-800 ">
+                <div className="flex gap-3 mr-10 cursor-pointer items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M11.95 18q.525 0 .888-.363t.362-.887t-.362-.888t-.888-.362t-.887.363t-.363.887t.363.888t.887.362m-.9-3.85h1.85q0-.825.188-1.3t1.062-1.3q.65-.65 1.025-1.238T15.55 8.9q0-1.4-1.025-2.15T12.1 6q-1.425 0-2.312.75T8.55 8.55l1.65.65q.125-.45.563-.975T12.1 7.7q.8 0 1.2.438t.4.962q0 .5-.3.938t-.75.812q-1.1.975-1.35 1.475t-.25 1.825M12 22q-2.075 0-3.9-.787t-3.175-2.138T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22"
+                    />
+                  </svg>
+                  Help
+                </div>
+              </div>
+
+              <div className="w-full h-full cursor-pointer hover:bg-zinc-800 ">
+                <div className="flex gap-3 mr-10 cursor-pointer items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      fill="currentColor"
+                      fill-rule="evenodd"
+                      d="M14.279 2.152C13.909 2 13.439 2 12.5 2s-1.408 0-1.779.152a2 2 0 0 0-1.09 1.083c-.094.223-.13.484-.145.863a1.62 1.62 0 0 1-.796 1.353a1.64 1.64 0 0 1-1.579.008c-.338-.178-.583-.276-.825-.308a2.03 2.03 0 0 0-1.49.396c-.318.242-.553.646-1.022 1.453c-.47.807-.704 1.21-.757 1.605c-.07.526.074 1.058.4 1.479c.148.192.357.353.68.555c.477.297.783.803.783 1.361s-.306 1.064-.782 1.36c-.324.203-.533.364-.682.556a2 2 0 0 0-.399 1.479c.053.394.287.798.757 1.605s.704 1.21 1.022 1.453c.424.323.96.465 1.49.396c.242-.032.487-.13.825-.308a1.64 1.64 0 0 1 1.58.008c.486.28.774.795.795 1.353c.015.38.051.64.145.863c.204.49.596.88 1.09 1.083c.37.152.84.152 1.779.152s1.409 0 1.779-.152a2 2 0 0 0 1.09-1.083c.094-.223.13-.483.145-.863c.02-.558.309-1.074.796-1.353a1.64 1.64 0 0 1 1.579-.008c.338.178.583.276.825.308c.53.07 1.066-.073 1.49-.396c.318-.242.553-.646 1.022-1.453c.47-.807.704-1.21.757-1.605a2 2 0 0 0-.4-1.479c-.148-.192-.357-.353-.68-.555c-.477-.297-.783-.803-.783-1.361s.306-1.064.782-1.36c.324-.203.533-.364.682-.556a2 2 0 0 0 .399-1.479c-.053-.394-.287-.798-.757-1.605s-.704-1.21-1.022-1.453a2.03 2.03 0 0 0-1.49-.396c-.242.032-.487.13-.825.308a1.64 1.64 0 0 1-1.58-.008a1.62 1.62 0 0 1-.795-1.353c-.015-.38-.051-.64-.145-.863a2 2 0 0 0-1.09-1.083M12.5 15c1.67 0 3.023-1.343 3.023-3S14.169 9 12.5 9s-3.023 1.343-3.023 3s1.354 3 3.023 3"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                  Settings
+                </div>
+              </div>
+            </div>
+          </div>
 
           {/* MAIN CONTENT */}
           <main
             ref={mainRef}
-            className=" backdrop-blur-sm overflow-y-auto h-screen relative"
+            className=" backdrop-blur-sm overflow-y-auto relative rounded-lg bg-[#121111] p-4 gap-5 "
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
             <style jsx>{`
@@ -463,7 +704,7 @@ export default function Home() {
             `}</style>
 
             {/* Hero Carousel */}
-            <div className="relative h-112 overflow-hidden">
+            <div className="relative h-60 overflow-hidden">
               <div
                 className="flex transition-transform duration-700 ease-in-out h-full"
                 style={{ transform: `translateX(-${currentSlide * 100}%)` }}
@@ -677,62 +918,9 @@ export default function Home() {
           </main>
 
           {/* RIGHT SIDEBAR */}
-          <aside className="bg-[#191E24]  rounded-tl-2xl rounded-bl-2xl p-6 overflow-y-auto h-screen scrollbar-hide">
-            <div>
-              <div className="flex items-center justify-between mb-4  ">
-                <div className="flex items-center gap-2 ">
-                  <h3 className="font-black text-md tracking-wider">FRIENDS</h3>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                {friends.map((friend, idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-center gap-3 p-1 bg-none cursor-pointer group rounded-tl-2xl rounded-bl-2xl"
-                  >
-                    <div className="relative">
-                      <div className="avatar avatar-online">
-                        <div className="w-11 rounded-full">
-                          <img src="https://img.daisyui.com/images/profile/demo/gordon@192.webp" />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex-1">
-                      <div className="font-[var(--font-poppins)] text-xs text-white">
-                        {friend.name}
-                      </div>
-                      <div className="font-light italic text-xs text-gray-400">
-                        {friend.rank}
-                      </div>
-                    </div>
-
-                    {
-                      <div className="dropdown dropdown-bottom dropdown-end">
-                        <div
-                          tabIndex={0}
-                          role="button"
-                          className="btn-ghost p-1  font-bold"
-                        >
-                          :
-                        </div>
-                        <ul
-                          tabIndex={0}
-                          className="dropdown-content menu rounded-box z-1 w-52 p-2 shadow-sm bg-black"
-                        >
-                          <li>
-                            <a>Invite</a>
-                          </li>
-                          <li>
-                            <a>Delete User</a>
-                          </li>
-                        </ul>
-                      </div>
-                    }
-                  </div>
-                ))}
-              </div>
+          <aside className="bg-[#191E24]  rounded-2xl p-3">
+            <div className="bg-[#121111] flex flex-col h-56 rounded-lg w-45">
+              <h1 className="text-center p-2 font-bold">Friends</h1>
             </div>
           </aside>
         </div>
