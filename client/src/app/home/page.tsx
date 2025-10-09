@@ -289,7 +289,7 @@ export default function Home() {
 
   return (
     <div
-      className={`flex-1 flex flex-col h-screen bg-black p-3 ${smoochSans.className}`}
+      className={`flex-1 flex flex-col h-screen bg-black bg-no-repeat p-3 ${smoochSans.className}`}
     >
       {/* header1  */}
       <div
@@ -396,7 +396,7 @@ export default function Home() {
             />
             <path
               fill="currentColor"
-              fill-rule="evenodd"
+              fillRule="evenodd"
               d="M16.377 2.347A26.4 26.4 0 0 0 12 2c-1.783 0-3.253.157-4.377.347c-1.139.192-1.708.288-2.184.874c-.475.586-.45 1.219-.4 2.485c.173 4.348 1.111 9.78 6.211 10.26V19.5H9.82a1 1 0 0 0-.98.804l-.19.946H6a.75.75 0 0 0 0 1.5h12a.75.75 0 0 0 0-1.5h-2.65l-.19-.946a1 1 0 0 0-.98-.804h-1.43v-3.534c5.1-.48 6.039-5.911 6.211-10.26c.05-1.266.076-1.9-.4-2.485c-.476-.586-1.045-.682-2.184-.874"
               clipRule="evenodd"
             />
@@ -421,7 +421,7 @@ export default function Home() {
                 viewBox="0 0 24 24"
               >
                 <path
-                  fill="#efb140"
+                  fill="red"
                   d="m12 2.6l-3 9.8l-7 7.5l10-2.3L22 20l-7-7.5z"
                 />
               </svg>
@@ -432,7 +432,7 @@ export default function Home() {
 
           {/* Profile  */}
           <div className="flex gap-3 items-center p-3">
-            <div className="rounded-full bg-gradient-to-r from-zinc-600 to-gray-600 flex items-center gap-3">
+            <div className="rounded-full bg-zinc-900 border border-zinc-500 flex items-center gap-3">
               <div className="avatar pl-3 py-2">
                 <div className="w-8 rounded-xl">
                   <img src="https://img.daisyui.com/images/profile/demo/yellingwoman@192.webp" />
@@ -687,12 +687,39 @@ export default function Home() {
                   >
                     <path
                       fill="currentColor"
-                      fill-rule="evenodd"
+                      fillRule="evenodd"
                       d="M14.279 2.152C13.909 2 13.439 2 12.5 2s-1.408 0-1.779.152a2 2 0 0 0-1.09 1.083c-.094.223-.13.484-.145.863a1.62 1.62 0 0 1-.796 1.353a1.64 1.64 0 0 1-1.579.008c-.338-.178-.583-.276-.825-.308a2.03 2.03 0 0 0-1.49.396c-.318.242-.553.646-1.022 1.453c-.47.807-.704 1.21-.757 1.605c-.07.526.074 1.058.4 1.479c.148.192.357.353.68.555c.477.297.783.803.783 1.361s-.306 1.064-.782 1.36c-.324.203-.533.364-.682.556a2 2 0 0 0-.399 1.479c.053.394.287.798.757 1.605s.704 1.21 1.022 1.453c.424.323.96.465 1.49.396c.242-.032.487-.13.825-.308a1.64 1.64 0 0 1 1.58.008c.486.28.774.795.795 1.353c.015.38.051.64.145.863c.204.49.596.88 1.09 1.083c.37.152.84.152 1.779.152s1.409 0 1.779-.152a2 2 0 0 0 1.09-1.083c.094-.223.13-.483.145-.863c.02-.558.309-1.074.796-1.353a1.64 1.64 0 0 1 1.579-.008c.338.178.583.276.825.308c.53.07 1.066-.073 1.49-.396c.318-.242.553-.646 1.022-1.453c.47-.807.704-1.21.757-1.605a2 2 0 0 0-.4-1.479c-.148-.192-.357-.353-.68-.555c-.477-.297-.783-.803-.783-1.361s.306-1.064.782-1.36c.324-.203.533-.364.682-.556a2 2 0 0 0 .399-1.479c-.053-.394-.287-.798-.757-1.605s-.704-1.21-1.022-1.453a2.03 2.03 0 0 0-1.49-.396c-.242.032-.487.13-.825.308a1.64 1.64 0 0 1-1.58-.008a1.62 1.62 0 0 1-.795-1.353c-.015-.38-.051-.64-.145-.863a2 2 0 0 0-1.09-1.083M12.5 15c1.67 0 3.023-1.343 3.023-3S14.169 9 12.5 9s-3.023 1.343-3.023 3s1.354 3 3.023 3"
                       clipRule="evenodd"
                     />
                   </svg>
                   Settings
+                </div>
+              </div>
+
+              {/* daily quest  */}
+              <div className="gap-2 flex flex-col">
+                <div className="border-t pt-4 text-xl font-bold">
+                  DAILY QUESTS
+                </div>
+
+                <div className="w-full h-full cursor-pointer hover:bg-zinc-800 ">
+                  <div className="flex gap-3 cursor-pointer items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                    >
+                      <g fill="none" fillRule="evenodd">
+                        <path d="m12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035q-.016-.005-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093q.019.005.029-.008l.004-.014l-.034-.614q-.005-.018-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z" />
+                        <path
+                          fill="currentColor"
+                          d="M7.67 5.5A5 5 0 0 1 12 3a5 5 0 0 1 4.33 2.5L17.2 7H6.8zm-4.117.606a1 1 0 0 1 1.341.447c.147.293.5.674.973.99C6.353 7.867 6.781 8 7 8h10c.219 0 .647-.133 1.133-.457c.474-.316.826-.697.973-.99a1 1 0 1 1 1.788.894c-.353.707-1 1.326-1.652 1.76a5.5 5.5 0 0 1-.966.516A9.8 9.8 0 0 1 18.892 12H21a1 1 0 1 1 0 2h-2.012a10 10 0 0 1-.74 3.327c.572.33.963.86 1.209 1.35A5.5 5.5 0 0 1 20 21a1 1 0 1 1-2 0c0-.374-.101-.966-.332-1.428c-.13-.26-.26-.409-.385-.49c-1.056 1.486-2.539 2.54-4.283 2.835V13a1 1 0 1 0-2 0v8.917c-1.744-.295-3.227-1.35-4.283-2.834c-.126.08-.255.23-.385.49A3.5 3.5 0 0 0 6 21a1 1 0 1 1-2 0a5.5 5.5 0 0 1 .543-2.322c.246-.492.637-1.02 1.209-1.35A10 10 0 0 1 5.012 14H3a1 1 0 1 1 0-2h2.108a9.8 9.8 0 0 1 .616-2.277a5.5 5.5 0 0 1-.966-.516c-.651-.434-1.3-1.053-1.652-1.76a1 1 0 0 1 .447-1.341"
+                        />
+                      </g>
+                    </svg>
+                    Solve A Quick Bug
+                  </div>
                 </div>
               </div>
             </div>
@@ -796,6 +823,22 @@ export default function Home() {
                     }`}
                   />
                 ))}
+              </div>
+            </div>
+
+            <div className="p-2 mt-4 gap-2 flex flex-col ">
+              <h1 className="font-bold text-2xl">YOUR JOURNEY</h1>
+              <h2 className="font-bold">PERSONAL STATS</h2>
+              <div className="border w-fit flex p-3 border-zinc-600 rounded-lg ">
+                <div
+                  className="radial-progress  text-green-600 "
+                  style={{ "--value": 70 } as React.CSSProperties}
+                  aria-valuenow={70}
+                  role="progressbar"
+                >
+                  70%
+                </div>
+                <div>Rank: Grandmaster</div>
               </div>
             </div>
 
@@ -926,12 +969,40 @@ export default function Home() {
 
           {/* RIGHT SIDEBAR */}
           <aside className=" rounded-2xl  gap-3 flex flex-col">
-            <div className=" flex flex-col h-56 w-45 rounded-xl  shadow-lg bg-white/20">
+            <div className=" flex flex-col h-56 w-45 rounded-xl  shadow-lg bg-[#121111]">
               <h1 className="text-center p-2 font-bold text-white">
                 Top Performers
               </h1>
+
+              <div className="flex-1 overflow-y-auto gap-1">
+                <div className="w-full p-2 flex text-lg">
+                  <div>1. Aarav</div>
+                  <div className="flex-1"></div>
+                  <div className="pr-2 text-orange-400">2045 Pts</div>
+                </div>
+
+                <div className="w-full p-2 flex text-lg">
+                  <div>2. Himanshu</div>
+                  <div className="flex-1"></div>
+                  <div className="pr-2 text-orange-400">1950 Pts</div>
+                </div>
+
+                <div className="w-full p-2 flex text-lg">
+                  <div>3. Mahatma Gand..</div>
+                  <div className="flex-1"></div>
+                  <div className="pr-2 text-orange-400">1810 Pts</div>
+                </div>
+              </div>
+
+              <div className="border border-gray-500 rounded-b-lg">
+                <div className="w-full p-2 flex text-lg">
+                  <div>#102. Hunter07</div>
+                  <div className="flex-1"></div>
+                  <div className="pr-2 text-orange-400">1400 Pts</div>
+                </div>
+              </div>
             </div>
-            <div className=" flex flex-col flex-1 bg-white/20 backdrop-blur-2xl rounded-xl  shadow-lg">
+            <div className=" flex flex-col flex-1 bg-[#121111]  rounded-xl  shadow-lg">
               <h1 className="text-center p-2 font-bold">Friends</h1>
             </div>
           </aside>
