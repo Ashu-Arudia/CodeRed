@@ -826,19 +826,57 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="p-2 mt-4 gap-2 flex flex-col ">
-              <h1 className="font-bold text-2xl">YOUR JOURNEY</h1>
-              <h2 className="font-bold">PERSONAL STATS</h2>
-              <div className="border w-fit flex p-3 border-zinc-600 rounded-lg ">
-                <div
-                  className="radial-progress  text-green-600 "
-                  style={{ "--value": 70 } as React.CSSProperties}
-                  aria-valuenow={70}
-                  role="progressbar"
-                >
-                  70%
+            <div className="stats shadow w-full mt-5 px-10">
+              <div className="stat">
+                <div className="p-2 flex flex-col">
+                  <div className="w-fit flex p-3 gap-3 border-zinc-600 rounded-lg flex-col">
+                    <div
+                      className="radial-progress text-primary"
+                      style={{ "--value": 70 } as React.CSSProperties}
+                      aria-valuenow={70}
+                      role="progressbar"
+                    >
+                      70%
+                    </div>
+                    <div>Rank: Grandmaster</div>
+                  </div>
                 </div>
-                <div>Rank: Grandmaster</div>
+              </div>
+
+              <div className="stat">
+                <div className="stat-figure text-secondary">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    className="inline-block h-8 w-8 stroke-current"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M13 10V3L4 14h7v7l9-11h-7z"
+                    ></path>
+                  </svg>
+                </div>
+                <div className="stat-title">Total Kills</div>
+                <div className="stat-value text-secondary">2,600</div>
+                <div className="stat-desc">21% more than last season</div>
+              </div>
+
+              <div className="stat">
+                <div className="stat-figure text-secondary">
+                  <div className="avatar avatar-online">
+                    <div className="w-16 rounded-full">
+                      <img src="https://img.daisyui.com/images/profile/demo/anakeen@192.webp" />
+                    </div>
+                  </div>
+                </div>
+                <div className="stat-value">86%</div>
+                <div className="stat-title">Achievement Completion</div>
+                <div className="stat-desc text-secondary">
+                  31 trophies left to unlock
+                </div>
               </div>
             </div>
 
