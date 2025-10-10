@@ -723,6 +723,71 @@ export default function Home() {
                 </div>
               </div>
             </div>
+
+            <div className="flex flex-col flex-1  rounded-xl shadow-lg text-white overflow-y-scroll scrollbar-hide">
+              {/* Header */}
+              <h1 className="text-center p-2 font-bold ">History</h1>
+
+              {/* History List Container */}
+              <div className="flex-grow p-3 space-y-3">
+                {/* History Item 1: Win */}
+                <div className="flex items-center justify-between p-2 rounded-lg opacity-90">
+                  <div className="flex items-center">
+                    <img
+                      className="w-10 h-10 rounded-full"
+                      src="https://i.pravatar.cc/150?u=a042581f4e29026704e"
+                      alt="Avatar"
+                    />
+                    <div className="ml-3">
+                      <p className="text-sm font-semibold">vs. CodeSlayer</p>
+                      <p className="text-xs text-gray-400">Ranked Match</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-bold text-green-500">WIN</p>
+                    <p className="text-xs text-gray-500">5 min ago</p>
+                  </div>
+                </div>
+
+                {/* History Item 2: Loss */}
+                <div className="flex items-center justify-between p-2 rounded-lg opacity-70">
+                  <div className="flex items-center">
+                    <img
+                      className="w-10 h-10 rounded-full"
+                      src="https://i.pravatar.cc/150?u=a042581f4e29026704f"
+                      alt="Avatar"
+                    />
+                    <div className="ml-3">
+                      <p className="text-sm font-semibold">vs. JaneDev</p>
+                      <p className="text-xs text-gray-400">Quick Match</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-bold text-red-500">LOSS</p>
+                    <p className="text-xs text-gray-500">45 min ago</p>
+                  </div>
+                </div>
+
+                {/* History Item 3: Win */}
+                <div className="flex items-center justify-between p-2  rounded-lg opacity-90">
+                  <div className="flex items-center">
+                    <img
+                      className="w-10 h-10 rounded-full"
+                      src="https://i.pravatar.cc/150?u=a042581f4e29026704a"
+                      alt="Avatar"
+                    />
+                    <div className="ml-3">
+                      <p className="text-sm font-semibold">vs. AlgoMaster</p>
+                      <p className="text-xs text-gray-400">Ranked Match</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-bold text-green-500">WIN</p>
+                    <p className="text-xs text-gray-500">2 hours ago</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* MAIN CONTENT */}
@@ -891,14 +956,6 @@ export default function Home() {
                     Select your Category
                   </p>
                 </div>
-                {/* <div role="tablist" className="tabs tabs-border">
-                  <a role="tab" className="tab tab-active">
-                    RANKED
-                  </a>
-                  <a role="tab" className="tab mx-4 ">
-                    NORMAL
-                  </a>
-                </div> */}
               </div>
 
               <div className="grid grid-cols-3 gap-6">
@@ -1007,28 +1064,44 @@ export default function Home() {
 
           {/* RIGHT SIDEBAR */}
           <aside className=" rounded-2xl  gap-3 flex flex-col">
-            <div className=" flex flex-col h-56 w-45 rounded-xl  shadow-lg bg-[#121111]">
+            <div className=" flex flex-col h-56 w-50 rounded-xl  shadow-lg bg-[#121111]">
               <h1 className="text-center p-2 font-bold text-white">
                 Top Performers
               </h1>
 
-              <div className="flex-1 overflow-y-auto gap-1">
-                <div className="w-full p-2 flex text-lg">
-                  <div>1. Aarav</div>
+              <div className="flex-1 overflow-y-auto gap-1 scrollbar-hide">
+                <div className="w-full p-2 flex text-lg gap-2">
+                  <div>1.</div>
+                  <img
+                    className="w-7 h-7 rounded-full"
+                    src="https://i.pravatar.cc/150?u=a042581f4e29026704b"
+                    alt="Avatar"
+                  />
+                  <div>Aarav</div>
                   <div className="flex-1"></div>
-                  <div className="pr-2 text-orange-400">2045 Pts</div>
+                  <div className="pr-2 text-red-600">2045 Pts</div>
                 </div>
-
-                <div className="w-full p-2 flex text-lg">
-                  <div>2. Himanshu</div>
+                <div className="w-full p-2 flex text-lg gap-2">
+                  <div>2.</div>
+                  <img
+                    className="w-7 h-7 rounded-full"
+                    src="https://i.pravatar.cc/150?u=a042581f4e29026704b"
+                    alt="Avatar"
+                  />
+                  <div>Himanshu</div>
                   <div className="flex-1"></div>
-                  <div className="pr-2 text-orange-400">1950 Pts</div>
+                  <div className="pr-2 text-red-600">1945 Pts</div>
                 </div>
-
-                <div className="w-full p-2 flex text-lg">
-                  <div>3. Mahatma Gand..</div>
+                <div className="w-full p-2 flex text-lg gap-2">
+                  <div>3.</div>
+                  <img
+                    className="w-7 h-7 rounded-full"
+                    src="https://i.pravatar.cc/150?u=a042581f4e29026704b"
+                    alt="Avatar"
+                  />
+                  <div>Mahatma Gand...</div>
                   <div className="flex-1"></div>
-                  <div className="pr-2 text-orange-400">1810 Pts</div>
+                  <div className="pr-2 text-red-600">1745 Pts</div>
                 </div>
               </div>
 
@@ -1036,13 +1109,84 @@ export default function Home() {
                 <div className="w-full p-2 flex text-lg">
                   <div>#102. Hunter07</div>
                   <div className="flex-1"></div>
-                  <div className="pr-2 text-orange-400">1400 Pts</div>
+                  <div className="pr-2 text-white">1400 Pts</div>
                 </div>
               </div>
             </div>
-            <div className=" flex flex-col flex-1 bg-[#121111]  rounded-xl  shadow-lg">
-              <h1 className="text-center p-2 font-bold">Friends</h1>
+
+            <div className="flex flex-col flex-1 bg-[#121111] rounded-xl shadow-lg w-50 text-white">
+              {/* Header with Invite Button */}
+              <div className="flex justify-between items-center p-2  border-gray-700">
+                <h1 className="font-bold">Friends</h1>
+                <div className="text-lg font-bold text-gray-400 hover:text-white hover:bg-gray-700 rounded-full w-7 h-7 flex items-center justify-center transition-colors">
+                  +
+                </div>
+              </div>
+
+              {/* Friends List Container */}
+              <div className="flex-grow p-2 overflow-y-auto">
+                {/* Friend Item 1 (Online) */}
+                <div className="flex items-center p-2 hover:bg-zinc-800 rounded-lg cursor-pointer">
+                  <div className="relative">
+                    <img
+                      className="w-10 h-10 rounded-full"
+                      src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
+                      alt="Avatar"
+                    />
+                    <span className="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-green-500 ring-2 ring-gray-800"></span>
+                  </div>
+                  <div className="ml-3">
+                    <p className="text-sm font-semibold">Alice</p>
+                  </div>
+                </div>
+
+                {/* Friend Item 2 (Online) */}
+                <div className="flex items-center p-2 mt-1 hover:bg-zinc-800 rounded-lg cursor-pointer">
+                  <div className="relative">
+                    <img
+                      className="w-10 h-10 rounded-full"
+                      src="https://i.pravatar.cc/150?u=a042581f4e29026704a"
+                      alt="Avatar"
+                    />
+                    <span className="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-green-500 ring-2 ring-gray-800"></span>
+                  </div>
+                  <div className="ml-3">
+                    <p className="text-sm font-semibold">Bob</p>
+                  </div>
+                </div>
+
+                {/* Friend Item 3 (Offline) */}
+                <div className="flex items-center p-2 mt-1 hover:bg-zinc-800 rounded-lg cursor-pointer opacity-70">
+                  <div className="relative">
+                    <img
+                      className="w-10 h-10 rounded-full"
+                      src="https://i.pravatar.cc/150?u=a042581f4e29026704b"
+                      alt="Avatar"
+                    />
+                    <span className="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-gray-500 ring-2 ring-gray-800"></span>
+                  </div>
+                  <div className="ml-3">
+                    <p className="text-sm font-semibold">Charlie</p>
+                  </div>
+                </div>
+
+                {/* Friend Item 4 (Offline) */}
+                <div className="flex items-center p-2 mt-1 hover:bg-zinc-800 rounded-lg cursor-pointer opacity-70">
+                  <div className="relative">
+                    <img
+                      className="w-10 h-10 rounded-full"
+                      src="https://i.pravatar.cc/150?u=a042581f4e29026704c"
+                      alt="Avatar"
+                    />
+                    <span className="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-gray-500 ring-2 ring-gray-800"></span>
+                  </div>
+                  <div className="ml-3">
+                    <p className="text-sm font-semibold">David</p>
+                  </div>
+                </div>
+              </div>
             </div>
+
           </aside>
         </div>
       </div>
