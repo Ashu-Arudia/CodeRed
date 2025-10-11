@@ -168,6 +168,7 @@
   },
   "active": "70c0161960ef2229",
   "lastOpenFiles": [
+    "server/reset_database.py",
     "server/app/api/v1/endpoints/auth/__pycache__/google.cpython-311.pyc",
     "server/app/api/v1/endpoints/auth/__pycache__/email_check.cpython-311.pyc",
     "server/app/api/v1/endpoints/auth/__pycache__/profile.cpython-311.pyc",
@@ -178,7 +179,6 @@
     "server/env/Lib/site-packages/strawberry/codegen/__pycache__/__init__.cpython-311.pyc",
     "server/env/Lib/site-packages/strawberry/codegen/__pycache__/types.cpython-311.pyc",
     "server/env/Lib/site-packages/strawberry/codegen/__pycache__/query_codegen.cpython-311.pyc",
-    "server/env/Lib/site-packages/strawberry/codegen/__pycache__/exceptions.cpython-311.pyc",
     "server/documents/Structure Overview.md",
     "server/documents/Plan.md",
     "server/env/Lib/site-packages/idna-3.10.dist-info/LICENSE.md",

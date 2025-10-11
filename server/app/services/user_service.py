@@ -4,7 +4,7 @@ from typing import Optional
 from datetime import date
 
 from app.models.user import User
-from app.schemas.user import UserProfileUpdate
+from app.schemas.user import UserProfileUpdate  # This import should work now
 
 
 class UserService:
@@ -77,6 +77,7 @@ class UserService:
     @staticmethod
     async def update_last_login(db: AsyncSession, user_id: int) -> None:
         """Update user's last login timestamp"""
+        from sqlalchemy.sql import func
         result = await db.execute(select(User).where(User.user_id == user_id))
         user = result.scalar_one_or_none()
         

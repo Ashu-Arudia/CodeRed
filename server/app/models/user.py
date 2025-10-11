@@ -7,11 +7,11 @@ class User(Base):
 
     # Primary Key & Identification
     user_id = Column(Integer, primary_key=True, index=True)
-    username = Column(String(50), unique=True, nullable=True, index=True)  # Nullable initially
+    username = Column(String(50), unique=True, nullable=True, index=True)
     email = Column(String(100), unique=True, nullable=False, index=True)
     password_hash = Column(String(255), nullable=True)
 
-    # Profile Information (Required after registration)
+    # Profile Information
     first_name = Column(String(50), nullable=True)
     last_name = Column(String(50), nullable=True)
     date_of_birth = Column(Date, nullable=True)
@@ -35,7 +35,7 @@ class User(Base):
     # Authentication & Status
     is_active = Column(Boolean, default=True, nullable=False)
     is_verified = Column(Boolean, default=False, nullable=False)
-    profile_complete = Column(Boolean, default=False, nullable=False)  # New field
+    profile_complete = Column(Boolean, default=False, nullable=False)  # This was missing!
     auth_provider = Column(String(20), default='local', nullable=False)
     google_id = Column(String(100), unique=True, nullable=True)
 
@@ -47,4 +47,4 @@ class User(Base):
     email_verified_at = Column(DateTime(timezone=True), nullable=True)
 
     def __repr__(self) -> str:
-        return f"<User(user_id={self.user_id}, email='{self.email}', profile_complete={self.profile_complete})>"
+        return f"<User(user_id={self.user_id}, email='{self.email}')>"
