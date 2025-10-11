@@ -97,3 +97,101 @@
     </li>
   </ul>
 </div>;
+
+ {
+   /* Create Profile card  */
+ }
+//  {
+//    !verified && (
+//      <div className="min-h-screen absolute w-full z-10 bg-black flex flex-col">
+
+//        <div className="flex-1 flex w-full items-center justify-center p-2">
+//          <div className="w-1/3  justify-center z-20 ml-20 bg-white/20 backdrop-blur-xl opacity-90 shadow-2xl  rounded-2xl">
+//            <div className="!p-10  !h-auto rounded-2xl gap-5 flex flex-col z-20">
+//              <div className="text-white text-2xl text-bold text-center">
+//                CREATE YOUR ACCOUNT
+//              </div>
+
+
+//              <div className="w-full justify-center flex">
+//                <div onClick={inputclick} className="w-30 h-30 cursor-pointer">
+//                  {preview ? (
+//                    <img
+//                      src={preview}
+//                      alt="preview"
+//                      className="object-cover rounded-full w-28 h-28"
+//                    />
+//                  ) : (
+//                    <Logo />
+//                  )}
+//                </div>
+
+//                <input
+//                  onChange={handleFileChange}
+//                  type="file"
+//                  accept="image/"
+//                  ref={inputRef}
+//                  className="hidden"
+//                />
+//              </div>
+
+
+//              <div>
+//                <fieldset className="fieldset">
+//                  <legend className="fieldset-legend text-white text-md">
+//                    Username
+//                  </legend>
+//                  <input
+//                    onChange={(e) => setUsername(e.target.value)}
+//                    type="text"
+//                    className="input w-full"
+//                    placeholder="Type here"
+//                  />
+//                </fieldset>
+//              </div>
+
+
+//              <div>
+//                <legend className="fieldset-legend text-white !text-sm">
+//                  Bio
+//                </legend>
+//                <textarea
+//                  onChange={(e) => setBio(e.target.value)}
+//                  className="textarea w-full"
+//                  placeholder="Bio"
+//                ></textarea>
+//              </div>
+
+
+//              <div>
+//                <legend className="fieldset-legend text-white text-sm">
+//                  DOB
+//                </legend>
+//                <input
+//                  onChange={(e) => setBio(e.target.value)}
+//                  type="date"
+//                  className="input validator"
+//                  required
+//                  placeholder="Pick a date in 2025"
+//                  min="1970-01-01"
+//                  max="2020-12-31"
+//                  title="Must be valid URL"
+//                />
+//                <p className="validator-hint">Must be 2025</p>
+//              </div>
+
+
+//              <div className="w-full flex flex-row  justify-end">
+//                <button
+//                  onSubmit={createprofile}
+//                  className="bg-gray-500 p-2 rounded-md px-8 cursor-pointer hover:scale-103 transition duration-100"
+//                >
+//                  Create Profile
+//                </button>
+//              </div>
+//            </div>
+//          </div>
+//        </div>
+//      </div>
+//    );
+//  }

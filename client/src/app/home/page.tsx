@@ -488,102 +488,6 @@ export default function Home() {
       </div>
 
       <div className="flex-1 relative overflow-hidden p-2">
-        {/* Create Profile card  */}
-        {!verified && (
-          <div className="min-h-screen absolute w-full z-10 bg-black flex flex-col">
-            {/* login card  */}
-            <div className="flex-1 flex w-full items-center justify-center p-2">
-              <div className="w-1/3  justify-center z-20 ml-20 bg-white/20 backdrop-blur-xl opacity-90 shadow-2xl  rounded-2xl">
-                <div className="!p-10  !h-auto rounded-2xl gap-5 flex flex-col z-20">
-                  <div className="text-white text-2xl text-bold text-center">
-                    CREATE YOUR ACCOUNT
-                  </div>
-
-                  {/* logo  */}
-                  <div className="w-full justify-center flex">
-                    <div
-                      onClick={inputclick}
-                      className="w-30 h-30 cursor-pointer"
-                    >
-                      {preview ? (
-                        <img
-                          src={preview}
-                          alt="preview"
-                          className="object-cover rounded-full w-28 h-28"
-                        />
-                      ) : (
-                        <Logo />
-                      )}
-                    </div>
-
-                    <input
-                      onChange={handleFileChange}
-                      type="file"
-                      accept="image/"
-                      ref={inputRef}
-                      className="hidden"
-                    />
-                  </div>
-
-                  {/* name  */}
-                  <div>
-                    <fieldset className="fieldset">
-                      <legend className="fieldset-legend text-white text-md">
-                        Username
-                      </legend>
-                      <input
-                        onChange={(e) => setUsername(e.target.value)}
-                        type="text"
-                        className="input w-full"
-                        placeholder="Type here"
-                      />
-                    </fieldset>
-                  </div>
-
-                  {/* Bio  */}
-                  <div>
-                    <legend className="fieldset-legend text-white !text-sm">
-                      Bio
-                    </legend>
-                    <textarea
-                      onChange={(e) => setBio(e.target.value)}
-                      className="textarea w-full"
-                      placeholder="Bio"
-                    ></textarea>
-                  </div>
-
-                  {/* DOB  */}
-                  <div>
-                    <legend className="fieldset-legend text-white text-sm">
-                      DOB
-                    </legend>
-                    <input
-                      onChange={(e) => setBio(e.target.value)}
-                      type="date"
-                      className="input validator"
-                      required
-                      placeholder="Pick a date in 2025"
-                      min="1970-01-01"
-                      max="2020-12-31"
-                      title="Must be valid URL"
-                    />
-                    <p className="validator-hint">Must be 2025</p>
-                  </div>
-
-                  {/* Submit  */}
-                  <div className="w-full flex flex-row  justify-end">
-                    <button
-                      onSubmit={createprofile}
-                      className="bg-gray-500 p-2 rounded-md px-8 cursor-pointer hover:scale-103 transition duration-100"
-                    >
-                      Create Profile
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
 
         <div className="relative flex  h-full gap-3">
           {/* LEFT SIDEBAR */}
@@ -724,12 +628,12 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="flex flex-col flex-1  rounded-xl shadow-lg text-white overflow-y-scroll scrollbar-hide">
+            <div className="flex flex-col flex-1  rounded-xl shadow-lg text-white overflow-auto">
               {/* Header */}
               <h1 className="text-center p-2 font-bold ">History</h1>
 
               {/* History List Container */}
-              <div className="flex-grow p-3 space-y-3">
+              <div className="flex-1 flex flex-col p-3 overflow-y-scroll scrollbar-hide">
                 {/* History Item 1: Win */}
                 <div className="flex items-center justify-between p-2 rounded-lg opacity-90">
                   <div className="flex items-center">
@@ -1136,7 +1040,7 @@ export default function Home() {
                     <span className="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-green-500 ring-2 ring-gray-800"></span>
                   </div>
                   <div className="ml-3">
-                    <p className="text-sm font-semibold">Alice</p>
+                    <p className="text-lg">Alice</p>
                   </div>
                 </div>
 
@@ -1151,7 +1055,7 @@ export default function Home() {
                     <span className="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-green-500 ring-2 ring-gray-800"></span>
                   </div>
                   <div className="ml-3">
-                    <p className="text-sm font-semibold">Bob</p>
+                    <p className="text-lg">Bob</p>
                   </div>
                 </div>
 
@@ -1166,7 +1070,7 @@ export default function Home() {
                     <span className="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-gray-500 ring-2 ring-gray-800"></span>
                   </div>
                   <div className="ml-3">
-                    <p className="text-sm font-semibold">Charlie</p>
+                    <p className="text-lg">Charlie</p>
                   </div>
                 </div>
 
@@ -1181,12 +1085,11 @@ export default function Home() {
                     <span className="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-gray-500 ring-2 ring-gray-800"></span>
                   </div>
                   <div className="ml-3">
-                    <p className="text-sm font-semibold">David</p>
+                    <p className="text-lg">David</p>
                   </div>
                 </div>
               </div>
             </div>
-
           </aside>
         </div>
       </div>

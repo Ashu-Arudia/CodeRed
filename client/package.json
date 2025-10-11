@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@monaco-editor/react": "^4.7.0",
     "axios": "^1.12.2",
     "lottie-react": "^2.4.1",
     "lottie-web": "^5.13.0",
