@@ -7,6 +7,8 @@ import Logo from "../component/logo";
 import { useRouter } from "next/navigation";
 import Notification from "../component/notification/notific";
 import Stats from "../component/stats/stat";
+import Friends from "../friends/page";
+import Settings from "../settings/page";
 
 const metalMania = Metal_Mania({
   subsets: ["latin"],
@@ -42,7 +44,10 @@ export default function Home() {
   const [imgbase64, setImgbase64] = useState<string | ArrayBuffer | null>(null);
   const [notification, setNotification] = useState<Boolean>(false);
   const [stat, setStat] = useState<Boolean>(false);
+  const [showFriends, setShowFriends] = useState<Boolean>(false);
+  const [showSettings, setShowSettings] = useState<Boolean>(false);
   const router = useRouter();
+  const [addfriends, setaddfriends] = useState<Boolean>(false);
 
   const inputclick = () => {
     inputRef.current?.click();
@@ -59,6 +64,21 @@ export default function Home() {
   }
   const dontshowstat = () => {
     setStat(false);
+  }
+
+  const showfriend = (add: boolean) => {
+    setaddfriends(add);
+    setShowFriends(true);
+  }
+  const dontshowfriend = () => {
+    setShowFriends(false);
+  }
+
+  const showsettings = () => {
+    setShowSettings(true);
+  }
+  const dontshowsettings = () => {
+    setShowSettings(false);
   }
 
   useEffect(() => {
@@ -487,7 +507,7 @@ export default function Home() {
                 />
               </svg>
               <div className="absolute -top-4 -right-3 bg-red-700 text-white text-sm  p-[3px] rounded-full w-6 h-6 items-center justify-center flex ">
-                10+
+                3
               </div>
             </div>
 
@@ -546,7 +566,10 @@ export default function Home() {
 
               {/* options  */}
               <div className="rounded-lg bg-[#121111] p-4 gap-5 flex flex-col">
-                <div className="w-full h-full cursor-pointer hover:bg-zinc-800 relative">
+                <div
+                  className="w-full h-full cursor-pointer hover:bg-zinc-800 relative"
+                  onClick={()=> showfriend(false)}
+                >
                   <div className="absolute top-0 left-0 w-12 h-12 bg-red-800 rounded-full blur-2xl"></div>
                   <div className="flex gap-3 mr-10 items-center">
                     <svg
@@ -591,7 +614,12 @@ export default function Home() {
                 </div>
 
                 <div className="w-full h-full cursor-pointer hover:bg-zinc-800 ">
-                  <div className="flex gap-3 mr-10 cursor-pointer items-center">
+                  <div
+                    className="flex gap-3 mr-10 cursor-pointer items-center"
+                    onClick={() => {
+                      router.push("/help");
+                    }}
+                  >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="24"
@@ -609,9 +637,7 @@ export default function Home() {
 
                 <div
                   className="w-full h-full cursor-pointer hover:bg-zinc-800 "
-                  onClick={() => {
-                    router.push("/settings");
-                  }}
+                  onClick={showsettings}
                 >
                   <div className="flex gap-3 mr-10 cursor-pointer items-center">
                     <svg
@@ -658,7 +684,6 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-
             </div>
 
             {/* MAIN CONTENT */}
@@ -759,60 +784,6 @@ export default function Home() {
                       }`}
                     />
                   ))}
-                </div>
-              </div>
-
-              <div className="stats shadow w-full mt-5 px-10">
-                <div className="stat">
-                  <div className="p-2 flex flex-col">
-                    <div className="w-fit flex p-3 gap-3 border-zinc-600 rounded-lg flex-col">
-                      <div
-                        className="radial-progress text-primary"
-                        style={{ "--value": 70 } as React.CSSProperties}
-                        aria-valuenow={70}
-                        role="progressbar"
-                      >
-                        70%
-                      </div>
-                      <div>Rank: Grandmaster</div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="stat">
-                  <div className="stat-figure text-secondary">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      className="inline-block h-8 w-8 stroke-current"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M13 10V3L4 14h7v7l9-11h-7z"
-                      ></path>
-                    </svg>
-                  </div>
-                  <div className="stat-title">Total Kills</div>
-                  <div className="stat-value text-secondary">2,600</div>
-                  <div className="stat-desc">21% more than last season</div>
-                </div>
-
-                <div className="stat">
-                  <div className="stat-figure text-secondary">
-                    <div className="avatar avatar-online">
-                      <div className="w-16 rounded-full">
-                        <img src="https://img.daisyui.com/images/profile/demo/anakeen@192.webp" />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="stat-value">86%</div>
-                  <div className="stat-title">Achievement Completion</div>
-                  <div className="stat-desc text-secondary">
-                    31 trophies left to unlock
-                  </div>
                 </div>
               </div>
 
@@ -995,7 +966,7 @@ export default function Home() {
                 {/* Header with Invite Button */}
                 <div className="flex justify-between items-center p-2  border-gray-700">
                   <h1 className="font-bold">Friends</h1>
-                  <div className="text-lg font-bold text-gray-400 hover:text-white hover:bg-gray-700 rounded-full w-7 h-7 flex items-center justify-center transition-colors">
+                  <div onClick={()=> showfriend(true)} className="cursor-pointer text-lg font-bold text-gray-400 hover:text-white hover:bg-gray-700 rounded-full w-7 h-7 flex items-center justify-center transition-colors">
                     +
                   </div>
                 </div>
@@ -1090,6 +1061,32 @@ export default function Home() {
           ></div>
           <div className="overflow-auto scrollbar-hide absolute z-20 flex h-full  items-center rounded-lg py-6">
             (<Stats />)
+          </div>
+        </div>
+      )}
+
+      {/* Friends  */}
+      {showFriends && (
+        <div className="w-full absolute top-0 z-10 flex justify-center items-center  h-screen">
+          <div
+            onClick={dontshowfriend}
+            className="w-full h-full bg-black opacity-50 "
+          ></div>
+          <div className="overflow-auto scrollbar-hide absolute z-20 flex h-full  items-center rounded-lg py-6 w-1/2">
+            (<Friends addfriend={addfriends} />)
+          </div>
+        </div>
+      )}
+
+      {/* Settings  */}
+      {showSettings && (
+        <div className="w-full absolute top-0 z-10 flex justify-center items-center  h-screen  ">
+          <div
+            onClick={dontshowsettings}
+            className="w-full h-full bg-black/20 backdrop-blur-sm"
+          ></div>
+          <div className="overflow-auto scrollbar-hide absolute z-20 flex h-full  items-center rounded-lg py-6 w-2/3 ">
+            (<Settings />)
           </div>
         </div>
       )}
