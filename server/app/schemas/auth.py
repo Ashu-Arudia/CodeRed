@@ -10,9 +10,14 @@ class RegisterRequest(BaseModel):
     email: EmailStr
     password: str = Field(..., min_length=8, max_length=128)
 
-class GoogleAuthRequest(BaseModel):
-    google_token: str
-    email: EmailStr
+class GoogleAuthCodeRequest(BaseModel):
+    authorization_code: str
+
+class GoogleAuthResponse(BaseModel):
+    authorization_url: str
+    client_id: str
+    redirect_uri: str
+    scope: str = "openid email profile"
 
 class ProfileCompletionRequest(BaseModel):
     username: str = Field(..., min_length=3, max_length=50, pattern=r'^[a-zA-Z0-9_]+$')
