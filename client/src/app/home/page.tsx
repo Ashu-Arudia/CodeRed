@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import Notification from "../component/notification/notific";
 import Stats from "../component/stats/stat";
 import Friends from "../friends/page";
-import Settings from "../settings/page";
+import Settings from "../settings/setting";
 
 const metalMania = Metal_Mania({
   subsets: ["latin"],
@@ -529,6 +529,7 @@ export default function Home() {
           </div>
         </div>
 
+        {/* main  */}
         <div className="flex-1 relative overflow-hidden p-2">
           <div className="relative flex  h-full gap-3">
             {/* LEFT SIDEBAR */}
@@ -1035,6 +1036,7 @@ export default function Home() {
                 </div>
               </div>
             </aside>
+            
           </div>
         </div>
       </div>

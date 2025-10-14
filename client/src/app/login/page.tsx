@@ -1,6 +1,8 @@
 "use client";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import axios from "axios";
+import { request } from "graphql-request";
 
 export default function LoginForm() {
   const [isLogin, setIsLogin] = useState(true);
@@ -15,12 +17,23 @@ export default function LoginForm() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:8000/api/auth/google";
+    window.location.href = "https://081c4dc68055.ngrok-free.app/authenticate";
   };
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+   const REGISTER_MUTATION = `
+          mutation Register($userData: UserRegisterInput!) {
+            register(userData: $userData) {
+              accessToken
+              tokenType
+              user { userId email }
+            }
+          }
+        `;
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,40 +46,97 @@ export default function LoginForm() {
       return;
     }
 
-    const url = isLogin
-      ? "https://quizzer-jqif.onrender.com/api/auth/login"
-      : "https://quizzer-jqif.onrender.com/api/auth/signup";
+    const registerUrl =
+      "https://081c4dc68055.ngrok-free.app/api/v1/auth/register";
 
-    const payload = isLogin
-      ? { username, password }
-      : { email, password, confirmPassword, role };
+    // Common REST payload shapes to try quickly
+    const payloadsToTry = [
+      { email, username, password, role }, // common shape
+      { email, password, role }, // email-only + role
+      { username, password }, // username-only (rare for register)
+      { user: { email, username, password, role } }, // nested `user` object
+      { userData: { email, username, password, role } }, // alternate nested shape
+    ];
+
+    // helper to clean fields
+    const clean = (obj: Record<string, any>) =>
+      Object.fromEntries(
+        Object.entries(obj).filter(([_, v]) => v !== undefined && v !== "")
+      );
 
     try {
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
+      // try each candidate payload (one by one). Stop on first success.
+      for (const candidate of payloadsToTry) {
+        const cleaned = clean(candidate);
+        if (Object.keys(cleaned).length === 0) continue; // skip empty candidate
 
-      const data = await response.json();
+        console.log("Trying register payload:", cleaned);
 
-      if (response.ok) {
-        setTimeout(() => {
-          // router.push("/home");
-          alert(isLogin ? "Login successful!" : "Signup successful!");
-        }, 1000);
-      } else {
-        setError(data.msg || "Something went wrong");
+        try {
+          const res = await axios.post(registerUrl, cleaned, {
+            headers: { "Content-Type": "application/json" },
+          });
+          console.log(
+            "Register success with payload:",
+            cleaned,
+            "response:",
+            res.data
+          );
+     
+          setIsLoading(false);
+          return;
+        } catch (err: any) {
+
+          console.warn("Register attempt failed for payload:", cleaned);
+          if (axios.isAxiosError(err)) {
+            console.error("Status:", err.response?.status);
+            console.error("Response headers:", err.response?.headers);
+            console.error("Response data (full):", err.response?.data);
+
+            const body = err.response?.data;
+            console.error(
+              "Possible message:",
+              body?.message ?? body?.detail ?? body?.error ?? body
+            );
+
+            if (Array.isArray(body?.detail)) {
+              console.error(
+                "detail array:",
+                JSON.stringify(body.detail, null, 2)
+              );
+            }
+            if (body?.errors) {
+              console.error(
+                "errors object:",
+                JSON.stringify(body.errors, null, 2)
+              );
+            }
+
+            const friendly =
+              body?.message ||
+              (body?.detail && JSON.stringify(body.detail)) ||
+              (body?.errors && JSON.stringify(body.errors)) ||
+              err.message;
+            setError(`Register failed: ${friendly}`);
+          } else {
+            console.error("Non-axios error:", err);
+            setError(err?.message || "Register failed");
+          }
+        }
       }
-    } catch (error) {
-      console.error("Error:", error);
-      setError("Network error. Please try again.");
+
+      setError(
+        "Registration failed for all attempted payload shapes. Check console for server responses."
+      );
+    } catch (outerErr) {
+      console.error("Unexpected error in register flow:", outerErr);
+      setError("Unexpected error during registration");
     } finally {
       setIsLoading(false);
     }
   };
+
+
 
   const resetForm = () => {
     setUsername("");
