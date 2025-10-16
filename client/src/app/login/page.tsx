@@ -1,7 +1,6 @@
 "use client";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { request } from "graphql-request";
 
 export default function LoginForm() {
@@ -16,24 +15,25 @@ export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const handleGoogleLogin = () => {
-    window.location.href = "https://081c4dc68055.ngrok-free.app/authenticate";
-  };
-
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-   const REGISTER_MUTATION = `
-          mutation Register($userData: UserRegisterInput!) {
-            register(userData: $userData) {
-              accessToken
-              tokenType
-              user { userId email }
-            }
-          }
-        `;
+  // GraphQL mutation (you already had this)
+  const REGISTER_MUTATION = `
+    mutation Register($userData: UserRegisterInput!) {
+      register(userData: $userData) {
+        accessToken
+        tokenType
+        user { userId email }
+      }
+    }
+  `;
 
+  const clean = (obj: Record<string, any>) =>
+    Object.fromEntries(
+      Object.entries(obj).filter(([_, v]) => v !== undefined && v !== "")
+    );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,97 +46,67 @@ export default function LoginForm() {
       return;
     }
 
-    const registerUrl =
-      "https://081c4dc68055.ngrok-free.app/api/v1/auth/register";
+    const registerRestUrl =
+      "https://9198840bf6b6.ngrok-free.app/api/v1/auth/register";
+    const graphqlUrl = registerRestUrl.includes("/api/")
+      ? registerRestUrl.replace("/api/v1/auth/register", "/graphql")
+      : "https://9198840bf6b6.ngrok-free.app/graphql";
 
-    // Common REST payload shapes to try quickly
-    const payloadsToTry = [
-      { email, username, password, role }, // common shape
-      { email, password, role }, // email-only + role
-      { username, password }, // username-only (rare for register)
-      { user: { email, username, password, role } }, // nested `user` object
-      { userData: { email, username, password, role } }, // alternate nested shape
-    ];
+    // Build userData for the mutation
+    const userData = clean({
+      email,
+      password,
+    });
 
-    // helper to clean fields
-    const clean = (obj: Record<string, any>) =>
-      Object.fromEntries(
-        Object.entries(obj).filter(([_, v]) => v !== undefined && v !== "")
-      );
+    // If there's nothing to send, abort
+    if (!userData.email && !userData.username) {
+      setError("Provide an email or username");
+      setIsLoading(false);
+      return;
+    }
 
     try {
-      // try each candidate payload (one by one). Stop on first success.
-      for (const candidate of payloadsToTry) {
-        const cleaned = clean(candidate);
-        if (Object.keys(cleaned).length === 0) continue; // skip empty candidate
 
-        console.log("Trying register payload:", cleaned);
+      if (!isLogin) {
+        console.log("Sending GraphQL register to:", graphqlUrl, "vars:", {
+          userData,
+        });
 
-        try {
-          const res = await axios.post(registerUrl, cleaned, {
-            headers: { "Content-Type": "application/json" },
-          });
-          console.log(
-            "Register success with payload:",
-            cleaned,
-            "response:",
-            res.data
+        const response = await request(graphqlUrl, REGISTER_MUTATION, {
+          userData,
+        });
+
+        console.log("GraphQL response:", response);
+
+        const registerResult = response;
+        if (registerResult) {
+          console.log("Registered OK — token:", registerResult);
+          setError("");
+          setUsername("");
+          setEmail("");
+          setPassword("");
+          setConfirmPassword("");
+        } else {
+          setError(
+            "Registration did not return an access token. Check server response in console."
           );
-     
-          setIsLoading(false);
-          return;
-        } catch (err: any) {
-
-          console.warn("Register attempt failed for payload:", cleaned);
-          if (axios.isAxiosError(err)) {
-            console.error("Status:", err.response?.status);
-            console.error("Response headers:", err.response?.headers);
-            console.error("Response data (full):", err.response?.data);
-
-            const body = err.response?.data;
-            console.error(
-              "Possible message:",
-              body?.message ?? body?.detail ?? body?.error ?? body
-            );
-
-            if (Array.isArray(body?.detail)) {
-              console.error(
-                "detail array:",
-                JSON.stringify(body.detail, null, 2)
-              );
-            }
-            if (body?.errors) {
-              console.error(
-                "errors object:",
-                JSON.stringify(body.errors, null, 2)
-              );
-            }
-
-            const friendly =
-              body?.message ||
-              (body?.detail && JSON.stringify(body.detail)) ||
-              (body?.errors && JSON.stringify(body.errors)) ||
-              err.message;
-            setError(`Register failed: ${friendly}`);
-          } else {
-            console.error("Non-axios error:", err);
-            setError(err?.message || "Register failed");
-          }
         }
+      } else {
+        setError(
+          "Login flow not implemented in this patch. Toggle to Sign Up first."
+        );
       }
-
-      setError(
-        "Registration failed for all attempted payload shapes. Check console for server responses."
-      );
-    } catch (outerErr) {
-      console.error("Unexpected error in register flow:", outerErr);
-      setError("Unexpected error during registration");
+    } catch (err: any) {
+      console.error("GraphQL register error:", err);
+      const friendly =
+        err?.response?.errors?.map((x: any) => x.message).join(", ") ||
+        err?.message ||
+        "Registration failed";
+      setError(`Register failed: ${friendly}`);
     } finally {
       setIsLoading(false);
     }
   };
-
-
 
   const resetForm = () => {
     setUsername("");
@@ -153,38 +123,33 @@ export default function LoginForm() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
-      {/* Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-32 w-80 h-80 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse"></div>
         <div className="absolute -bottom-40 -left-32 w-80 h-80 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse"></div>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse"></div>
       </div>
 
-      {/* Main Container */}
       <div className="flex w-full max-w-6xl bg-white/80 backdrop-blur-lg shadow-2xl rounded-3xl border border-white/20 relative z-10 overflow-hidden min-h-[700px]">
-        {/* Left Image Panel */}
         <div className="hidden lg:flex lg:w-1/2 relative bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 items-center justify-center">
           <Image
-            src="/assets/image3.jpg" // Image from public folder
+            src="/assets/image3.jpg"
             alt="A cool image"
             fill
             className="object-cover"
-            priority // optional (preloads image)
+            priority
           />
         </div>
 
-        {/* Right Login/Signup Panel */}
         <div className="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-12">
           <div className="w-full max-w-md">
-            {/* Header */}
             <div className="text-center mb-8">
               <div className="avatar placeholder mb-4">
                 <Image
-                  src="/assets/image3.jpg" // Image from public folder
+                  src="/assets/image3.jpg"
                   alt="A cool image"
                   fill
                   className="object-cover"
-                  priority // optional (preloads image)
+                  priority
                 />
               </div>
               <h1 className="text-3xl font-bold text-black bg-clip-text">
@@ -197,7 +162,6 @@ export default function LoginForm() {
               </p>
             </div>
 
-            {/* Error Alert */}
             {error && (
               <div className="alert alert-error mb-6 shadow-lg bg-red-50 border border-red-200">
                 <svg
@@ -217,9 +181,7 @@ export default function LoginForm() {
               </div>
             )}
 
-            {/* Form */}
-            <div className="space-y-6">
-              {/* Username (Login) / Email (Signup) Field */}
+            <form className="space-y-6" onSubmit={handleSubmit}>
               <div className="form-control">
                 <label className="label">
                   <span className="label-text font-semibold text-gray-700">
@@ -266,7 +228,6 @@ export default function LoginForm() {
                 </div>
               </div>
 
-              {/* Password Field */}
               <div className="form-control">
                 <label className="label">
                   <span className="label-text font-semibold text-gray-700">
@@ -345,7 +306,6 @@ export default function LoginForm() {
                 </div>
               </div>
 
-              {/* Confirm Password Field (Signup only) */}
               {!isLogin && (
                 <div className="form-control">
                   <label className="label">
@@ -428,10 +388,8 @@ export default function LoginForm() {
                 </div>
               )}
 
-              {/* Submit Button */}
               <button
                 type="submit"
-                onClick={handleSubmit}
                 disabled={isLoading}
                 className="btn w-full bg-black hover:bg-gray-800 text-white font-semibold py-3 border-0 shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200"
               >
@@ -444,14 +402,15 @@ export default function LoginForm() {
                   <>{isLogin ? "Sign In" : "Sign Up"}</>
                 )}
               </button>
-            </div>
+            </form>
 
-            {/* Divider */}
             <div className="divider my-6 text-gray-400">or continue with</div>
 
-            {/* Google Login */}
             <button
-              onClick={handleGoogleLogin}
+              onClick={() =>
+                (window.location.href =
+                  "https://081c4dc68055.ngrok-free.app/authenticate")
+              }
               className="btn btn-outline w-full border-gray-300 hover:border-gray-400 hover:bg-gray-50 text-gray-700 font-medium shadow-md hover:shadow-lg transition-all duration-200"
             >
               <img
@@ -462,7 +421,6 @@ export default function LoginForm() {
               Continue with Google
             </button>
 
-            {/* Footer */}
             <div className="text-center mt-8">
               <p className="text-sm text-gray-600">
                 {isLogin
@@ -481,7 +439,6 @@ export default function LoginForm() {
         </div>
       </div>
 
-      {/* Floating Elements */}
       <div className="absolute top-20 left-20 w-4 h-4 bg-purple-400 rounded-full opacity-60 animate-bounce lg:hidden"></div>
       <div className="absolute bottom-32 right-32 w-3 h-3 bg-blue-400 rounded-full opacity-60 animate-bounce lg:hidden"></div>
       <div className="absolute top-1/3 right-20 w-2 h-2 bg-pink-400 rounded-full opacity-60 animate-bounce lg:hidden"></div>
