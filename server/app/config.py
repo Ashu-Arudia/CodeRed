@@ -15,7 +15,7 @@ class Settings(BaseSettings):
         "your-super-secret-key-change-in-production"
     )
     ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440
     
     # Google OAuth
     GOOGLE_CLIENT_ID: str = os.getenv("GOOGLE_CLIENT_ID", "")
@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     # Application
     PROJECT_NAME: str = "CodeForge"
     VERSION: str = "1.0.0"
+    DEBUG: bool = True
     ENVIRONMENT: str = os.getenv("ENVIRONMENT", "development")
     
     class Config:

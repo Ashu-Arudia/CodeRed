@@ -1,7 +1,7 @@
 import strawberry
 from typing import List, Optional
-from datetime import datetime
-
+from datetime import datetime, date
+#from strawberry.types import Info
 from app.services.auth_service import AuthService
 from app.schemas.user import UserCreate
 from app.database import get_db
@@ -31,11 +31,19 @@ class AuthPayload:
     user: UserType
 
 
+@strawberry.type
+class CompleteProfileResponse:
+    success: bool
+    message: str
+    user_id: str = strawberry.field(name="userId")
+    profile_complete: bool = strawberry.field(name="profileComplete")
+
+
 @strawberry.input
 class UserRegisterInput:
-    username: str
     email: str
     password: str
+    username: Optional[str] = None
     first_name: Optional[str] = strawberry.field(name="firstName", default=None)
     last_name: Optional[str] = strawberry.field(name="lastName", default=None)
 
@@ -44,6 +52,16 @@ class UserRegisterInput:
 class UserLoginInput:
     email: str
     password: str
+
+
+@strawberry.input
+class CompleteProfileInput:
+    username: str
+    first_name: str = strawberry.field(name="firstName")
+    last_name: str = strawberry.field(name="lastName")
+    date_of_birth: Optional[date] = strawberry.field(name="dateOfBirth", default=None)
+    bio: Optional[str] = None
+    preferred_language: Optional[str] = strawberry.field(name="preferredLanguage", default="en")
 
 
 @strawberry.type
@@ -131,6 +149,84 @@ class Mutation:
                 token_type=tokens["token_type"],
                 user=user_type
             )
+
+    @strawberry.mutation
+    async def complete_profile(
+        self, 
+        input: CompleteProfileInput,
+        info
+    ) -> CompleteProfileResponse:
+        async for db in get_db():
+            try:
+                # Get current user from context
+                current_user = info.context.get("current_user")
+                
+                # Temporary: If no auth, use a default user ID for testing
+                if not current_user:
+                    # For testing only - remove this in production
+                    from app.services.user_service import UserService
+                    current_user = await UserService.get_user_by_id(db, 1)  # Use first user
+                    
+                    if not current_user:
+                        return CompleteProfileResponse(
+                            success=False,
+                            message="Authentication required - no user found",
+                            user_id="",
+                            profile_complete=False
+                        )
+                
+                # Import necessary services and schemas
+                from app.services.user_service import UserService
+                from app.schemas.user import UserProfileUpdate
+                
+                # Check if username is available (and not taken by other users)
+                username_exists = await UserService.check_username_exists(db, input.username)
+                
+                if username_exists and current_user.username != input.username:
+                    return CompleteProfileResponse(
+                        success=False,
+                        message="Username already taken",
+                        user_id="",
+                        profile_complete=False
+                    )
+                
+                # Convert to UserProfileUpdate schema
+                profile_update = UserProfileUpdate(
+                    username=input.username,
+                    first_name=input.first_name,
+                    last_name=input.last_name,
+                    date_of_birth=input.date_of_birth,
+                    bio=input.bio,
+                    preferred_language=input.preferred_language
+                )
+                
+                # Complete profile using the authenticated user's ID
+                updated_user = await UserService.complete_user_profile(
+                    db, current_user.user_id, profile_update
+                )
+                
+                if not updated_user:
+                    return CompleteProfileResponse(
+                        success=False,
+                        message="Failed to complete profile",
+                        user_id="",
+                        profile_complete=False
+                    )
+                
+                return CompleteProfileResponse(
+                    success=True,
+                    message="Profile completed successfully!",
+                    user_id=str(updated_user.user_id),
+                    profile_complete=True
+                )
+                
+            except Exception as e:
+                return CompleteProfileResponse(
+                    success=False,
+                    message=f"Error: {str(e)}",
+                    user_id="",
+                    profile_complete=False
+                )
 
 
 schema = strawberry.Schema(query=Query, mutation=Mutation)
