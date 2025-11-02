@@ -1,11 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import strawberry
-from strawberry.fastapi import GraphQLRouter
 
 from app.config import settings
-from app.database import engine,Base
-from app.graphql.schema import schema
+from app.database import engine, Base
 
 def create_application() -> FastAPI:
     """Application factory pattern for better testability"""
@@ -30,65 +27,28 @@ def create_application() -> FastAPI:
 def setup_middleware(app: FastAPI) -> None:
     """setup all middleware"""
     
-    # Replace with your NEW ngrok URL
+    # Allow both your frontend URLs
     origins = [
-        "http://localhost:3000",
-        "http://127.0.0.1:3000", 
-        "https://9198840bf6b6.ngrok-free.app",  # ← Update this!
-        "https://*.ngrok-free.app"
+        "http://localhost:3000",      # Local development
+        "http://127.0.0.1:3000",      # Local development
+        "https://4d3c12da490b.ngrok-free.app ",  # Your ngrok URL
+        "https://*.ngrok-free.app",
+        "http://localhost:8000",      # Backend itself
+        # Add your actual frontend domain if deployed
     ]
     
     app.add_middleware(
         CORSMiddleware,
         allow_origins=origins,
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
+        allow_credentials=True,  # Important for cookies/tokens
+        allow_methods=["*"],     # Allow all methods
+        allow_headers=["*"],     # Allow all headers
     )
 
 def setup_routes(app: FastAPI) -> None:
     """Setup all API routes"""
     
-    from fastapi import Request, Depends, HTTPException
-    from sqlalchemy.ext.asyncio import AsyncSession
-    from app.database import get_db
-    from app.core.security import verify_token  # Import verify_token directly
-    from app.services.auth_service import AuthService
-
-    async def get_context(
-        request: Request,
-        db: AsyncSession = Depends(get_db)
-    ):
-        # Extract token from headers
-        auth_header = request.headers.get("authorization", "")
-        token = auth_header.replace("Bearer ", "") if auth_header.startswith("Bearer ") else ""
-        
-        current_user = None
-        if token:
-            try:
-                # Use verify_token directly (bypassing the dependency system)
-                payload = verify_token(token)
-                
-                if payload is not None:
-                    user_id = int(payload.get("sub"))
-                    current_user = await AuthService.get_user_by_id(db, user_id)
-                    
-            except Exception as e:
-                print(f"Auth error: {e}")
-                # Don't raise exception - just leave current_user as None
-                pass
-        
-        return {
-            "db": db,
-            "current_user": current_user,
-            "request": request
-        }
-    
-    # GraphQL with context
-    graphql_app = GraphQLRouter(schema, context_getter=get_context)
-    app.include_router(graphql_app, prefix="/graphql")
-    
-    # REST API
+    # REST API only - no GraphQL!
     from app.api.v1.endpoints import auth
     app.include_router(auth.router, prefix="/api/v1")
 
@@ -107,13 +67,13 @@ def setup_events(app: FastAPI) -> None:
         return {
             "message": "CodeForge API is running!",
             "version": settings.VERSION,
-            "docs": "/docs",
-            "graphql": "/graphql"
+            "docs": "/docs"
+            # Removed "graphql" reference
         }
     
     @app.get("/health")
     async def health_check():
         return {"status": "healthy", "service": "CodeForge API"}
-    
+
 # Create app instance
 app = create_application()
