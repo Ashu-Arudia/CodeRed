@@ -1,283 +1,550 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
+import { Camera, Calendar } from "lucide-react";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
-export default function ProfilePage() {
-  const [username, setUsername] = useState("Zenitsu_1");
-  const [firstName, setFirstName] = useState("Zenitsu");
-  const [lastName, setLastName] = useState("Agatsuma");
-  const [dateOfBirth, setDateOfBirth] = useState("2000-01-01");
-  const [bio, setBio] = useState("I will kill you!");
-  const [preferredLanguage, setPreferredLanguage] = useState("Cpp");
+export default function CompleteProfilePage() {
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [username, setUsername] = useState("");
+  const [dob, setDob] = useState("");
+  const [experienceLevel, setExperienceLevel] = useState("");
+  const [primaryLanguage, setPrimaryLanguage] = useState("");
+  const [goals, setGoals] = useState(""); // This will be our "bio"
+  const [profilePhoto, setProfilePhoto] = useState<File | null>(null);
+  const [profilePhotoPreview, setProfilePhotoPreview] = useState<string | null>(
+    null
+  );
 
-  const graphqlUrl = "https://9198840bf6b6.ngrok-free.app/graphql";
+  const [programmingLanguages, setProgrammingLanguages] = useState<string[]>(
+    []
+  );
+  const [platformExperience, setPlatformExperience] = useState<string[]>([]);
+  const [participated, setParticipated] = useState<string | null>(null);
+  const [preferredDuration, setPreferredDuration] = useState("");
 
-  const HARDCODED_TOKEN =
-    "header eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxM…QyMn0.lgSbjvmMTHd4JLCDt_rBYBBNzzBF3bPHHoh48AY3jrk";
+  const backendUrl = "https://4d3c12da490b.ngrok-free.app";
 
-  const clean = (obj: Record<string, any>) =>
-    Object.fromEntries(
-      Object.entries(obj).filter(([_, v]) => v !== undefined && v !== "")
-    );
-
-  const sanitizeHeaderValue = (v: string) => {
-    if (!v) return v;
-
-    let replaced = v.replace(/\u2026/g, "...");
-
-    replaced = replaced.replace(/[\u2018\u2019\u201A\u201B\u2032]/g, "'");
-    replaced = replaced.replace(/[\u201C\u201D\u201E\u201F\u2033]/g, '"');
-
-    const offending: number[] = [];
-    for (let i = 0; i < replaced.length; i++) {
-      const code = replaced.charCodeAt(i);
-      if (code > 0xff) offending.push(code);
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setProfilePhoto(file);
+      // Create a preview URL
+      setProfilePhotoPreview(URL.createObjectURL(file));
     }
-    if (offending.length > 0) {
-      console.warn(
-        "sanitizeHeaderValue: token contains non-Latin1 code points (will be stripped):",
-        offending
-      );
-    }
-
-    const cleaned = replaced.replace(/[^\x00-\xFF]/g, "");
-    return cleaned;
   };
+  const router = useRouter();
 
+  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    setSuccess(null);
-    setIsLoading(true);
-
-    const input = clean({
-      username,
-      firstName: firstName, // ✅ camelCase keys
-      lastName: lastName, // ✅ camelCase keys
-      dateOfBirth: dateOfBirth, // ✅ camelCase keys
-      bio,
-      preferredLanguage: preferredLanguage, // ✅ camelCase keys
-    });
-
-    // <-- Updated mutation: no token variable, returns userId & profileComplete
-    const mutation = `
-      mutation CompleteProfile($input: CompleteProfileInput!) {
-        completeProfile(input: $input) {
-          success
-          message
-          userId
-          profileComplete
-        }
-      }
-    `;
-
-    // doRequest now either includes Authorization header (useHeader = true)
-    // or sends no Authorization header (useHeader = false).
-    const doRequest = async (useHeader: boolean) => {
-      const body = {
-        query: mutation,
-        variables: { input },
-      };
-
-      const headers: Record<string, string> = {
-        "Content-Type": "application/json",
-      };
-
-      if (useHeader && HARDCODED_TOKEN) {
-        const safeToken = sanitizeHeaderValue(HARDCODED_TOKEN);
-        headers["Authorization"] = `Bearer ${safeToken}`;
-      }
-
-      return axios.post(graphqlUrl, body, { headers });
+    const token = localStorage.getItem('token');
+    console.log("Tokennn: ", token);
+    const userProfileData = {
+      username: username,
+      first_name: firstName,
+      last_name: lastName,
+      date_of_birth: dob,
+      bio: goals,
+      preferred_language: primaryLanguage,
+      profile_photo: profilePhoto ? profilePhoto.name : null,
+      experienceLevel: experienceLevel,
+      participated: participated
     };
+    console.log("User data - ", userProfileData, "\n and token - ",token)
 
     try {
-      console.log("Sending GraphQL variables (input):", input);
 
-      let response;
-      if (HARDCODED_TOKEN) {
-        try {
-          // first try with Authorization header
-          response = await doRequest(true);
-        } catch (err: any) {
-          const msg = String(err?.message || "");
-          const isHeaderEncodingError =
-            msg.includes("String contains non ISO-8859-1") ||
-            msg.includes("setRequestHeader");
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
 
-          if (isHeaderEncodingError) {
-            console.warn(
-              "Header value caused XHR encoding error. Retrying WITHOUT Authorization header (mutation does not accept token variable)."
-            );
+      const response = await axios.post(
+        `${backendUrl}/api/v1/auth/complete-profile`,
+        userProfileData,
+        config
+      );
 
-            // retry without sending header (mutation no longer expects token variable)
-            response = await doRequest(false);
-          } else {
-            throw err;
-          }
-        }
-      } else {
-        // no token available — just send the request without Authorization
-        response = await doRequest(false);
+      console.log("res from backend ", response);
+      if (response.status === 200) {
+        localStorage.setItem("token", response.data.access_token);
       }
+      alert(response.data.message);
+      router.replace("/home");
 
-      if (!response) {
-        throw new Error("No response returned from server.");
-      }
+    } catch (err) {
+      console.log("Error: ",err)
+    }
 
-      if (response.data?.errors && response.data.errors.length > 0) {
-        console.error("GraphQL errors:", response.data.errors);
-        setError(response.data.errors[0].message || "GraphQL error occurred.");
-      } else {
-        const result = response.data?.data?.completeProfile;
-        console.log(" Server response:", result);
+    console.log(userProfileData);
 
-        if (result?.success) {
-          // result contains success, message, userId, profileComplete
-          setSuccess(result.message || "Profile sent successfully!");
-        } else {
-          setError(result?.message || "Failed to complete profile.");
-        }
-      }
-    } catch (err: any) {
-      console.error(" Network/Error:", err);
-      const webErr =
-        err?.response?.data?.errors?.[0]?.message ||
-        err?.response?.data?.message ||
-        err?.message ||
-        String(err);
-      setError(webErr);
-    } finally {
-      setIsLoading(false);
+    const alertBox = document.getElementById("alert-box");
+    const alertMessage = document.getElementById("alert-message");
+    if (alertBox && alertMessage) {
+      alertMessage.textContent = "Profile data submitted! Check the console.";
+      alertBox.classList.remove("hidden");
+      setTimeout(() => {
+        alertBox.classList.add("hidden");
+      }, 3000);
+    } else {
+      console.log("Profile data submitted! Check the console.");
     }
   };
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
-      <div className="w-full max-w-2xl bg-white rounded-xl shadow-md p-8">
-        <h2 className="text-2xl font-semibold mb-4">Edit Profile</h2>
-
-        {error && (
-          <div className="mb-4 p-3 bg-red-50 text-red-800 border border-red-100 rounded">
-            {error}
-          </div>
-        )}
-        {success && (
-          <div className="mb-4 p-3 bg-green-50 text-green-800 border border-green-100 rounded">
-            {success}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Username
-            </label>
-            <input
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="mt-1 block w-full input input-bordered"
-              placeholder="username"
-              required
-            />
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                First name
-              </label>
-              <input
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                className="mt-1 block w-full input input-bordered"
-                placeholder="First name"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Last name
-              </label>
-              <input
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                className="mt-1 block w-full input input-bordered"
-                placeholder="Last name"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Date of birth
-            </label>
-            <input
-              type="date"
-              value={dateOfBirth}
-              onChange={(e) => setDateOfBirth(e.target.value)}
-              className="mt-1 block w-full input input-bordered"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Bio
-            </label>
-            <textarea
-              value={bio}
-              onChange={(e) => setBio(e.target.value)}
-              className="mt-1 block w-full textarea textarea-bordered"
-              rows={3}
-              placeholder="Tell something about yourself"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Preferred language
-            </label>
-            <input
-              value={preferredLanguage}
-              onChange={(e) => setPreferredLanguage(e.target.value)}
-              className="mt-1 block w-full input input-bordered"
-              placeholder="Preferred language (e.g., Cpp, Python)"
-            />
-          </div>
-
-          <div className="flex items-center space-x-3 mt-4">
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="btn bg-black text-white px-4 py-2 rounded disabled:opacity-60"
-            >
-              {isLoading ? "Sending..." : "Send Profile"}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                setUsername("Zenitsu_1");
-                setFirstName("Zenitsu");
-                setLastName("Agatsuma");
-                setDateOfBirth("2000-01-01");
-                setBio("I will kill you!");
-                setPreferredLanguage("Cpp");
-                setError(null);
-                setSuccess(null);
-              }}
-              className="btn btn-ghost px-4 py-2"
-            >
-              Reset Example
-            </button>
-          </div>
-        </form>
-      </div>
+  const Checkbox = ({
+    id,
+    label,
+    value,
+    onChange,
+  }: {
+    id: string;
+    label: string;
+    value: string;
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  }) => (
+    <div className="flex items-center">
+      <input
+        id={id}
+        name={id}
+        type="checkbox"
+        value={value}
+        onChange={onChange}
+        className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
+      />
+      <label htmlFor={id} className="ml-2 block text-sm text-white">
+        {label}
+      </label>
     </div>
+  );
+
+  return (
+    <>
+      {/* Custom Alert Box */}
+      <div
+        id="alert-box"
+        className="hidden fixed top-5 right-5 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded shadow-lg z-50"
+        role="alert"
+      >
+        <strong className="font-bold">Success!</strong>
+        <span id="alert-message" className="block sm:inline ml-2"></span>
+        <span
+          className="absolute top-0 bottom-0 right-0 px-4 py-3"
+          onClick={() =>
+            document.getElementById("alert-box")?.classList.add("hidden")
+          }
+        >
+          <svg
+            className="fill-current h-6 w-6 text-green-500"
+            role="button"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+          >
+            <title>Close</title>
+            <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.818l-2.651 2.651a1.2 1.2 0 1 1-1.697-1.697L8.303 10 5.651 7.349a1.2 1.2 0 1 1 1.697-1.697L10 8.182l2.651-2.651a1.2 1.2 0 1 1 1.697 1.697L11.697 10l2.651 2.651a1.2 1.2 0 0 1 0 1.698z" />
+          </svg>
+        </span>
+      </div>
+
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-5xl w-full bg-zinc-900 p-8 md:p-12 shadow-xl rounded-lg">
+          <div>
+            {/* Corrected: Text color changed to white for high contrast */}
+            <h2 className="text-3xl font-extrabold text-white">
+              Complete Your Profile
+            </h2>
+            {/* Corrected: Text color changed to light gray */}
+            <p className="mt-2 text-sm text-gray-400">
+              Help us personalize your competitive coding experience.
+            </p>
+          </div>
+
+          {/* Profile Picture Section */}
+          <div className="mt-8 flex flex-col items-center">
+            <div className="relative">
+              <img
+                className="h-24 w-24 rounded-full object-cover ring-4 ring-gray-700" // Corrected: Ring color made visible
+                src={
+                  profilePhotoPreview ||
+                  "https://placehold.co/100x100/E2E8F0/A0AEC0?text=User"
+                }
+                alt="Profile"
+              />
+              <label
+                htmlFor="profile-photo-input"
+                className="absolute bottom-0 right-0 flex h-7 w-7 rounded-full bg-red-600 text-white items-center justify-center ring-2 ring-white cursor-pointer" // Corrected: Added 'flex' to center icon
+              >
+                <Camera size={16} />
+                <input
+                  id="profile-photo-input"
+                  name="profile-photo-input"
+                  type="file"
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  accept="image/*"
+                  onChange={handlePhotoChange}
+                />
+              </label>
+            </div>
+            <label
+              htmlFor="profile-photo-input"
+              className="mt-3 text-sm font-medium text-red-600 hover:text-red-500 cursor-pointer"
+            >
+              Change Profile Picture
+            </label>
+          </div>
+
+          {/* Form */}
+          <form className="mt-8 space-y-8" onSubmit={handleSubmit}>
+            {/* Personal Information */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label
+                  htmlFor="first-name"
+                  className="block text-sm font-medium text-gray-300"
+                >
+                  First Name
+                </label>
+                <input
+                  type="text"
+                  name="first-name"
+                  id="first-name"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  placeholder="Enter your first name"
+                  className="mt-1 block w-full px-4 py-3 bg-zinc-800 text-white border border-gray-700 rounded-md shadow-sm placeholder-gray-500 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="last-name"
+                  className="block text-sm font-medium text-gray-300" // Corrected: Label color
+                >
+                  Last Name
+                </label>
+                <input
+                  type="text"
+                  name="last-name"
+                  id="last-name"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  placeholder="Enter your last name"
+                  // Corrected: Added dark bg, light text, dark border, and dark placeholder
+                  className="mt-1 block w-full px-4 py-3 bg-zinc-800 text-white border border-gray-700 rounded-md shadow-sm placeholder-gray-500 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="username"
+                  className="block text-sm font-medium text-gray-300" // Corrected: Label color
+                >
+                  Username
+                </label>
+                <input
+                  type="text"
+                  name="username"
+                  id="username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Choose a unique username"
+                  className="mt-1 block w-full px-4 py-3 bg-zinc-800 text-white border border-gray-700 rounded-md shadow-sm placeholder-gray-500 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
+                />
+              </div>
+              <div className="relative">
+                <label
+                  htmlFor="dob"
+                  className="block text-sm font-medium text-gray-300" // Corrected: Label color
+                >
+                  Date of Birth
+                </label>
+                <input
+                  type="date" // This automatically provides a calendar picker
+                  name="dob"
+                  id="dob"
+                  value={dob}
+                  onChange={(e) => setDob(e.target.value)}
+                  placeholder="mm/dd/yyyy"
+                  className="mt-1 block w-full px-4 py-3 bg-zinc-800 text-white border border-gray-700 rounded-md shadow-sm placeholder-gray-500 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm "
+                />
+              </div>
+            </div>
+
+            <div className="border-t border-gray-700 pt-8">
+              <h3 className="text-lg font-medium leading-6 text-white">
+                {" "}
+                {/* Corrected: Text color */}
+                Coding Background
+              </h3>
+              <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label
+                    htmlFor="experience-level"
+                    className="block text-sm font-medium text-gray-300"
+                  >
+                    Experience Level
+                  </label>
+                  <select
+                    id="experience-level"
+                    name="experience-level"
+                    value={experienceLevel}
+                    onChange={(e) => setExperienceLevel(e.target.value)}
+
+                    className="mt-1 block w-full pl-3 pr-10 py-3 text-base bg-zinc-800 text-white border-gray-700 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm rounded-md"
+                  >
+                    <option value="" disabled>
+                      Select your level
+                    </option>
+                    <option value="beginner">Beginner</option>
+                    <option value="intermediate">Intermediate</option>
+                    <option value="advanced">Advanced</option>
+                    <option value="expert">Expert</option>
+                  </select>
+                </div>
+                <div>
+                  <label
+                    htmlFor="primary-language"
+                    className="block text-sm font-medium text-gray-300" // Corrected: Label color
+                  >
+                    Primary Language
+                  </label>
+                  <select
+                    id="primary-language"
+                    name="primary-language"
+                    value={primaryLanguage}
+                    onChange={(e) => setPrimaryLanguage(e.target.value)}
+                    // Corrected: Removed 'bg-zinc-00', added dark bg, light text, dark border
+                    className="mt-1 block w-full pl-3 pr-10 py-3 text-base bg-zinc-800 text-white border-gray-700 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm rounded-md"
+                  >
+                    <option value="" disabled>
+                      Select primary language
+                    </option>
+                    <option value="Python">Python</option>
+                    <option value="JavaScript">JavaScript</option>
+                    <option value="Java">Java</option>
+                    <option value="Cpp">C++</option>
+                    <option value="C">C</option>
+                    <option value="Go">Go</option>
+                    <option value="Rust">Rust</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
+              <div className="mt-6">
+                <label className="block text-sm font-medium text-white">
+                  Other Programming Languages
+                </label>
+
+                <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-gray-300">
+                  <Checkbox
+                    id="lang-python"
+                    label="Python"
+                    value="python"
+                    onChange={() => {}}
+                  />
+                  <Checkbox
+                    id="lang-java"
+                    label="Java"
+                    value="java"
+                    onChange={() => {}}
+                  />
+                  <Checkbox
+                    id="lang-cpp"
+                    label="C++"
+                    value="cpp"
+                    onChange={() => {}}
+                  />
+                  <Checkbox
+                    id="lang-js"
+                    label="JavaScript"
+                    value="javascript"
+                    onChange={() => {}}
+                  />
+                  <Checkbox
+                    id="lang-c"
+                    label="C"
+                    value="c"
+                    onChange={() => {}}
+                  />
+                  <Checkbox
+                    id="lang-go"
+                    label="Go"
+                    value="go"
+                    onChange={() => {}}
+                  />
+                  <Checkbox
+                    id="lang-rust"
+                    label="Rust"
+                    value="rust"
+                    onChange={() => {}}
+                  />
+                  <Checkbox
+                    id="lang-other"
+                    label="Other"
+                    value="other"
+                    onChange={() => {}}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Competitive Programming */}
+            {/* Corrected: Border color */}
+            <div className="border-t border-gray-700 pt-8">
+              <h3 className="text-lg font-medium leading-6 text-white">
+                {" "}
+                {/* Corrected: Text color */}
+                Competitive Programming
+              </h3>
+              <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300">
+                    {" "}
+                    {/* Corrected: Label color */}
+                    Have you participated in competitive programming before?
+                  </label>
+                  <fieldset className="mt-4">
+                    <div className="flex items-center space-x-6">
+                      <div className="flex items-center">
+                        <input
+                          id="participated-yes"
+                          name="participated"
+                          type="radio"
+                          value="yes"
+                          onChange={(e) => setParticipated(e.target.value)}
+                          className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-600" // Corrected: Border color
+                        />
+                        <label
+                          htmlFor="participated-yes"
+                          className="ml-2 block text-sm text-gray-300" // Corrected: Label color
+                        >
+                          Yes
+                        </label>
+                      </div>
+                      <div className="flex items-center">
+                        <input
+                          id="participated-no"
+                          name="participated"
+                          type="radio"
+                          value="no"
+                          onChange={(e) => setParticipated(e.target.value)}
+                          className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-600" // Corrected: Border color
+                        />
+                        <label
+                          htmlFor="participated-no"
+                          className="ml-2 block text-sm text-gray-300" // Corrected: Label color
+                        >
+                          No
+                        </label>
+                      </div>
+                    </div>
+                  </fieldset>
+                </div>
+                <div>
+                  <label
+                    htmlFor="contest-duration"
+                    className="block text-sm font-medium text-gray-300" // Corrected: Label color
+                  >
+                    Preferred Contest Duration
+                  </label>
+                  <select
+                    id="contest-duration"
+                    name="contest-duration"
+                    value={preferredDuration}
+                    onChange={(e) => setPreferredDuration(e.target.value)}
+                    // Corrected: Added dark bg, light text, dark border
+                    className="mt-1 block w-full pl-3 pr-10 py-3 text-base bg-zinc-800 text-white border-gray-700 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm rounded-md"
+                  >
+                    <option value="" disabled>
+                      Select duration
+                    </option>
+                    <option value="short">Short (1-2 hours)</option>
+                    <option value="medium">Medium (2-3 hours)</option>
+                    <option value="long">Long (3+ hours)</option>
+                  </select>
+                </div>
+              </div>
+              <div className="mt-6">
+                <label className="block text-sm font-medium text-gray-300">
+                  {" "}
+                  {/* Corrected: Label color */}
+                  Platform Experience
+                </label>
+                <div className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {/* Assuming <Checkbox> component is styled for dark mode or inherits text color */}
+                  <Checkbox
+                    id="platform-leetcode"
+                    label="LeetCode"
+                    value="leetcode"
+                    onChange={() => {}}
+                  />
+                  <Checkbox
+                    id="platform-codeforces"
+                    label="Codeforces"
+                    value="codeforces"
+                    onChange={() => {}}
+                  />
+                  <Checkbox
+                    id="platform-hackerrank"
+                    label="HackerRank"
+                    value="hackerrank"
+                    onChange={() => {}}
+                  />
+                  <Checkbox
+                    id="platform-codechef"
+                    label="CodeChef"
+                    value="codechef"
+                    onChange={() => {}}
+                  />
+                  <Checkbox
+                    id="platform-atcoder"
+                    label="AtCoder"
+                    value="atcoder"
+                    onChange={() => {}}
+                  />
+                  <Checkbox
+                    id="platform-topcoder"
+                    label="TopCoder"
+                    value="topcoder"
+                    onChange={() => {}}
+                  />
+                </div>
+              </div>
+              <div className="mt-6">
+                <label
+                  htmlFor="goals"
+                  className="block text-sm font-medium text-gray-300" // Corrected: Label color
+                >
+                  Tell us about yourself (Bio)
+                </label>
+                <textarea
+                  id="goals"
+                  name="goals"
+                  rows={4}
+                  value={goals}
+                  onChange={(e) => setGoals(e.target.value)}
+                  placeholder="I'm a CodeRed Champion"
+                  // Corrected: Added dark bg, light text, dark border, and dark placeholder
+                  className="mt-1 block w-full px-4 py-3 bg-zinc-800 text-white border border-gray-700 rounded-md shadow-sm placeholder-gray-500 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
+                ></textarea>
+              </div>
+            </div>
+
+            {/* Form Actions */}
+            {/* Corrected: Border color */}
+            <div className="flex justify-center pt-8 border-t border-gray-700">
+              <button
+                type="submit"
+                className="w-1/2 py-3 px-6 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+              >
+                Create Profile
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </>
   );
 }
