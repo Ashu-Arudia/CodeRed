@@ -261,15 +261,13 @@ export default function App() {
 
       {/* Main Content */}
       <main className="overflow-hidden">
-        {" "}
-        {/* Added overflow-hidden to contain horizontal elements */}
-        {/* Hero Section */}
+     
         <section className="container mx-auto px-6 py-16 md:py-24">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             {/* Hero Text Content */}
             <div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-gray-900 mb-6">
-                <div className="text-red-600">The Arena</div> for Every
+                <div className="text-red-600">The Arena for</div> Every <div></div>
                 Developer
               </h1>
               <p className="text-lg text-gray-600 mb-8 max-w-lg">

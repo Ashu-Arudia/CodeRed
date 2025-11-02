@@ -10,22 +10,25 @@ import Stats from "../component/stats/stat";
 import Friends from "../friends/page";
 import Settings from "../settings/setting";
 
+const backendUrl = "https://4d3c12da490b.ngrok-free.app";
+
 const metalMania = Metal_Mania({
   subsets: ["latin"],
   weight: "400",
 });
 
 const smoochSans = Smooch_Sans({
-  subsets: ["latin"], // always include 'latin' for English text
-  weight: ["400", "500", "700"], // available weights: 300–900
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
   variable: "--font-smooch-sans",
 });
 
 const oswald = Oswald({
-  subsets: ["latin"], // must include subset
-  weight: ["200", "300", "400", "500", "600", "700"], // choose as needed
+  subsets: ["latin"],
+  weight: ["200", "300", "400", "500", "600", "700"],
   variable: "--font-oswald",
 });
+
 
 export default function Home() {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
@@ -82,6 +85,34 @@ export default function Home() {
   }
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    console.log("Tokenn: ", token);
+    if (!token) {
+      router.replace("/login");
+    }
+    const fetchdata = async () => {
+      try {
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "ngrok-skip-browser-warning": "true",
+          },
+        };
+        const url = `${backendUrl}/api/v1/auth/me`;
+        console.log(url);
+        const response = await axios.get(
+          `${backendUrl}/api/v1/auth/me`,
+          config
+        );
+        console.log("response from backend: ", response.data);
+      } catch (err) {
+        console.log("Error occured: ", err);
+      }
+    };
+    fetchdata();
+  }, []);
+
+  useEffect(() => {
     const { searchParams } = new URL(window.location.href);
     const tokenParam = searchParams.get("token");
     const verifiedParam = searchParams.get("verified");
@@ -92,7 +123,6 @@ export default function Home() {
     }
   }, []);
 
-  // Parallax scroll effect
   useEffect(() => {
     const handleScroll = () => {
       if (mainRef.current) {
@@ -107,7 +137,6 @@ export default function Home() {
     }
   }, []);
 
-  // Auto-carousel effect
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % featuredMatches.length);
@@ -280,7 +309,6 @@ export default function Home() {
   const validate = () => {
     if (!username.trim()) return "Username required";
     if (!dob) return "Date of birth required";
-    // optionally validate file type/size
     if (img && img.size > 5 * 1024 * 1024) return "Image must be < 5MB";
     return null;
   };
@@ -311,7 +339,7 @@ export default function Home() {
       if (img) formData.append("image", imgbase64 as string);
 
       const res = await axios.post(
-        "hhtp://localhost:8000/api/user/create-profile",
+        "http://localhost:8000/api/user/create-profile",
         formData,
         {
           headers: {
@@ -569,7 +597,7 @@ export default function Home() {
               <div className="rounded-lg bg-[#121111] p-4 gap-5 flex flex-col">
                 <div
                   className="w-full h-full cursor-pointer hover:bg-zinc-800 relative"
-                  onClick={()=> showfriend(false)}
+                  onClick={() => showfriend(false)}
                 >
                   <div className="absolute top-0 left-0 w-12 h-12 bg-red-800 rounded-full blur-2xl"></div>
                   <div className="flex gap-3 mr-10 items-center">
@@ -846,15 +874,15 @@ export default function Home() {
                           {/* Middle section - Stats with luxury glass effect */}
                           <div className="grid grid-cols-2 gap-4 p-5 rounded-xl bg-none shadow-xl">
                             <div className="text-center">
-                              <div className="text-yellow-200/80 font-mono text-xs uppercase tracking-widest mb-2 font-semibold">
+                              <div className="text-red-600 font-mono text-xs uppercase tracking-widest mb-2 font-semibold">
                                 MIN. POINTS
                               </div>
-                              <div className="text-2xl font-bold text-yellow-300 drop-shadow-lg">
+                              <div className="text-2xl font-bold text-red-600 drop-shadow-lg">
                                 {tournament.prize}
                               </div>
                             </div>
-                            <div className="text-center border-l border-yellow-300/20 pl-4">
-                              <div className="text-yellow-200/80 font-mono text-xs uppercase tracking-widest mb-2 font-semibold">
+                            <div className="text-center border-l  pl-4">
+                              <div className="text-white font-mono text-xs uppercase tracking-widest mb-2 font-semibold">
                                 Players Online
                               </div>
                               <div className="text-2xl font-bold text-white drop-shadow-lg">
@@ -967,7 +995,10 @@ export default function Home() {
                 {/* Header with Invite Button */}
                 <div className="flex justify-between items-center p-2  border-gray-700">
                   <h1 className="font-bold">Friends</h1>
-                  <div onClick={()=> showfriend(true)} className="cursor-pointer text-lg font-bold text-gray-400 hover:text-white hover:bg-gray-700 rounded-full w-7 h-7 flex items-center justify-center transition-colors">
+                  <div
+                    onClick={() => showfriend(true)}
+                    className="cursor-pointer text-lg font-bold text-gray-400 hover:text-white hover:bg-gray-700 rounded-full w-7 h-7 flex items-center justify-center transition-colors"
+                  >
                     +
                   </div>
                 </div>

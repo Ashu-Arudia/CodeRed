@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { request } from "graphql-request";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 import {
   Lock,
   Mail,
@@ -13,12 +14,13 @@ import {
 } from "lucide-react";
 
 import { Metal_Mania } from "next/font/google";
-import { useRouter } from "next/navigation";
 
 const metalMania = Metal_Mania({
   subsets: ["latin"],
   weight: "400",
 });
+
+const backendUrl = "https://4d3c12da490b.ngrok-free.app";
 
 
 const GoogleIcon = () => (
@@ -56,98 +58,11 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  const router = useRouter();
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-
-  const REGISTER_MUTATION = `
-    mutation Register($userData: UserRegisterInput!) {
-      register(userData: $userData) {
-        accessToken
-        tokenType
-        user { userId email }
-      }
-    }
-  `;
-  const clean = (obj: Record<string, any>) =>
-    Object.fromEntries(
-      Object.entries(obj).filter(([_, v]) => v !== undefined && v !== "")
-    );
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setIsLoading(true);
-
-    if (!isLogin && password !== confirmPassword) {
-      setError("Passwords do not match");
-      setIsLoading(false);
-      return;
-    }
-
-    const registerRestUrl =
-      "https://859d9cdde2fa.ngrok-free.app/api/v1/auth/register";
-    const graphqlUrl = registerRestUrl.includes("/api/")
-      ? registerRestUrl.replace("/api/v1/auth/register", "/graphql")
-      : "https://859d9cdde2fa.ngrok-free.app/graphql";
-
-
-    const userData = clean({
-      email,
-      password,
-    });
-
-    if (!userData.email) {
-      setError("Please provide an email");
-      setIsLoading(false);
-      return;
-    }
-    if (!userData.password) {
-      setError("Please provide a password");
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      if (!isLogin) {
-        console.log("Sending GraphQL register to:", graphqlUrl, "vars:", {
-          userData,
-        });
-
-        const response: any = await request(graphqlUrl, REGISTER_MUTATION, {
-          userData,
-        });
-
-        console.log("GraphQL response:", response);
-
-        const registerResult = response.register;
-        if (registerResult && registerResult.accessToken) {
-          console.log("Registered OK — token:", registerResult.accessToken);
-          setError("");
-          setIsLogin(true);
-          resetForm();
-        } else {
-          setError(
-            "Registration did not return an access token. Check server response in console."
-          );
-        }
-      } else {
-
-        setError(
-          "Login flow not implemented in this patch. Toggle to Sign Up first."
-        );
-      }
-    } catch (err: any) {
-      console.error("GraphQL request error:", err);
-      const friendly =
-        err?.response?.errors?.map((x: any) => x.message).join(", ") ||
-        err?.message ||
-        (isLogin ? "Login failed" : "Registration failed");
-      setError(`${isLogin ? "Login failed" : "Register failed"}: ${friendly}`);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const resetForm = () => {
     setEmail("");
@@ -161,9 +76,60 @@ export default function LoginPage() {
     resetForm();
   };
 
+  const handlesubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!isLogin) {
+
+      try {
+        const userData = {
+          email: email,
+          password: password,
+        };
+        const response = await axios.post(
+          `${backendUrl}/api/v1/auth/register`,
+          userData
+        );
+        console.log("response from backend: ", response);
+        if (response.status === 201) {
+          console.log(response.data.access_token);
+          localStorage.setItem("token", response.data.access_token);
+          router.push("/profile");
+        }
+      } catch (err) {
+        console.log("Error in sending req to backend: ", err);
+      }
+    }
+    else {
+
+      try {
+        const userData = {
+          email: email,
+          password: password,
+        };
+        const response = await axios.post(
+          `${backendUrl}/api/v1/auth/login`,
+          userData
+        );
+        console.log("response from backend: ", response)
+        if (response.status === 200) {
+          localStorage.setItem("token", response.data.access_token);
+          router.replace("/home");
+        }
+        else {
+          alert("Password is incorrect!");
+        }
+
+      } catch (err) {
+        console.log("Error : ", err);
+      }
+    }
+    
+  };
+
   return (
     <div className="min-h-screen bg-white text-gray-100 flex items-center justify-center p-4">
       <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 bg-gray-900/90 backdrop-blur-md rounded-xl shadow-2xl overflow-hidden max-w-6xl w-full">
+
         {/* Left Section - Marketing Content */}
         <div className="bg-red-800/10 p-8 md:p-12 lg:p-16 flex flex-col justify-between relative overflow-hidden">
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-red-600/10 rounded-full mix-blend-multiply filter blur-xl animate-blob opacity-50"></div>
@@ -230,7 +196,7 @@ export default function LoginPage() {
             </div>
           )}
 
-          <form className="space-y-6" onSubmit={handleSubmit}>
+          <form className="space-y-6" onSubmit={handlesubmit}>
             <div>
               <label
                 htmlFor="email"
@@ -393,18 +359,14 @@ export default function LoginPage() {
           </div>
 
           <div className="space-y-4">
-            {/* Replaced GitHub button with Google Auth logic from your snippet */}
             <button
-              onClick={
-                () =>
-                  (window.location.href =
-                    "https://859d9cdde2fa.ngrok-free.app/authenticate") // URL from your snippet
-              }
+
               className="w-full flex items-center justify-center bg-gray-700 hover:bg-gray-600 text-white font-medium py-3 rounded-md transition-colors duration-300 border border-gray-600 shadow-sm"
             >
               <GoogleIcon />
               Continue with Google
             </button>
+
             {/* You can add a GitHub button here if you have a separate auth flow for it */}
             <button
               type="button"
