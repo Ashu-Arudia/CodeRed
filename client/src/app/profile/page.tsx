@@ -137,387 +137,405 @@ export default function CompleteProfilePage() {
       </div>
 
       <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-3xl w-full bg-white p-8 md:p-12 shadow-xl rounded-lg">
-          <div>
-            <h2 className="text-3xl font-extrabold text-gray-900">
-              Complete Your Profile
-            </h2>
-            <p className="mt-2 text-sm text-gray-600">
-              Help us personalize your competitive coding experience.
-            </p>
-          </div>
+       <div className="max-w-3xl w-full bg-zinc-900 p-8 md:p-12 shadow-xl rounded-lg">
+  <div>
+    {/* Corrected: Text color changed to white for high contrast */}
+    <h2 className="text-3xl font-extrabold text-white">
+      Complete Your Profile
+    </h2>
+    {/* Corrected: Text color changed to light gray */}
+    <p className="mt-2 text-sm text-gray-400">
+      Help us personalize your competitive coding experience.
+    </p>
+  </div>
 
-          {/* Profile Picture Section */}
-          <div className="mt-8 flex flex-col items-center">
-            <div className="relative">
-              <img
-                className="h-24 w-24 rounded-full object-cover ring-4 ring-gray-200"
-                src={
-                  profilePhotoPreview ||
-                  "https://placehold.co/100x100/E2E8F0/A0AEC0?text=User"
-                }
-                alt="Profile"
-              />
-              <label
-                htmlFor="profile-photo-input"
-                className="absolute bottom-0 right-0 block h-7 w-7 rounded-full bg-red-600 text-white items-center justify-center ring-2 ring-white cursor-pointer"
-              >
-                <Camera size={16} />
-                <input
-                  id="profile-photo-input"
-                  name="profile-photo-input"
-                  type="file"
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  accept="image/*"
-                  onChange={handlePhotoChange}
-                />
-              </label>
-            </div>
-            <label
-              htmlFor="profile-photo-input"
-              className="mt-3 text-sm font-medium text-red-600 hover:text-red-500 cursor-pointer"
-            >
-              Change Profile Picture
-            </label>
-          </div>
+  {/* Profile Picture Section */}
+  <div className="mt-8 flex flex-col items-center">
+    <div className="relative">
+      <img
+        className="h-24 w-24 rounded-full object-cover ring-4 ring-gray-700" // Corrected: Ring color made visible
+        src={
+          profilePhotoPreview ||
+          "https://placehold.co/100x100/E2E8F0/A0AEC0?text=User"
+        }
+        alt="Profile"
+      />
+      <label
+        htmlFor="profile-photo-input"
+        className="absolute bottom-0 right-0 flex h-7 w-7 rounded-full bg-red-600 text-white items-center justify-center ring-2 ring-white cursor-pointer" // Corrected: Added 'flex' to center icon
+      >
+        <Camera size={16} />
+        <input
+          id="profile-photo-input"
+          name="profile-photo-input"
+          type="file"
+          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          accept="image/*"
+          onChange={handlePhotoChange}
+        />
+      </label>
+    </div>
+    <label
+      htmlFor="profile-photo-input"
+      className="mt-3 text-sm font-medium text-red-600 hover:text-red-500 cursor-pointer"
+    >
+      Change Profile Picture
+    </label>
+  </div>
 
-          {/* Form */}
-          <form className="mt-8 space-y-8" onSubmit={handleSubmit}>
-            {/* Personal Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label
-                  htmlFor="first-name"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  First Name
-                </label>
-                <input
-                  type="text"
-                  name="first-name"
-                  id="first-name"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                  placeholder="Enter your first name"
-                  className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="last-name"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Last Name
-                </label>
-                <input
-                  type="text"
-                  name="last-name"
-                  id="last-name"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                  placeholder="Enter your last name"
-                  className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="username"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Username
-                </label>
-                <input
-                  type="text"
-                  name="username"
-                  id="username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder="Choose a unique username"
-                  className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
-                />
-              </div>
-              <div className="relative">
-                <label
-                  htmlFor="dob"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Date of Birth
-                </label>
-                <input
-                  type="date" // Changed to type="date" for better UX
-                  name="dob"
-                  id="dob"
-                  value={dob}
-                  onChange={(e) => setDob(e.target.value)}
-                  placeholder="mm/dd/yyyy"
-                  className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
-                />
-              </div>
-            </div>
+  {/* Form */}
+  <form className="mt-8 space-y-8" onSubmit={handleSubmit}>
+    {/* Personal Information */}
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <label
+          htmlFor="first-name"
+          className="block text-sm font-medium text-gray-300" // Corrected: Label color
+        >
+          First Name
+        </label>
+        <input
+          type="text"
+          name="first-name"
+          id="first-name"
+          value={firstName}
+          onChange={(e) => setFirstName(e.target.value)}
+          placeholder="Enter your first name"
+          // Corrected: Added dark bg, light text, dark border, and dark placeholder
+          className="mt-1 block w-full px-4 py-3 bg-zinc-800 text-white border border-gray-700 rounded-md shadow-sm placeholder-gray-500 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
+        />
+      </div>
+      <div>
+        <label
+          htmlFor="last-name"
+          className="block text-sm font-medium text-gray-300" // Corrected: Label color
+        >
+          Last Name
+        </label>
+        <input
+          type="text"
+          name="last-name"
+          id="last-name"
+          value={lastName}
+          onChange={(e) => setLastName(e.target.value)}
+          placeholder="Enter your last name"
+          // Corrected: Added dark bg, light text, dark border, and dark placeholder
+          className="mt-1 block w-full px-4 py-3 bg-zinc-800 text-white border border-gray-700 rounded-md shadow-sm placeholder-gray-500 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
+        />
+      </div>
+      <div>
+        <label
+          htmlFor="username"
+          className="block text-sm font-medium text-gray-300" // Corrected: Label color
+        >
+          Username
+        </label>
+        <input
+          type="text"
+          name="username"
+          id="username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          placeholder="Choose a unique username"
+          // Corrected: Added dark bg, light text, dark border, and dark placeholder
+          className="mt-1 block w-full px-4 py-3 bg-zinc-800 text-white border border-gray-700 rounded-md shadow-sm placeholder-gray-500 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
+        />
+      </div>
+      <div className="relative">
+        <label
+          htmlFor="dob"
+          className="block text-sm font-medium text-gray-300" // Corrected: Label color
+        >
+          Date of Birth
+        </label>
+        <input
+          type="date" // This automatically provides a calendar picker
+          name="dob"
+          id="dob"
+          value={dob}
+          onChange={(e) => setDob(e.target.value)}
+          placeholder="mm/dd/yyyy"
+          // Corrected: Added dark bg, light text, dark border.
+          // Note: [color-scheme:dark] hints to the browser to use a dark calendar
+          className="mt-1 block w-full px-4 py-3 bg-zinc-800 text-white border border-gray-700 rounded-md shadow-sm placeholder-gray-500 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm [color-scheme:dark]"
+        />
+      </div>
+    </div>
 
-            {/* Coding Background */}
-            <div className="border-t border-gray-200 pt-8">
-              <h3 className="text-lg font-medium leading-6 text-gray-900">
-                Coding Background
-              </h3>
-              <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label
-                    htmlFor="experience-level"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Experience Level
-                  </label>
-                  <select
-                    id="experience-level"
-                    name="experience-level"
-                    value={experienceLevel}
-                    onChange={(e) => setExperienceLevel(e.target.value)}
-                    className="mt-1 block w-full pl-3 pr-10 py-3 text-base border-gray-300 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm rounded-md"
-                  >
-                    <option value="" disabled>
-                      Select your level
-                    </option>
-                    <option value="beginner">Beginner</option>
-                    <option value="intermediate">Intermediate</option>
-                    <option value="advanced">Advanced</option>
-                    <option value="expert">Expert</option>
-                  </select>
-                </div>
-                <div>
-                  <label
-                    htmlFor="primary-language"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Primary Language
-                  </label>
-                  <select
-                    id="primary-language"
-                    name="primary-language"
-                    value={primaryLanguage}
-                    onChange={(e) => setPrimaryLanguage(e.target.value)}
-                    className="mt-1 block w-full pl-3 pr-10 py-3 text-base border-gray-300 bg-zinc-00 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm rounded-md"
-                  >
-                    <option value="" disabled>
-                      Select primary language
-                    </option>
-                    <option value="Python">Python</option>
-                    <option value="JavaScript">JavaScript</option>
-                    <option value="Java">Java</option>
-                    <option value="Cpp">C++</option>
-                    <option value="C">C</option>
-                    <option value="Go">Go</option>
-                    <option value="Rust">Rust</option>
-                    <option value="Other">Other</option>
-                  </select>
-                </div>
-              </div>
-              <div className="mt-6">
-                <label className="block text-sm font-medium text-gray-700">
-                  Programming Languages
-                </label>
-                <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <Checkbox
-                    id="lang-python"
-                    label="Python"
-                    value="python"
-                    onChange={() => {}}
-                  />
-                  <Checkbox
-                    id="lang-java"
-                    label="Java"
-                    value="java"
-                    onChange={() => {}}
-                  />
-                  <Checkbox
-                    id="lang-cpp"
-                    label="C++"
-                    value="cpp"
-                    onChange={() => {}}
-                  />
-                  <Checkbox
-                    id="lang-js"
-                    label="JavaScript"
-                    value="javascript"
-                    onChange={() => {}}
-                  />
-                  <Checkbox
-                    id="lang-c"
-                    label="C"
-                    value="c"
-                    onChange={() => {}}
-                  />
-                  <Checkbox
-                    id="lang-go"
-                    label="Go"
-                    value="go"
-                    onChange={() => {}}
-                  />
-                  <Checkbox
-                    id="lang-rust"
-                    label="Rust"
-                    value="rust"
-                    onChange={() => {}}
-                  />
-                  <Checkbox
-                    id="lang-other"
-                    label="Other"
-                    value="other"
-                    onChange={() => {}}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Competitive Programming */}
-            <div className="border-t border-gray-200 pt-8">
-              <h3 className="text-lg font-medium leading-6 text-gray-900">
-                Competitive Programming
-              </h3>
-              <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Have you participated in competitive programming before?
-                  </label>
-                  <fieldset className="mt-4">
-                    <div className="flex items-center space-x-6">
-                      <div className="flex items-center">
-                        <input
-                          id="participated-yes"
-                          name="participated"
-                          type="radio"
-                          value="yes"
-                          onChange={(e) => setParticipated(e.target.value)}
-                          className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300"
-                        />
-                        <label
-                          htmlFor="participated-yes"
-                          className="ml-2 block text-sm text-gray-700"
-                        >
-                          Yes
-                        </label>
-                      </div>
-                      <div className="flex items-center">
-                        <input
-                          id="participated-no"
-                          name="participated"
-                          type="radio"
-                          value="no"
-                          onChange={(e) => setParticipated(e.target.value)}
-                          className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300"
-                        />
-                        <label
-                          htmlFor="participated-no"
-                          className="ml-2 block text-sm text-gray-700"
-                        >
-                          No
-                        </label>
-                      </div>
-                    </div>
-                  </fieldset>
-                </div>
-                <div>
-                  <label
-                    htmlFor="contest-duration"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Preferred Contest Duration
-                  </label>
-                  <select
-                    id="contest-duration"
-                    name="contest-duration"
-                    value={preferredDuration}
-                    onChange={(e) => setPreferredDuration(e.target.value)}
-                    className="mt-1 block w-full pl-3 pr-10 py-3 text-base border-gray-300 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm rounded-md"
-                  >
-                    <option value="" disabled>
-                      Select duration
-                    </option>
-                    <option value="short">Short (1-2 hours)</option>
-                    <option value="medium">Medium (2-3 hours)</option>
-                    <option value="long">Long (3+ hours)</option>
-                  </select>
-                </div>
-              </div>
-              <div className="mt-6">
-                <label className="block text-sm font-medium text-gray-700">
-                  Platform Experience
-                </label>
-                <div className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-4">
-                  <Checkbox
-                    id="platform-leetcode"
-                    label="LeetCode"
-                    value="leetcode"
-                    onChange={() => {}}
-                  />
-                  <Checkbox
-                    id="platform-codeforces"
-                    label="Codeforces"
-                    value="codeforces"
-                    onChange={() => {}}
-                  />
-                  <Checkbox
-                    id="platform-hackerrank"
-                    label="HackerRank"
-                    value="hackerrank"
-                    onChange={() => {}}
-                  />
-                  <Checkbox
-                    id="platform-codechef"
-                    label="CodeChef"
-                    value="codechef"
-                    onChange={() => {}}
-                  />
-                  <Checkbox
-                    id="platform-atcoder"
-                    label="AtCoder"
-                    value="atcoder"
-                    onChange={() => {}}
-                  />
-                  <Checkbox
-                    id="platform-topcoder"
-                    label="TopCoder"
-                    value="topcoder"
-                    onChange={() => {}}
-                  />
-                </div>
-              </div>
-              <div className="mt-6">
-                <label
-                  htmlFor="goals"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  What are your goals with CodeRed? (Bio)
-                </label>
-                <textarea
-                  id="goals"
-                  name="goals"
-                  rows={4}
-                  value={goals}
-                  onChange={(e) => setGoals(e.target.value)}
-                  placeholder="Tell us about your competitive programming goals and what you hope to achieve..."
-                  className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
-                ></textarea>
-              </div>
-            </div>
-
-            {/* Form Actions */}
-            <div className="flex justify-between pt-8 border-t border-gray-200">
-              <button
-                type="button"
-                className="w-1/3 py-3 px-6 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-              >
-                Back
-              </button>
-              <button
-                type="submit"
-                className="w-1/2 py-3 px-6 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-              >
-                Continue to Preferences
-              </button>
-            </div>
-          </form>
+    {/* Coding Background */}
+    {/* Corrected: Border color */}
+    <div className="border-t border-gray-700 pt-8">
+      <h3 className="text-lg font-medium leading-6 text-white"> {/* Corrected: Text color */}
+        Coding Background
+      </h3>
+      <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label
+            htmlFor="experience-level"
+            className="block text-sm font-medium text-gray-300" // Corrected: Label color
+          >
+            Experience Level
+          </label>
+          <select
+            id="experience-level"
+            name="experience-level"
+            value={experienceLevel}
+            onChange={(e) => setExperienceLevel(e.target.value)}
+            // Corrected: Added dark bg, light text, dark border
+            className="mt-1 block w-full pl-3 pr-10 py-3 text-base bg-zinc-800 text-white border-gray-700 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm rounded-md"
+          >
+            <option value="" disabled>
+              Select your level
+            </option>
+            <option value="beginner">Beginner</option>
+            <option value="intermediate">Intermediate</option>
+            <option value="advanced">Advanced</option>
+            <option value="expert">Expert</option>
+          </select>
         </div>
+        <div>
+          <label
+            htmlFor="primary-language"
+            className="block text-sm font-medium text-gray-300" // Corrected: Label color
+          >
+            Primary Language
+          </label>
+          <select
+            id="primary-language"
+            name="primary-language"
+            value={primaryLanguage}
+            onChange={(e) => setPrimaryLanguage(e.target.value)}
+            // Corrected: Removed 'bg-zinc-00', added dark bg, light text, dark border
+            className="mt-1 block w-full pl-3 pr-10 py-3 text-base bg-zinc-800 text-white border-gray-700 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm rounded-md"
+          >
+            <option value="" disabled>
+              Select primary language
+            </option>
+            <option value="Python">Python</option>
+            <option value="JavaScript">JavaScript</option>
+            <option value="Java">Java</option>
+            <option value="Cpp">C++</option>
+            <option value="C">C</option>
+            <option value="Go">Go</option>
+            <option value="Rust">Rust</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+      </div>
+      <div className="mt-6">
+        <label className="block text-sm font-medium text-gray-300"> {/* Corrected: Label color */}
+          Programming Languages
+        </label>
+        {/* Assuming <Checkbox> component's internal labels are styled correctly or this label is enough */}
+        <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-gray-300">
+          <Checkbox
+            id="lang-python"
+            label="Python"
+            value="python"
+            onChange={() => {}}
+          />
+          <Checkbox
+            id="lang-java"
+            label="Java"
+            value="java"
+            onChange={() => {}}
+          />
+          <Checkbox
+            id="lang-cpp"
+            label="C++"
+            value="cpp"
+            onChange={() => {}}
+          />
+          <Checkbox
+            id="lang-js"
+            label="JavaScript"
+            value="javascript"
+            onChange={() => {}}
+          />
+          <Checkbox
+            id="lang-c"
+            label="C"
+            value="c"
+            onChange={() => {}}
+          />
+          <Checkbox
+            id="lang-go"
+            label="Go"
+            value="go"
+            onChange={() => {}}
+          />
+          <Checkbox
+            id="lang-rust"
+            label="Rust"
+            value="rust"
+            onChange={() => {}}
+          />
+          <Checkbox
+            id="lang-other"
+            label="Other"
+            value="other"
+            onChange={() => {}}
+          />
+        </div>
+      </div>
+    </div>
+
+    {/* Competitive Programming */}
+    {/* Corrected: Border color */}
+    <div className="border-t border-gray-700 pt-8">
+      <h3 className="text-lg font-medium leading-6 text-white"> {/* Corrected: Text color */}
+        Competitive Programming
+      </h3>
+      <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-300"> {/* Corrected: Label color */}
+            Have you participated in competitive programming before?
+          </label>
+          <fieldset className="mt-4">
+            <div className="flex items-center space-x-6">
+              <div className="flex items-center">
+                <input
+                  id="participated-yes"
+                  name="participated"
+                  type="radio"
+                  value="yes"
+                  onChange={(e) => setParticipated(e.target.value)}
+                  className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-600" // Corrected: Border color
+                />
+                <label
+                  htmlFor="participated-yes"
+                  className="ml-2 block text-sm text-gray-300" // Corrected: Label color
+                >
+                  Yes
+                </label>
+              </div>
+              <div className="flex items-center">
+                <input
+                  id="participated-no"
+                  name="participated"
+                  type="radio"
+                  value="no"
+                  onChange={(e) => setParticipated(e.target.value)}
+                  className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-600" // Corrected: Border color
+                />
+                <label
+                  htmlFor="participated-no"
+                  className="ml-2 block text-sm text-gray-300" // Corrected: Label color
+                >
+                  No
+                </label>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+        <div>
+          <label
+            htmlFor="contest-duration"
+            className="block text-sm font-medium text-gray-300" // Corrected: Label color
+          >
+            Preferred Contest Duration
+          </label>
+          <select
+            id="contest-duration"
+            name="contest-duration"
+            value={preferredDuration}
+            onChange={(e) => setPreferredDuration(e.target.value)}
+            // Corrected: Added dark bg, light text, dark border
+            className="mt-1 block w-full pl-3 pr-10 py-3 text-base bg-zinc-800 text-white border-gray-700 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm rounded-md"
+          >
+            <option value="" disabled>
+              Select duration
+            </option>
+            <option value="short">Short (1-2 hours)</option>
+            <option value="medium">Medium (2-3 hours)</option>
+            <option value="long">Long (3+ hours)</option>
+          </select>
+        </div>
+      </div>
+      <div className="mt-6">
+        <label className="block text-sm font-medium text-gray-300"> {/* Corrected: Label color */}
+          Platform Experience
+        </label>
+        <div className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-4">
+          {/* Assuming <Checkbox> component is styled for dark mode or inherits text color */}
+          <Checkbox
+            id="platform-leetcode"
+            label="LeetCode"
+            value="leetcode"
+            onChange={() => {}}
+          />
+          <Checkbox
+            id="platform-codeforces"
+            label="Codeforces"
+            value="codeforces"
+            onChange={() => {}}
+          />
+          <Checkbox
+            id="platform-hackerrank"
+            label="HackerRank"
+            value="hackerrank"
+            onChange={() => {}}
+
+          />
+          <Checkbox
+            id="platform-codechef"
+            label="CodeChef"
+            value="codechef"
+            onChange={() => {}}
+          />
+          <Checkbox
+            id="platform-atcoder"
+            label="AtCoder"
+            value="atcoder"
+            onChange={() => {}}
+          />
+          <Checkbox
+            id="platform-topcoder"
+            label="TopCoder"
+            value="topcoder"
+            onChange={() => {}}
+          />
+        </div>
+      </div>
+      <div className="mt-6">
+        <label
+          htmlFor="goals"
+          className="block text-sm font-medium text-gray-300" // Corrected: Label color
+        >
+          What are your goals with CodeRed? (Bio)
+        </label>
+        <textarea
+          id="goals"
+          name="goals"
+          rows={4}
+          value={goals}
+          onChange={(e) => setGoals(e.target.value)}
+          placeholder="Tell us about your competitive programming goals and what you hope to achieve..."
+          // Corrected: Added dark bg, light text, dark border, and dark placeholder
+          className="mt-1 block w-full px-4 py-3 bg-zinc-800 text-white border border-gray-700 rounded-md shadow-sm placeholder-gray-500 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
+        ></textarea>
+      </div>
+    </div>
+
+    {/* Form Actions */}
+    {/* Corrected: Border color */}
+    <div className="flex justify-between pt-8 border-t border-gray-700">
+      <button
+        type="button"
+        // Corrected: Dark-mode-friendly "Back" button
+        className="w-1/3 py-3 px-6 border border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-300 bg-zinc-800 hover:bg-zinc-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+      >
+        Back
+      </button>
+      <button
+        type="submit"
+        className="w-1/2 py-3 px-6 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+      >
+        Continue to Preferences
+      </button>
+    </div>
+  </form>
+</div>
       </div>
     </>
   );

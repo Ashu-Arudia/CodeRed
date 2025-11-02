@@ -19,8 +19,8 @@ import {
   Check, // For Why CodeRed list
   ArrowRight,
   ChevronRight,
-  Bug,
-  UserCircle,
+  UserCircle, // <-- RE-ADDED for avatars
+  // Calendar, <-- REMOVED
 } from "lucide-react";
 import { Metal_Mania } from "next/font/google";
 import { useRouter } from "next/navigation";
@@ -42,29 +42,54 @@ export default function App() {
     { name: "Blog", href: "#blog" },
   ];
 
-  // "The Idea" section items
+  // Data for the new Leaderboard Card
+  const topChampions = [
+    {
+      avatar: UserCircle,
+      name: "@codeMaster",
+      points: "2450 pts",
+      rank: "Grandmaster",
+      rankColor: "text-red-700 bg-red-100",
+    },
+    {
+      avatar: UserCircle,
+      name: "@logicQueen",
+      points: "2412 pts",
+      rank: "Master",
+      rankColor: "text-yellow-700 bg-yellow-100",
+    },
+    {
+      avatar: UserCircle,
+      name: "@pyDev",
+      points: "2398 pts",
+      rank: "Master",
+      rankColor: "text-yellow-700 bg-yellow-100",
+    },
+  ];
+
+  // "The Idea" section items (*** UPDATED ***)
   const ideaItems = [
     {
       icon: Zap,
-      title: "Connection",
+      title: "Challenge",
       description:
-        "Notify your various integrations, make API calls, trigger event-driven integrations.",
+        "Put your skills to the test in real-time coding tournaments and head-to-head battles against other developers.",
     },
     {
       icon: Heart,
       title: "Community",
       description:
-        "Receive data from any source, in any format, to trigger powerful integrations.",
+        "Join a passionate community. Discuss problems, share solutions, and grow together with peers from around the world.",
     },
     {
       icon: Award,
-      title: "Excellence",
+      title: "Mastery",
       description:
-        "Run powerful workflows to transform and process data from integrations.",
+        "Go from novice to grandmaster. Master data structures and algorithms, track your progress, and earn achievements.",
     },
   ];
 
-  // "Key Features" section items
+  // "Key Features" section items (*** UPDATED ***)
   const keyFeatures = [
     {
       icon: Book,
@@ -73,9 +98,9 @@ export default function App() {
         "Access 1000s of manually curated problems with solutions and test cases.",
     },
     {
-      icon: CheckCircle,
-      title: "Test Cases",
-      description: "Participate in weekly contests and challenge your skills.",
+      icon: CheckCircle, // Re-purposing this icon
+      title: "Live Contests", // Changed title
+      description: "Participate in weekly contests and challenge your skills.", // This description now fits the title
     },
     {
       icon: Target,
@@ -103,7 +128,7 @@ export default function App() {
     },
   ];
 
-  // "Why CodeRed" list items
+  // "Why CodeRed" list items (*** UPDATED ***)
   const whyItems = [
     {
       icon: Check,
@@ -111,11 +136,11 @@ export default function App() {
     },
     {
       icon: Check,
-      text: "Project-based Workflows. We connect our experts with related features to grow skills.",
+      text: "Built for competition. Our platform provides real-time judging and accurate leaderboards.",
     },
     {
       icon: Check,
-      text: "Continuously updated with 1000s of developers from all over the world.",
+      text: "From practice to performance. Access a vast problem library, join weekly contests, and discuss solutions.",
     },
   ];
 
@@ -244,12 +269,12 @@ export default function App() {
             {/* Hero Text Content */}
             <div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-gray-900 mb-6">
-                Master Competitive Coding
+                <div className="text-red-600">The Arena</div> for Every
+                Developer
               </h1>
               <p className="text-lg text-gray-600 mb-8 max-w-lg">
-                Join thousands of developers honing their skills on our
-                platform. Access curated problems, real-time contests, and
-                comprehensive solutions.
+                Join the ultimate coding arena. Compete with developers
+                worldwide, climb the ranks, and become the CodeRed Champion
               </p>
               <div className="flex flex-wrap gap-4 mb-8">
                 <button className="bg-white text-red-600 font-medium px-6 py-3 rounded-md border border-red-600 hover:bg-red-50 transition-colors">
@@ -275,48 +300,50 @@ export default function App() {
               </div>
             </div>
 
-            {/* Hero Card/Widget */}
-            <div className="bg-white p-6 rounded-xl shadow-xl border border-gray-100">
-              <div className="font-semibold text-lg mb-4 text-gray-900">
-                Live Bug Tracking
+            {/*
+             *
+             * START OF REPLACEMENT (Leaderboard Card)
+             *
+             */}
+            <div className="bg-white p-6 rounded-xl shadow-xl border border-gray-100 transition-all duration-300 ease-in-out transform rotate-3 hover:rotate-0 hover:scale-105">
+              <div className="font-semibold flex gap-2 text-lg mb-4 text-gray-900">
+                Top <div className="text-red-600">CodeRed</div> Champions
               </div>
               <ul className="space-y-4">
-                <li className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <UserCircle size={24} className="text-gray-400" />
-                    <span className="font-medium text-gray-700">
-                      CodeFix Bug
+                {topChampions.map((user, index) => (
+                  <li
+                    key={user.name}
+                    className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <user.avatar size={28} className="text-gray-400" />
+                      <div>
+                        <span className="font-semibold text-gray-800 block">
+                          {user.name}
+                        </span>
+                        <span className="text-sm text-gray-500">
+                          {user.points}
+                        </span>
+                      </div>
+                    </div>
+                    <span
+                      className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${user.rankColor}`}
+                    >
+                      {user.rank}
                     </span>
-                  </div>
-                  <span className="text-xs font-medium bg-red-100 text-red-700 px-2.5 py-0.5 rounded-full">
-                    High
-                  </span>
-                </li>
-                <li className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <UserCircle size={24} className="text-gray-400" />
-                    <span className="font-medium text-gray-700">
-                      Auth Issue
-                    </span>
-                  </div>
-                  <span className="text-xs font-medium bg-green-100 text-green-700 px-2.5 py-0.5 rounded-full">
-                    Fixed
-                  </span>
-                </li>
-                <li className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <UserCircle size={24} className="text-gray-400" />
-                    <span className="font-medium text-gray-700">UI Glitch</span>
-                  </div>
-                  <span className="text-xs font-medium bg-yellow-100 text-yellow-700 px-2.5 py-0.5 rounded-full">
-                    In Progress
-                  </span>
-                </li>
+                  </li>
+                ))}
               </ul>
               <button className="w-full mt-4 text-sm font-medium text-red-600 hover:text-red-700 flex items-center justify-center">
-                View all <ChevronRight size={16} className="ml-1" />
+                View full leaderboard{" "}
+                <ChevronRight size={16} className="ml-1" />
               </button>
             </div>
+            {/*
+             *
+             * END OF REPLACEMENT
+             *
+             */}
           </div>
         </section>
         {/* "The Idea" Section */}
@@ -355,7 +382,7 @@ export default function App() {
           <div className="container mx-auto px-6">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">
-                Key Features
+                Key Features {" "}
               </h2>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
                 Everything you need to excel in competitive programming, all in

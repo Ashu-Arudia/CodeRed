@@ -12,6 +12,14 @@ import {
   Users,
 } from "lucide-react";
 
+import { Metal_Mania } from "next/font/google";
+import { useRouter } from "next/navigation";
+
+const metalMania = Metal_Mania({
+  subsets: ["latin"],
+  weight: "400",
+});
+
 
 const GoogleIcon = () => (
   <svg
@@ -154,17 +162,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 text-gray-100 flex items-center justify-center p-4">
-      <div
-        className="absolute inset-0 bg-cover bg-center opacity-10"
-        style={{
-          backgroundImage:
-            'url("https://images.unsplash.com/photo-1549605335-d226a1170669?q=80&w=2940&auto=format&fit=crop&ixlib-rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D")',
-          backgroundBlendMode: "multiply",
-        }}
-      ></div>
-      <div className="absolute inset-0 bg-gradient-to-br from-red-900/10 via-transparent to-black/50 z-0"></div>
-
+    <div className="min-h-screen bg-white text-gray-100 flex items-center justify-center p-4">
       <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 bg-gray-900/90 backdrop-blur-md rounded-xl shadow-2xl overflow-hidden max-w-6xl w-full">
         {/* Left Section - Marketing Content */}
         <div className="bg-red-800/10 p-8 md:p-12 lg:p-16 flex flex-col justify-between relative overflow-hidden">
@@ -172,11 +170,12 @@ export default function LoginPage() {
           <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-600/10 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000 opacity-50"></div>
 
           <div>
-            <div className="flex items-center text-red-500 text-2xl font-bold mb-6">
-              <span className="w-8 h-8 bg-red-600 rounded-md flex items-center justify-center text-white mr-2 text-lg font-bold">
-                &lt;/&gt;
-              </span>
-              CodeRed
+            <div className="flex items-center  text-2xl font-bold mb-6">
+              <div
+                className={`flex gap-2 text-4xl px-1 ${metalMania.className} relative`}
+              >
+                Code <p className="text-red-600">Red </p>
+              </div>
             </div>
             <h1 className="text-3xl md:text-4xl font-extrabold text-white mb-4 leading-tight">
               The ultimate competitive coding platform where developers sharpen
@@ -215,7 +214,7 @@ export default function LoginPage() {
         </div>
 
         {/* Right Section - Login Form */}
-        <div className="p-8 md:p-12 lg:p-16 bg-gray-800 flex flex-col justify-center">
+        <div className="p-8 md:p-12 lg:p-16 bg-zinc-800 flex flex-col justify-center">
           <h2 className="text-3xl font-bold text-white mb-2">
             {isLogin ? "Welcome Back" : "Create Account"}
           </h2>
