@@ -480,7 +480,7 @@ export default function Home() {
           {/* right  */}
           <div className="gap-5 px-3 flex items-center">
             {/* Points  */}
-            <div className="stats shadow cursor-pointer" onClick={showstat}>
+            <div className="stats shadow ">
               <div className="stat flex items-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -493,7 +493,9 @@ export default function Home() {
                     d="m12 2.6l-3 9.8l-7 7.5l10-2.3L22 20l-7-7.5z"
                   />
                 </svg>
-                <div className="stat-value">1,400</div>
+                <div className="stat-value cursor-pointer" onClick={showstat}>
+                  1,400
+                </div>
                 <div className="">PTS</div>
               </div>
             </div>
@@ -907,7 +909,7 @@ export default function Home() {
                               </svg>
                               <div
                                 onClick={() => {
-                                  router.push("/match");
+                                  router.push("/matchmaking");
                                 }}
                               >
                                 START MATCH
@@ -1086,7 +1088,7 @@ export default function Home() {
 
       {/* stats  */}
       {stat && (
-        <div className="w-full absolute top-0 z-10 flex justify-center items-center  h-screen">
+        <div className="w-full absolute top-0 z-10 flex justify-center items-center h-full">
           <div
             onClick={dontshowstat}
             className="w-full h-full bg-black opacity-50 "
