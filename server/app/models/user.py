@@ -38,7 +38,7 @@ class User(Base):
     profile_complete = Column(Boolean, default=False, nullable=False)  # This was missing!
     auth_provider = Column(String(20), default='local', nullable=False)
     google_id = Column(String(100), unique=True, nullable=True)
-    google_refresh_token = Column(String(500), nullable=True)
+    #google_refresh_token = Column(String(500), nullable=True)
     
     # Timestamps
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)

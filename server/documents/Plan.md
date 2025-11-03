@@ -13,6 +13,7 @@ const createCircle = (percentage, phaseName, completed, total) => { const size =
 const tasks = phase.rows; const completed = tasks.where(t => t.completed).length; const total = tasks.length; const percentage = total ? Math.round((completed / total) * 100) : 0; dashboard.appendChild(createCircle(percentage, phaseTitle, completed, total)); }); dv.el("div", dashboard);
 ```
 
+
 ## Phase 1: Foundation & Core Infrastructure
 
 > **🎯 Objective:** Establish a stable, scalable foundation for the application, including the database schema, core application setup, and a secure authentication system.
