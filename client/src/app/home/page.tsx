@@ -10,7 +10,7 @@ import Stats from "../component/stats/stat";
 import Friends from "../friends/page";
 import Settings from "../settings/setting";
 
-const backendUrl = "https://4d3c12da490b.ngrok-free.app";
+const backendUrl = process.env.NEXT_PUBLIC_API_URL;
 
 const metalMania = Metal_Mania({
   subsets: ["latin"],
@@ -38,9 +38,6 @@ export default function Home() {
   const mainRef = useRef<HTMLDivElement | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [verified, setVerified] = useState<string | null>(null);
-  const [username, setUsername] = useState<string>("");
-  const [bio, setBio] = useState<string>("");
-  const [dob, setDob] = useState<string>("");
   const inputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [img, setImg] = useState<File | null>(null);
@@ -51,6 +48,31 @@ export default function Home() {
   const [showSettings, setShowSettings] = useState<Boolean>(false);
   const router = useRouter();
   const [addfriends, setaddfriends] = useState<Boolean>(false);
+
+  //User details
+  const [user, setUser] = useState({
+    bio: "I'm a codeRed champion",
+    country: null,
+    created_at: "",
+    current_rank: "Grandmaster",
+    current_rating: 1256,
+    date_of_birth: "2024-12-10",
+    email: "testuser@gmail.com",
+    first_name: "Test",
+    is_verified: true,
+    last_login: null,
+    last_name: "User",
+    matches_won: 12,
+    preferred_language: "Cpp",
+    problems_solved: 10,
+    profile_complete: true,
+    timezone: "",
+    total_matches: 23,
+    user_id: 2,
+    username: "XUser",
+    win_rate: 45,
+  });
+
 
   const inputclick = () => {
     inputRef.current?.click();
@@ -99,11 +121,15 @@ export default function Home() {
           },
         };
         const url = `${backendUrl}/api/v1/auth/me`;
-        console.log(url);
         const response = await axios.get(
           `${backendUrl}/api/v1/auth/me`,
           config
         );
+
+        setUser((prevUser) => ({
+          ...prevUser,
+          ...response.data,
+        }));
         console.log("response from backend: ", response.data);
       } catch (err) {
         console.log("Error occured: ", err);
@@ -113,15 +139,8 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    const { searchParams } = new URL(window.location.href);
-    const tokenParam = searchParams.get("token");
-    const verifiedParam = searchParams.get("verified");
-    setVerified(verifiedParam);
-    if (tokenParam) {
-      setToken(tokenParam);
-      localStorage.setItem("token", tokenParam);
-    }
-  }, []);
+    console.log("User state has been updated:", user);
+  }, [user]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -306,54 +325,6 @@ export default function Home() {
     );
   };
 
-  const validate = () => {
-    if (!username.trim()) return "Username required";
-    if (!dob) return "Date of birth required";
-    if (img && img.size > 5 * 1024 * 1024) return "Image must be < 5MB";
-    return null;
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImg(file);
-      const imageUrl = URL.createObjectURL(file);
-      setPreview(imageUrl);
-    }
-  };
-
-  const createprofile = async () => {
-    try {
-      const error = validate();
-      if (error) return alert(error);
-
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImgbase64(reader.result);
-      };
-
-      const formData = new FormData();
-      formData.append("username", username);
-      formData.append("bio", bio);
-      formData.append("dob", dob);
-      if (img) formData.append("image", imgbase64 as string);
-
-      const res = await axios.post(
-        "http://localhost:8000/api/user/create-profile",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      console.log("response from creating profile: ", res);
-    } catch (err) {
-      console.log("Error in creating profile : ", err);
-    }
-  };
-
   return (
     <>
       <div
@@ -480,7 +451,7 @@ export default function Home() {
           {/* right  */}
           <div className="gap-5 px-3 flex items-center">
             {/* Points  */}
-            <div className="stats shadow cursor-pointer" onClick={showstat}>
+            <div className="stats shadow ">
               <div className="stat flex items-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -493,7 +464,9 @@ export default function Home() {
                     d="m12 2.6l-3 9.8l-7 7.5l10-2.3L22 20l-7-7.5z"
                   />
                 </svg>
-                <div className="stat-value">1,400</div>
+                <div className="stat-value cursor-pointer" onClick={showstat}>
+                  {user.current_rating}
+                </div>
                 <div className="">PTS</div>
               </div>
             </div>
@@ -507,7 +480,7 @@ export default function Home() {
                   </div>
                 </div>
 
-                <div className="pr-3">Hunter07</div>
+                <div className="pr-3">{user.username}</div>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
@@ -907,15 +880,14 @@ export default function Home() {
                               </svg>
                               <div
                                 onClick={() => {
-                                  router.push("/match");
+                                  router.push("/matchmaking");
                                 }}
                               >
                                 START MATCH
                               </div>
                             </button>
                             <button
-                              className={`btn backdrop-blur-sm bg-black/50 border-2 border-white/80 text-white hover:bg-white hover:text-black hover:border-white transition-all duration-300 shadow-lg `}
-                            >
+                              className={`btn backdrop-blur-sm bg-black/50 border-2 border-white/80 text-white hover:bg-white hover:text-black hover:border-white transition-all duration-300 shadow-lg `}>
                               <svg
                                 className="w-4 h-4"
                                 fill="none"
@@ -986,7 +958,7 @@ export default function Home() {
                   <div className="w-full p-2 flex text-lg">
                     <div>#102. Hunter07</div>
                     <div className="flex-1"></div>
-                    <div className="pr-2 text-white">1400 Pts</div>
+                    <div className="pr-2 text-white">{user.current_rating} Pts</div>
                   </div>
                 </div>
               </div>
@@ -1086,13 +1058,13 @@ export default function Home() {
 
       {/* stats  */}
       {stat && (
-        <div className="w-full absolute top-0 z-10 flex justify-center items-center  h-screen">
+        <div className="w-full absolute top-0 z-10 flex justify-center items-center h-full">
           <div
             onClick={dontshowstat}
             className="w-full h-full bg-black opacity-50 "
           ></div>
           <div className="overflow-auto scrollbar-hide absolute z-20 flex h-full  items-center rounded-lg py-6">
-            (<Stats />)
+            (<Stats user={user} />)
           </div>
         </div>
       )}

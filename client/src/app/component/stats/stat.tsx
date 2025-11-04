@@ -1,6 +1,6 @@
 // You can place this code in a file like `app/profile/[username]/page.tsx`
 import { BarChart2, Swords, Target, TrendingUp, Code } from "lucide-react";
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 
 // --- Types for placeholder data ---
 type Match = {
@@ -262,7 +262,8 @@ const MatchHistoryItem = ({ match }: { match: Match }) => (
   </div>
 );
 
-export default function PlayerStatsPage() {
+export default function PlayerStatsPage({ user }: any) {
+
   const {
     username,
     avatarUrl,
@@ -290,12 +291,12 @@ export default function PlayerStatsPage() {
             className="w-32 h-32 rounded-full ring-4 ring-red-500 shadow-lg"
           />
           <div>
-            <h1 className="text-4xl font-bold tracking-tight">{username}</h1>
+            <h1 className="text-4xl font-bold tracking-tight">{user.username}</h1>
             <p className="text-zinc-400 mt-1">
               Global Rank: #{globalRank} | Member since {joinDate}
             </p>
             <div className="mt-3 text-2xl font-bold text-red-400">
-              {totalPoints.toLocaleString()} PTS
+              {user.current_rating} PTS
             </div>
           </div>
         </div>
@@ -311,7 +312,7 @@ export default function PlayerStatsPage() {
               <RankProgressBar
                 currentPoints={totalPoints}
                 nextRankPoints={pointsForNextRank}
-                currentRank={currentRank}
+                currentRank={user.current_rank}
                 nextRank={nextRank}
               />
             </div>
