@@ -20,7 +20,7 @@ const metalMania = Metal_Mania({
   weight: "400",
 });
 
-const backendUrl = "https://4d3c12da490b.ngrok-free.app";
+const backendUrl = process.env.NEXT_PUBLIC_API_URL;
 
 
 const GoogleIcon = () => (
@@ -123,7 +123,7 @@ export default function LoginPage() {
         console.log("Error : ", err);
       }
     }
-    
+
   };
 
   return (

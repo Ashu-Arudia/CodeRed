@@ -26,7 +26,7 @@ export default function CompleteProfilePage() {
   const [participated, setParticipated] = useState<string | null>(null);
   const [preferredDuration, setPreferredDuration] = useState("");
 
-  const backendUrl = "https://4d3c12da490b.ngrok-free.app";
+  const backendUrl = process.env.NEXT_PUBLIC_API_URL;
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {

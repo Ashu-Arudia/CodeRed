@@ -24,7 +24,6 @@ const foundOpponent: Player = {
   rank: "Gold I",
 };
 
-// 3. A list of dummy profiles for the "reel" to spin through
 const dummyOpponents: Player[] = [
   {
     username: "ByteProwler",
@@ -60,7 +59,7 @@ export default function MatchmakingProPage() {
 
     // --- 2. MATCH FOUND (at 10s) ---
     const findMatchTimer = setTimeout(() => {
-      setIsSearching(false); 
+      setIsSearching(false);
       setStatus("Opponent found! Finalizing...");
     }, 10000); // 10 seconds
 
