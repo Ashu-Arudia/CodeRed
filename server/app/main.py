@@ -31,7 +31,7 @@ def setup_middleware(app: FastAPI) -> None:
     origins = [
         "http://localhost:3000",      # Local development
         "http://127.0.0.1:3000",      # Local development
-        "https://4d3c12da490b.ngrok-free.app ",  # Your ngrok URL
+        "https://ec3d0556de7f.ngrok-free.app",  # Your ngrok URL
         "https://*.ngrok-free.app",
         "http://localhost:8000",      # Backend itself
         # Add your actual frontend domain if deployed
