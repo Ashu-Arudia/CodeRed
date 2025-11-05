@@ -82,7 +82,7 @@ const communityFeed: FeedItem[] = [
 
 export default function CommunityPage() {
   return (
-    <div className="bg-[#121212] text-white min-h-screen p-8 font-sans">
+    <div className="bg-black text-white min-h-screen p-8 font-sans">
       <div className="max-w-7xl mx-auto">
         {/* Header and Search */}
         <div className="mb-10">

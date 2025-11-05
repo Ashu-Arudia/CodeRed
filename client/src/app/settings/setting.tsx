@@ -11,7 +11,7 @@ const ToggleSwitch = ({ label }: ToggleSwitchProps) => (
   </label>
 );
 
-export default function SettingsPage() {
+export default function SettingsPage({user}: any) {
   return (
     <div className="bg-[#121212] w-full text-white h-full overflow-y-auto scrollbar-hide  p-8 font-sans rounded-lg">
       <div className="w-full mx-auto scrollbar-hide h-full ">
@@ -54,7 +54,7 @@ export default function SettingsPage() {
               <input
                 type="text"
                 id="username"
-                defaultValue="Hunter07"
+                defaultValue={user.username}
                 className="w-full bg-zinc-900 border border-zinc-700 rounded-lg p-2.5 text-sm text-white focus:ring-red-500 focus:border-red-500"
               />
             </div>
@@ -75,7 +75,7 @@ export default function SettingsPage() {
               <input
                 type="email"
                 id="email"
-                defaultValue="aaravarudi@gmail.com"
+                defaultValue={user.email}
                 className="w-full bg-zinc-900 border border-zinc-700 rounded-lg p-2.5 text-sm text-white focus:ring-red-500 focus:border-red-500"
               />
             </div>

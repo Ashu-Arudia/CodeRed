@@ -70,7 +70,7 @@ export default function MatchmakingProPage() {
 
     const startMatchTimer = setTimeout(() => {
       setStatus("Let's Go!");
-      router.push('/match');
+      // router.push('/match');
       console.log("Redirecting to match...");
     }, 15000);
 
