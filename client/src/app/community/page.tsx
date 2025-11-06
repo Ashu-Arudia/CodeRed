@@ -86,9 +86,9 @@ export default function CommunityPage() {
       <div className="max-w-7xl mx-auto">
         {/* Header and Search */}
         <div className="mb-10">
-          <h1 className="text-4xl font-bold">Community Hub</h1>
+          <h1 className="text-4xl font-bold">Empire</h1>
           <p className="text-zinc-400 mt-2">
-            Find players, join clans, and see what's happening.
+            Find players, join empire, and see what's happening.
           </p>
           <div className="relative mt-6 max-w-md">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
@@ -102,7 +102,7 @@ export default function CommunityPage() {
 
         {/* Top Clans Section */}
         <div className="mb-12">
-          <h2 className="text-2xl font-semibold mb-4">Top Clans</h2>
+          <h2 className="text-2xl font-semibold mb-4">Top Empires</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {topClans.map((clan) => (
               <div

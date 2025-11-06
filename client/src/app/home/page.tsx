@@ -475,10 +475,26 @@ export default function Home() {
               </div>
             </div>
 
-            {/* level  */}
-            <div className="flex gap-1">
-              <div>LVL</div>
+            {/* Custom card  */}
+            <div className="flex gap-1 cursor-pointer">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  fill="currentColor"
+                  d="M15.58 16.8L12 14.5l-3.58 2.3l1.08-4.12L6.21 10l4.25-.26L12 5.8l1.54 3.94l4.25.26l-3.29 2.68M20 12a2 2 0 0 1 2-2V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v4a2 2 0 0 1 2 2a2 2 0 0 1-2 2v4a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-4a2 2 0 0 1-2-2"
+                />
+              </svg>
               <div>12</div>
+            </div>
+
+            {/* level  */}
+            <div className="flex gap-1 font-bold">
+              <div>LVL</div>
+              <div className="text-red-500">12</div>
             </div>
 
             {/* Profile  */}
@@ -546,7 +562,7 @@ export default function Home() {
             {/* LEFT SIDEBAR */}
             <div className="h-full flex flex-col p-1 gap-3 text-lg">
               {/* search  */}
-              <label className="input bg-[#121111]">
+              {/* <label className="input bg-[#121111]">
                 <svg
                   className="h-[1em] opacity-50"
                   xmlns="http://www.w3.org/2000/svg"
@@ -564,10 +580,11 @@ export default function Home() {
                   </g>
                 </svg>
                 <input type="search" className="grow" placeholder="Search" />
-              </label>
+              </label> */}
 
               {/* options  */}
               <div className="rounded-lg bg-[#121111] p-4 gap-5 flex flex-col">
+                {/* Friends  */}
                 <div
                   className="w-full h-full cursor-pointer hover:bg-zinc-800 relative"
                   onClick={() => showfriend(false)}
@@ -589,6 +606,7 @@ export default function Home() {
                   </div>
                 </div>
 
+                {/* Empire */}
                 <div
                   className="w-full h-full cursor-pointer hover:bg-zinc-800 "
                   onClick={() => {
@@ -611,10 +629,34 @@ export default function Home() {
                         d="M7 9V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6m0 0v-6.172a2 2 0 0 0-.586-1.414l-3-3a2 2 0 0 0-2.828 0l-3 3A2 2 0 0 0 3 13.828V18a2 2 0 0 0 2 2h3m5 0H8m0-4v4m9.001-12H17m.002 4H17m.001 4H17"
                       />
                     </svg>
-                    Communities
+                    Empire
                   </div>
                 </div>
 
+                {/* Store */}
+                <div
+                  className="w-full h-full cursor-pointer hover:bg-zinc-800 "
+                  onClick={() => {
+                    router.push("/community");
+                  }}
+                >
+                  <div className="flex gap-3 mr-10 cursor-pointer items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        fill="currentColor"
+                        d="M20 4H4v2h16zm1 10v-2l-1-5H4l-1 5v2h1v6h10v-6h4v6h2v-6zm-9 4H6v-4h6z"
+                      />
+                    </svg>
+                    Store
+                  </div>
+                </div>
+
+                {/* help  */}
                 <div className="w-full h-full cursor-pointer hover:bg-zinc-800 ">
                   <div
                     className="flex gap-3 mr-10 cursor-pointer items-center"
@@ -637,6 +679,7 @@ export default function Home() {
                   </div>
                 </div>
 
+                {/* settings  */}
                 <div
                   className="w-full h-full cursor-pointer hover:bg-zinc-800 "
                   onClick={showsettings}
@@ -691,7 +734,7 @@ export default function Home() {
             {/* MAIN CONTENT */}
             <main
               ref={mainRef}
-              className=" backdrop-blur-sm overflow-y-auto relative rounded-lg bg-[#121111] p-4 gap-5 "
+              className=" backdrop-blur-sm overflow-y-auto relative rounded-lg bg-[#121111] p-4 gap-5 flex-1 "
               style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
             >
               <style jsx>{`
@@ -801,11 +844,11 @@ export default function Home() {
                     </p>
                   </div>
 
-                  {/* ranked and unranked  */}
+                  {/* ranked and classic button  */}
                   <div className="flex rounded-lg  px-2 py-2 justify-between ">
                     <div
                       onClick={() => isrank(true)}
-                      className={` w-full h-full text-center cursor-pointer rounded-lg px-2 ${
+                      className={` w-full h-full text-xl text-center cursor-pointer font-bold rounded-lg px-2 ${
                         isranked ? "bg-red-500" : ""
                       }`}
                     >
@@ -813,17 +856,17 @@ export default function Home() {
                     </div>
                     <div
                       onClick={() => isrank(false)}
-                      className={`w-full h-full text-center cursor-pointer rounded-lg px-2 ${
+                      className={`w-full h-full text-xl text-center cursor-pointer font-bold rounded-lg px-2 ${
                         isranked ? "" : "bg-red-500"
                       }`}
                     >
-                      UNRANKED
+                      CLASSIC
                     </div>
                   </div>
                 </div>
 
                 {/* ranked games  */}
-                { isranked &&
+                {isranked && (
                   <div className="grid grid-cols-3 gap-6">
                     {tournaments.map((tournament, idx) => (
                       <div
@@ -833,20 +876,22 @@ export default function Home() {
                         onMouseLeave={() => setHoveredCard(null)}
                       >
                         <div
-                          className={`card relative h-80 rounded-2xl overflow-hidden border transition-all duration-500 shadow-2xl ${hoveredCard === idx
+                          className={`card relative h-80 rounded-2xl overflow-hidden border transition-all duration-500 shadow-2xl ${
+                            hoveredCard === idx
                               ? "border-black  transform scale-105"
                               : "border-gray-800"
-                            }`}
+                          }`}
                         >
                           {/* Full background image */}
                           <div className="absolute inset-0">
                             <img
-                              src={tournament.img}
+                              src="/image2.jpg"
                               alt={tournament.title}
-                              className={`w-full h-full object-cover transition-all duration-700 ${hoveredCard === idx
-                                  ? "scale-110 brightness-75"
-                                  : "scale-100 brightness-60"
-                                }`}
+                              className={`w-full h-full object-cover transition-all duration-700 ${
+                                hoveredCard === idx
+                                  ? "scale-110 brightness-75 opacity-100"
+                                  : "scale-100 brightness-60 opacity-90"
+                              }`}
                             />
 
                             {/* Luxury dark overlay with subtle gold tint */}
@@ -856,117 +901,9 @@ export default function Home() {
                           {/* Content overlay */}
                           <div className="card-body relative z-10 p-6 h-full flex flex-col justify-between">
                             {/* Top section - Title and Badge */}
-                            <div className="flex flex-col gap-3">
-                              <div className="flex items-start justify-between">
-                                <h3 className="text-2xl font-bold text-white drop-shadow-2xl leading-tight tracking-wide">
-                                  {tournament.title}
-                                </h3>
-                              </div>
-                            </div>
-
-                            {/* Middle section - Stats with luxury glass effect */}
-                            <div className="grid grid-cols-2 gap-4 p-5 rounded-xl bg-none shadow-xl">
-                              <div className="text-center">
-                                <div className="text-red-600 font-mono text-xs uppercase tracking-widest mb-2 font-semibold">
-                                  MIN. POINTS
-                                </div>
-                                <div className="text-2xl font-bold text-red-600 drop-shadow-lg">
-                                  {tournament.prize}
-                                </div>
-                              </div>
-                              <div className="text-center border-l  pl-4">
-                                <div className="text-white font-mono text-xs uppercase tracking-widest mb-2 font-semibold">
-                                  Players Online
-                                </div>
-                                <div className="text-2xl font-bold text-white drop-shadow-lg">
-                                  {tournament.participants.toLocaleString()}
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Bottom section - Luxury action buttons */}
-                            <div className="card-actions justify-between gap-4">
-                              <button
-                                className={`btn flex-1 font-bold transition-all duration-300 shadow-xl border-0 tracking-wide
-                              bg-white text-black shadow-black/50"
-                          `}
-                              >
-                                <svg
-                                  className="w-4 h-4 mr-2"
-                                  fill="currentColor"
-                                  viewBox="0 0 20 20"
-                                >
-                                  <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
-                                </svg>
-                                <div
-                                  onClick={() => {
-                                    router.push("/matchmaking");
-                                  }}
-                                >
-                                  START MATCH
-                                </div>
-                              </button>
-                              <button
-                                className={`btn backdrop-blur-sm bg-black/50 border-2 border-white/80 text-white hover:bg-white hover:text-black hover:border-white transition-all duration-300 shadow-lg `}
-                              >
-                                <svg
-                                  className="w-4 h-4"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                                  />
-                                </svg>
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>}
-
-                {/* unranked games  */}
-                { !isranked &&
-                  <div className="grid grid-cols-3 gap-6">
-                    {tournaments.map((tournament, idx) => (
-                      <div
-                        key={idx}
-                        className="relative group cursor-pointer"
-                        onMouseEnter={() => setHoveredCard(idx)}
-                        onMouseLeave={() => setHoveredCard(null)}
-                      >
-                        <div
-                          className={`card relative h-80 rounded-2xl overflow-hidden border transition-all duration-500 shadow-2xl ${hoveredCard === idx
-                              ? "border-black  transform scale-105"
-                              : "border-gray-800"
-                            }`}
-                        >
-                          {/* Full background image */}
-                          <div className="absolute inset-0">
-                            <img
-                              src={tournament.img}
-                              alt={tournament.title}
-                              className={`w-full h-full object-cover transition-all duration-700 ${hoveredCard === idx
-                                  ? "scale-110 brightness-75"
-                                  : "scale-100 brightness-60"
-                                }`}
-                            />
-
-                            {/* Luxury dark overlay with subtle gold tint */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/70 to-black/40"></div>
-                          </div>
-
-                          {/* Content overlay */}
-                          <div className="card-body relative z-10 p-6 h-full flex flex-col justify-between">
-                            {/* Top section - Title and Badge */}
-                            <div className="flex flex-col gap-3">
-                              <div className="flex items-start justify-between">
-                                <h3 className="text-2xl font-bold text-white drop-shadow-2xl leading-tight tracking-wide">
+                            <div className="flex gap-3 h-full items-center justify-between">
+                              <div className="flex items-start justify-between w-full">
+                                <h3 className="text-2xl font-bold text-white drop-shadow-2xl leading-tight tracking-wide justify-center  w-full flex">
                                   {tournament.title}
                                 </h3>
                               </div>
@@ -1017,8 +954,98 @@ export default function Home() {
                       </div>
                     ))}
                   </div>
-                }
+                )}
 
+                {/* classic games  */}
+                {!isranked && (
+                  <div className="grid grid-cols-3 gap-6">
+                    {tournaments.map((tournament, idx) => (
+                      <div
+                        key={idx}
+                        className="relative group cursor-pointer"
+                        onMouseEnter={() => setHoveredCard(idx)}
+                        onMouseLeave={() => setHoveredCard(null)}
+                      >
+                        <div
+                          className={`card relative h-80 rounded-2xl overflow-hidden border transition-all duration-500 shadow-2xl ${
+                            hoveredCard === idx
+                              ? "border-black  transform scale-105"
+                              : "border-gray-800"
+                          }`}
+                        >
+                          {/* Full background image */}
+                          <div className="absolute inset-0">
+                            <img
+                              src="/image3.jpg"
+                              alt={tournament.title}
+                              className={`w-full h-full object-cover transition-all duration-700  ${
+                                hoveredCard === idx
+                                  ? "scale-110 brightness-75 opacity-100"
+                                  : "scale-100 brightness-60 opacity-90"
+                              }`}
+                            />
+
+                            {/* Luxury dark overlay with subtle gold tint */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/70 to-black/40"></div>
+                          </div>
+
+                          {/* Content overlay */}
+                          <div className="card-body relative z-10 p-6 h-full flex flex-col justify-between">
+                            {/* Top section - Title and Badge */}
+                            <div className="flex gap-3 h-full items-center justify-between">
+                              <div className="flex items-start justify-center w-full">
+                                <h3 className="text-2xl font-bold text-white rounded-lg drop-shadow-2xl leading-tight tracking-wide justify-center flex">
+                                  {tournament.title}
+                                </h3>
+                              </div>
+                            </div>
+
+                            {/* Bottom section - Luxury action buttons */}
+                            <div className="card-actions justify-between gap-4">
+                              <button
+                                className={`btn flex-1 font-bold transition-all duration-300 shadow-xl border-0 tracking-wide
+                              bg-white text-black shadow-black/50"
+                          `}
+                              >
+                                <svg
+                                  className="w-4 h-4 mr-2"
+                                  fill="currentColor"
+                                  viewBox="0 0 20 20"
+                                >
+                                  <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+                                </svg>
+                                <div
+                                  onClick={() => {
+                                    router.push("/matchmaking");
+                                  }}
+                                >
+                                  START MATCH
+                                </div>
+                              </button>
+                              <button
+                                className={`btn backdrop-blur-sm bg-black/50 border-2 border-white/80 text-white hover:bg-white hover:text-black hover:border-white transition-all duration-300 shadow-lg `}
+                              >
+                                <svg
+                                  className="w-4 h-4"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                  />
+                                </svg>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </main>
 
