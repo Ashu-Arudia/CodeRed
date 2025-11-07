@@ -2,6 +2,8 @@
 import Editor from "@monaco-editor/react";
 import { Divide } from "lucide-react";
 import { Metal_Mania, Oswald, Smooch_Sans } from "next/font/google";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 
 const metalMania = Metal_Mania({
@@ -9,6 +11,9 @@ const metalMania = Metal_Mania({
   weight: "400",
 });
 
+const backendUrl = process.env.NEXT_PUBLIC_API_URL;
+const token =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxNSIsImV4cCI6MTc2MjQzODA3N30.JyluIZT3TbwqupeXqSrfSzckD7YJKaSExnfjHwKgUmU";
 
 export default function CodeEditor() {
   const cppDefaultCode = `#include <iostream>
@@ -17,6 +22,53 @@ int main() {
     std::cout << "Hello, C++ World!";
     return 0;
 }`;
+
+  const [code, setCode] = useState<string>(cppDefaultCode);
+  const [message, setMessage] = useState<string | null>(null);
+  const [result, setResult] = useState<String>("");
+
+
+  useEffect(() => {
+    const saved = localStorage.getItem("userCode");
+    if (saved) setCode(saved);
+  }, []);
+
+  function handleEditorChange(value?: string) {
+    setCode(value ?? "");
+  }
+
+  const runCode = () => {
+    const fun = async () => {
+      try {
+        localStorage.setItem("userCode", code);
+        const data = {
+          "source_code": code,
+          "language_id": 7,
+          "stdin": null,
+          "problem_id": null,
+          "match_id": null
+        }
+        console.log(data);
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "ngrok-skip-browser-warning": "true",
+          },
+        };
+        const response = await axios.post(
+          `${backendUrl}/api/v1/submission/submit`,
+          data,
+          config
+        );
+
+        console.log("response from backend: ", response);
+        setResult(response.data.stdout);
+      } catch (err) {
+        setMessage(" Failed to save locally.");
+      }
+    }
+    fun();
+  }
 
   return (
     <div className="h-screen flex flex-col bg-zinc-950 ">
@@ -33,7 +85,7 @@ int main() {
         </div>
 
         {/* Code start  */}
-        <div className="items-center bg-zinc-800 cursor-pointer hover:scale-105">
+        <div className="items-center bg-zinc-800 cursor-pointer hover:scale-105" onClick={runCode}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"
@@ -175,6 +227,8 @@ int main() {
                 language="cpp"
                 theme="vs-dark"
                 defaultValue={cppDefaultCode}
+                value={code}
+                onChange={handleEditorChange}
               />
             </div>
             <div className="flex flex-col w-full h-fit bg-zinc-800 text-gray-300 font-sans rounded-lg">
@@ -196,23 +250,15 @@ int main() {
                 {/* Input: nums */}
                 <div>
                   <p className="text-sm font-medium text-gray-400 mb-1">
-                    nums =
+                    Stdout
                   </p>
                   <div className="w-full bg-zinc-900 p-2 rounded font-mono text-sm">
-                    [2, 7, 11, 15]
+                    {result || " "}
                   </div>
                 </div>
 
-                {/* Input: target */}
-                <div>
-                  <p className="text-sm font-medium text-gray-400 mb-1">
-                    target =
-                  </p>
-                  <div className="w-full bg-zinc-900 p-2 rounded font-mono text-sm">
-                    9
-                  </div>
-                </div>
               </div>
+              
             </div>
           </div>
         </div>

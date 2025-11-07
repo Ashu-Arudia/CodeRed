@@ -49,6 +49,7 @@ export default function Home() {
   const router = useRouter();
   const [addfriends, setaddfriends] = useState<Boolean>(false);
   const [isranked, setIsranked] = useState<Boolean>(true);
+  const [nav, setNav] = useState<"home" | "hackathon" | "bonus">("home");
 
   //User details
   const [user, setUser] = useState({
@@ -74,10 +75,13 @@ export default function Home() {
     win_rate: 45,
   });
 
-
   const inputclick = () => {
     inputRef.current?.click();
   };
+
+  const setnav = (para : "home"| "hackathon" | "bonus") => {
+    setNav(para);
+  }
 
   const shownotification = () => {
     setNotification(true);
@@ -409,7 +413,8 @@ export default function Home() {
           </div>
 
           {/* home  */}
-          <div className="px-3 cursor-pointer  flex items-center  gap-1 ">
+          <div className="px-3 cursor-pointer  flex items-center  gap-1 "
+          onClick={()=>setNav("home")}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="20"
@@ -417,15 +422,16 @@ export default function Home() {
               viewBox="0 0 24 24"
             >
               <path
-                fill="red"
+                fill={`${nav === "home" ? "red" : "currentcolor"}`}
                 d="M5 19v-8.692q0-.384.172-.727t.474-.565l5.385-4.078q.423-.323.966-.323t.972.323l5.385 4.077q.303.222.474.566q.172.343.172.727V19q0 .402-.299.701T18 20h-3.384q-.344 0-.576-.232q-.232-.233-.232-.576v-4.769q0-.343-.232-.575q-.233-.233-.576-.233h-2q-.343 0-.575.233q-.233.232-.233.575v4.77q0 .343-.232.575T9.385 20H6q-.402 0-.701-.299T5 19"
               />
             </svg>
             <div className="hover:scale-101 ">Home</div>
           </div>
 
-          {/* tournament  */}
-          <div className="px-3 cursor-pointer flex gap-1 items-center ">
+          {/* hackathon  */}
+          <div className="px-3 cursor-pointer flex gap-1 items-center "
+          onClick={()=>setNav("hackathon")}>
             {" "}
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -434,21 +440,36 @@ export default function Home() {
               viewBox="0 0 24 24"
             >
               <path
-                fill="currentColor"
+                fill={`${nav === "hackathon" ? "red" : "currentcolor"}`}
                 d="M22 8.162v.073c0 .86 0 1.291-.207 1.643s-.584.561-1.336.98l-.793.44c.546-1.848.729-3.834.796-5.532l.01-.221l.002-.052c.651.226 1.017.395 1.245.711c.283.393.283.915.283 1.958m-20 0v.073c0 .86 0 1.291.207 1.643s.584.561 1.336.98l.794.44c-.547-1.848-.73-3.834-.797-5.532l-.01-.221l-.001-.052c-.652.226-1.018.395-1.246.711C2 6.597 2 7.12 2 8.162"
               />
               <path
-                fill="currentColor"
+                fill={`${nav === "hackathon" ? "red" : "currentcolor"}`}
                 fillRule="evenodd"
                 d="M16.377 2.347A26.4 26.4 0 0 0 12 2c-1.783 0-3.253.157-4.377.347c-1.139.192-1.708.288-2.184.874c-.475.586-.45 1.219-.4 2.485c.173 4.348 1.111 9.78 6.211 10.26V19.5H9.82a1 1 0 0 0-.98.804l-.19.946H6a.75.75 0 0 0 0 1.5h12a.75.75 0 0 0 0-1.5h-2.65l-.19-.946a1 1 0 0 0-.98-.804h-1.43v-3.534c5.1-.48 6.039-5.911 6.211-10.26c.05-1.266.076-1.9-.4-2.485c-.476-.586-1.045-.682-2.184-.874"
                 clipRule="evenodd"
               />
             </svg>
-            <div className="hover:scale-101">Tournaments</div>
+            <div className="hover:scale-101">Hackathons</div>
           </div>
 
-          {/* bonuses  */}
-          <div className="px-3 cursor-pointer hover:scale-101">Bonuses</div>
+          {/* Bonus  */}
+          <div className="px-3 cursor-pointer flex gap-1 items-center "
+          onClick={()=>setNav("bonus")}>
+            {" "}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+            >
+              <path
+                fill={`${nav === "bonus" ? "red" : "currentcolor"}`}
+                d="M23.005 12.003v2c0 3.314-4.925 6-11 6c-5.967 0-10.824-2.591-10.995-5.823l-.005-.177v-2c0 3.313 4.925 6 11 6s11-2.687 11-6m-11-8c6.075 0 11 2.686 11 6s-4.925 6-11 6s-11-2.687-11-6s4.925-6 11-6"
+              />
+            </svg>
+            <div className="hover:scale-101">Bonus</div>
+          </div>
 
           <div className="flex-1"></div>
 
@@ -492,9 +513,9 @@ export default function Home() {
             </div>
 
             {/* level  */}
-            <div className="flex gap-1 font-bold">
-              <div>LVL</div>
-              <div className="text-red-500">12</div>
+            <div className="flex gap-1">
+              <div className="font-bold">LVL</div>
+              <div className="">45</div>
             </div>
 
             {/* Profile  */}
@@ -1177,6 +1198,7 @@ export default function Home() {
                 </div>
               </div>
             </aside>
+            
           </div>
         </div>
       </div>
