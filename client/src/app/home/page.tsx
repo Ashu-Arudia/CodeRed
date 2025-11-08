@@ -9,6 +9,7 @@ import Notification from "../component/notification/notific";
 import Stats from "../component/stats/stat";
 import Friends from "../friends/page";
 import Settings from "../settings/setting";
+import Hackathon from "../hackathon/page";
 
 const backendUrl = process.env.NEXT_PUBLIC_API_URL;
 
@@ -753,7 +754,7 @@ export default function Home() {
             </div>
 
             {/* MAIN CONTENT */}
-            <main
+            {nav === "home" && <main
               ref={mainRef}
               className=" backdrop-blur-sm overflow-y-auto relative rounded-lg bg-[#121111] p-4 gap-5 flex-1 "
               style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
@@ -843,11 +844,10 @@ export default function Home() {
                     <button
                       key={idx}
                       onClick={() => setCurrentSlide(idx)}
-                      className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                        idx === currentSlide
+                      className={`w-3 h-3 rounded-full transition-all duration-300 ${idx === currentSlide
                           ? "bg-white w-8"
                           : "bg-gray-600 hover:bg-gray-500"
-                      }`}
+                        }`}
                     />
                   ))}
                 </div>
@@ -869,17 +869,15 @@ export default function Home() {
                   <div className="flex rounded-lg  px-2 py-2 justify-between ">
                     <div
                       onClick={() => isrank(true)}
-                      className={` w-full h-full text-xl text-center cursor-pointer font-bold rounded-lg px-2 ${
-                        isranked ? "bg-red-500" : ""
-                      }`}
+                      className={` w-full h-full text-xl text-center cursor-pointer font-bold rounded-lg px-2 ${isranked ? "bg-red-500" : ""
+                        }`}
                     >
                       RANKED
                     </div>
                     <div
                       onClick={() => isrank(false)}
-                      className={`w-full h-full text-xl text-center cursor-pointer font-bold rounded-lg px-2 ${
-                        isranked ? "" : "bg-red-500"
-                      }`}
+                      className={`w-full h-full text-xl text-center cursor-pointer font-bold rounded-lg px-2 ${isranked ? "" : "bg-red-500"
+                        }`}
                     >
                       CLASSIC
                     </div>
@@ -897,22 +895,20 @@ export default function Home() {
                         onMouseLeave={() => setHoveredCard(null)}
                       >
                         <div
-                          className={`card relative h-80 rounded-2xl overflow-hidden border transition-all duration-500 shadow-2xl ${
-                            hoveredCard === idx
+                          className={`card relative h-80 rounded-2xl overflow-hidden border transition-all duration-500 shadow-2xl ${hoveredCard === idx
                               ? "border-black  transform scale-105"
                               : "border-gray-800"
-                          }`}
+                            }`}
                         >
                           {/* Full background image */}
                           <div className="absolute inset-0">
                             <img
                               src="/image2.jpg"
                               alt={tournament.title}
-                              className={`w-full h-full object-cover transition-all duration-700 ${
-                                hoveredCard === idx
+                              className={`w-full h-full object-cover transition-all duration-700 ${hoveredCard === idx
                                   ? "scale-110 brightness-75 opacity-100"
                                   : "scale-100 brightness-60 opacity-90"
-                              }`}
+                                }`}
                             />
 
                             {/* Luxury dark overlay with subtle gold tint */}
@@ -988,22 +984,20 @@ export default function Home() {
                         onMouseLeave={() => setHoveredCard(null)}
                       >
                         <div
-                          className={`card relative h-80 rounded-2xl overflow-hidden border transition-all duration-500 shadow-2xl ${
-                            hoveredCard === idx
+                          className={`card relative h-80 rounded-2xl overflow-hidden border transition-all duration-500 shadow-2xl ${hoveredCard === idx
                               ? "border-black  transform scale-105"
                               : "border-gray-800"
-                          }`}
+                            }`}
                         >
                           {/* Full background image */}
                           <div className="absolute inset-0">
                             <img
                               src="/image3.jpg"
                               alt={tournament.title}
-                              className={`w-full h-full object-cover transition-all duration-700  ${
-                                hoveredCard === idx
+                              className={`w-full h-full object-cover transition-all duration-700  ${hoveredCard === idx
                                   ? "scale-110 brightness-75 opacity-100"
                                   : "scale-100 brightness-60 opacity-90"
-                              }`}
+                                }`}
                             />
 
                             {/* Luxury dark overlay with subtle gold tint */}
@@ -1068,7 +1062,9 @@ export default function Home() {
                   </div>
                 )}
               </div>
-            </main>
+            </main>}
+
+            {nav === "hackathon" && <Hackathon />}
 
             {/* RIGHT SIDEBAR */}
             <aside className=" rounded-2xl  gap-3 flex flex-col">
@@ -1198,7 +1194,7 @@ export default function Home() {
                 </div>
               </div>
             </aside>
-            
+
           </div>
         </div>
       </div>
