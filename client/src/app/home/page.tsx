@@ -151,19 +151,19 @@ export default function Home() {
     console.log("User state has been updated:", user);
   }, [user]);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (mainRef.current) {
-        setScrollY(mainRef.current.scrollTop);
-      }
-    };
+  // useEffect(() => {
+  //   const handleScroll = () => {
+  //     if (mainRef.current) {
+  //       setScrollY(mainRef.current.scrollTop);
+  //     }
+  //   };
 
-    const mainElement = mainRef.current;
-    if (mainElement) {
-      mainElement.addEventListener("scroll", handleScroll);
-      return () => mainElement.removeEventListener("scroll", handleScroll);
-    }
-  }, []);
+  //   const mainElement = mainRef.current;
+  //   if (mainElement) {
+  //     mainElement.addEventListener("scroll", handleScroll);
+  //     return () => mainElement.removeEventListener("scroll", handleScroll);
+  //   }
+  // }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
