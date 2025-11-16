@@ -113,7 +113,6 @@ int main() {
   ];
 
   const [cases] = useState<TestCase[]>(sampleData);
-    // index -1 will be Results tab, otherwise 0..n-1 for cases
   const [activeIndex, setActiveIndex] = useState<number>(0);
 
   const passedCount = cases.filter((c) => c.passed).length;
@@ -127,7 +126,6 @@ int main() {
 
 
 
-  // Close on click outside
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) {
@@ -162,10 +160,10 @@ int main() {
   }, []);
 
   const buttons = [
-    { id: 1, icon: "📷", title: "Camera" },
-    { id: 2, icon: "📝", title: "Edit" },
-    { id: 3, icon: "🖼️", title: "Gallery" },
-    { id: 4, icon: "🎤", title: "Mic" },
+    { id: 1, icon: "A", title: "Question" },
+    { id: 2, icon: "S", title: "Submit" },
+    { id: 3, icon: "Q", title: "Run" },
+    { id: 4, icon: "W", title: "Comments" },
   ];
 
   const radius = 100;

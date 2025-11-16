@@ -10,6 +10,8 @@ import Stats from "../component/stats/stat";
 import Friends from "../friends/page";
 import Settings from "../settings/setting";
 import Hackathon from "../hackathon/page";
+import userDetails from "../../store/UserDetails";
+import Community from "../community/page";
 
 const backendUrl = process.env.NEXT_PUBLIC_API_URL;
 
@@ -44,6 +46,7 @@ export default function Home() {
   const [img, setImg] = useState<File | null>(null);
   const [imgbase64, setImgbase64] = useState<string | ArrayBuffer | null>(null);
   const [notification, setNotification] = useState<Boolean>(false);
+  const [community, setCommunity] = useState<Boolean>(false);
   const [stat, setStat] = useState<Boolean>(false);
   const [showFriends, setShowFriends] = useState<Boolean>(false);
   const [showSettings, setShowSettings] = useState<Boolean>(false);
@@ -51,6 +54,8 @@ export default function Home() {
   const [addfriends, setaddfriends] = useState<Boolean>(false);
   const [isranked, setIsranked] = useState<Boolean>(true);
   const [nav, setNav] = useState<"home" | "hackathon" | "bonus">("home");
+
+  const setUserDetail = userDetails((state) => state.setUser)
 
   //User details
   const [user, setUser] = useState({
@@ -83,7 +88,9 @@ export default function Home() {
   const setnav = (para : "home"| "hackathon" | "bonus") => {
     setNav(para);
   }
-
+  const showcommunity = (para : Boolean) => {
+    setCommunity(para);
+  }
   const shownotification = () => {
     setNotification(true);
   }
@@ -139,12 +146,15 @@ export default function Home() {
           ...prevUser,
           ...response.data,
         }));
+        setUserDetail(response.data);
         console.log("response from backend: ", response.data);
       } catch (err) {
         console.log("Error occured: ", err);
       }
     };
     fetchdata();
+
+    setUserDetail(user);
   }, []);
 
   useEffect(() => {
@@ -400,8 +410,10 @@ export default function Home() {
           </div>
 
           {/* home  */}
-          <div className="px-3 cursor-pointer  flex items-center  gap-1 "
-          onClick={()=>setNav("home")}>
+          <div
+            className="px-3 cursor-pointer  flex items-center  gap-1 "
+            onClick={() => setNav("home")}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="20"
@@ -417,8 +429,10 @@ export default function Home() {
           </div>
 
           {/* hackathon  */}
-          <div className="px-3 cursor-pointer flex gap-1 items-center "
-          onClick={()=>setNav("hackathon")}>
+          <div
+            className="px-3 cursor-pointer flex gap-1 items-center "
+            onClick={() => setNav("hackathon")}
+          >
             {" "}
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -441,8 +455,10 @@ export default function Home() {
           </div>
 
           {/* Bonus  */}
-          <div className="px-3 cursor-pointer flex gap-1 items-center "
-          onClick={()=>setNav("bonus")}>
+          <div
+            className="px-3 cursor-pointer flex gap-1 items-center "
+            onClick={() => setNav("bonus")}
+          >
             {" "}
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -618,7 +634,7 @@ export default function Home() {
                 <div
                   className="w-full h-full cursor-pointer hover:bg-zinc-800 "
                   onClick={() => {
-                    router.push("/community");
+                    showcommunity(true);
                   }}
                 >
                   <div className="flex gap-3 mr-10 cursor-pointer items-center">
@@ -740,315 +756,324 @@ export default function Home() {
             </div>
 
             {/* MAIN CONTENT */}
-            {nav === "home" && <main
-              ref={mainRef}
-              className=" backdrop-blur-sm overflow-y-auto relative rounded-lg bg-[#121111] p-4 gap-5 flex-1 "
-              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-            >
-              <style jsx>{`
-                main::-webkit-scrollbar {
-                  display: none;
-                }
-              `}</style>
+            {nav === "home" && (
+              <main
+                ref={mainRef}
+                className=" backdrop-blur-sm overflow-y-auto relative rounded-lg bg-[#121111] p-4 gap-5 flex-1 "
+                style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+              >
+                <style jsx>{`
+                  main::-webkit-scrollbar {
+                    display: none;
+                  }
+                `}</style>
 
-              {/* Hero Carousel */}
-              <div className="relative h-60 overflow-hidden">
-                <div
-                  className="flex transition-transform duration-700 ease-in-out h-full"
-                  style={{ transform: `translateX(-${currentSlide * 100}%)` }}
-                  ref={carouselRef}
-                >
-                  {featuredMatches.map((match, idx) => (
-                    <div key={idx} className="min-w-full relative">
-                      <div
-                        className="absolute inset-0 bg-cover bg-center"
-                        style={{
-                          backgroundImage: `url(${match.img})`,
-                          transform: `translateY(${scrollY * 0.3}px)`,
-                        }}
+                {/* Hero Carousel */}
+                <div className="relative h-60 overflow-hidden">
+                  <div
+                    className="flex transition-transform duration-700 ease-in-out h-full"
+                    style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+                    ref={carouselRef}
+                  >
+                    {featuredMatches.map((match, idx) => (
+                      <div key={idx} className="min-w-full relative">
+                        <div
+                          className="absolute inset-0 bg-cover bg-center"
+                          style={{
+                            backgroundImage: `url(${match.img})`,
+                            transform: `translateY(${scrollY * 0.3}px)`,
+                          }}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+
+                        <div className="relative z-10 h-full flex items-center p-12">
+                          <div className="max-w-2xl">
+                            <h1 className="text-5xl font-black mb-6 text-white tracking-wider">
+                              {match.title}
+                            </h1>
+                            <h2 className="text-xl font-bold text-orange-400 mb-6 font-mono tracking-wide">
+                              {match.subtitle}
+                            </h2>
+                            <div className="flex items-center gap-8 mb-8">
+                              <div className="flex items-center gap-2">
+                                {/* <FaTrophy className="text-yellow-400" /> */}
+                                <span className="font-mono font-bold text-lg text-white">
+                                  {match.prize}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <FaUsers className="text-white-400 border-2" />
+                                <span className="font-mono text-white-400">
+                                  {match.participants.toLocaleString()}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <FaFire className="border-2 " />
+                                <span className="font-mono text-white">
+                                  {match.timeLeft}
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className="flex gap-4">
+                              <button className="btn btn-outline btn-warning rounded-sm">
+                                Register
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Carousel Controls */}
+                  <button
+                    onClick={prevSlide}
+                    className="absolute left-2 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-none hover:bg-gray-500  hover:rounded-3xl flex items-center justify-center transition-all duration-300"
+                  >
+                    <FaChevronLeft className="text-white font-bold" />
+                  </button>
+                  <button
+                    onClick={nextSlide}
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-none hover:bg-gray-500  hover:rounded-3xl flex items-center justify-center transition-all duration-300"
+                  >
+                    <FaChevronRight className="text-white font-bold" />
+                  </button>
+
+                  {/* Carousel Indicators */}
+                  <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
+                    {featuredMatches.map((_, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setCurrentSlide(idx)}
+                        className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                          idx === currentSlide
+                            ? "bg-white w-8"
+                            : "bg-gray-600 hover:bg-gray-500"
+                        }`}
                       />
-                      <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-transparent" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-
-                      <div className="relative z-10 h-full flex items-center p-12">
-                        <div className="max-w-2xl">
-                          <h1 className="text-5xl font-black mb-6 text-white tracking-wider">
-                            {match.title}
-                          </h1>
-                          <h2 className="text-xl font-bold text-orange-400 mb-6 font-mono tracking-wide">
-                            {match.subtitle}
-                          </h2>
-                          <div className="flex items-center gap-8 mb-8">
-                            <div className="flex items-center gap-2">
-                              {/* <FaTrophy className="text-yellow-400" /> */}
-                              <span className="font-mono font-bold text-lg text-white">
-                                {match.prize}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <FaUsers className="text-white-400 border-2" />
-                              <span className="font-mono text-white-400">
-                                {match.participants.toLocaleString()}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <FaFire className="border-2 " />
-                              <span className="font-mono text-white">
-                                {match.timeLeft}
-                              </span>
-                            </div>
-                          </div>
-
-                          <div className="flex gap-4">
-                            <button className="btn btn-outline btn-warning rounded-sm">
-                              Register
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Carousel Controls */}
-                <button
-                  onClick={prevSlide}
-                  className="absolute left-2 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-none hover:bg-gray-500  hover:rounded-3xl flex items-center justify-center transition-all duration-300"
-                >
-                  <FaChevronLeft className="text-white font-bold" />
-                </button>
-                <button
-                  onClick={nextSlide}
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-none hover:bg-gray-500  hover:rounded-3xl flex items-center justify-center transition-all duration-300"
-                >
-                  <FaChevronRight className="text-white font-bold" />
-                </button>
-
-                {/* Carousel Indicators */}
-                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
-                  {featuredMatches.map((_, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setCurrentSlide(idx)}
-                      className={`w-3 h-3 rounded-full transition-all duration-300 ${idx === currentSlide
-                          ? "bg-white w-8"
-                          : "bg-gray-600 hover:bg-gray-500"
-                        }`}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              {/* Tournament Grid */}
-              <div className="p-8">
-                <div className="flex items-center justify-between mb-8">
-                  <div>
-                    <h2 className="text-3xl font-black tracking-wider text-white mb-2">
-                      AVAILABLE ARENAS
-                    </h2>
-                    <p className="text-gray-400 font-sans">
-                      Select your Category
-                    </p>
-                  </div>
-
-                  {/* ranked and classic button  */}
-                  <div className="flex rounded-lg  px-2 py-2 justify-between ">
-                    <div
-                      onClick={() => isrank(true)}
-                      className={` w-full h-full text-xl text-center cursor-pointer font-bold rounded-lg px-2 ${isranked ? "bg-red-500" : ""
-                        }`}
-                    >
-                      RANKED
-                    </div>
-                    <div
-                      onClick={() => isrank(false)}
-                      className={`w-full h-full text-xl text-center cursor-pointer font-bold rounded-lg px-2 ${isranked ? "" : "bg-red-500"
-                        }`}
-                    >
-                      CLASSIC
-                    </div>
-                  </div>
-                </div>
-
-                {/* ranked games  */}
-                {isranked && (
-                  <div className="grid grid-cols-3 gap-6">
-                    {tournaments.map((tournament, idx) => (
-                      <div
-                        key={idx}
-                        className="relative group cursor-pointer"
-                        onMouseEnter={() => setHoveredCard(idx)}
-                        onMouseLeave={() => setHoveredCard(null)}
-                      >
-                        <div
-                          className={`card relative h-80 rounded-2xl overflow-hidden border transition-all duration-500 shadow-2xl ${hoveredCard === idx
-                              ? "border-black  transform scale-105"
-                              : "border-gray-800"
-                            }`}
-                        >
-                          {/* Full background image */}
-                          <div className="absolute inset-0">
-                            <img
-                              src="/image2.jpg"
-                              alt={tournament.title}
-                              className={`w-full h-full object-cover transition-all duration-700 ${hoveredCard === idx
-                                  ? "scale-110 brightness-75 opacity-100"
-                                  : "scale-100 brightness-60 opacity-90"
-                                }`}
-                            />
-
-                            {/* Luxury dark overlay with subtle gold tint */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/70 to-black/40"></div>
-                          </div>
-
-                          {/* Content overlay */}
-                          <div className="card-body relative z-10 p-6 h-full flex flex-col justify-between">
-                            {/* Top section - Title and Badge */}
-                            <div className="flex gap-3 h-full items-center justify-between">
-                              <div className="flex items-start justify-between w-full">
-                                <h3 className="text-2xl font-bold text-white drop-shadow-2xl leading-tight tracking-wide justify-center  w-full flex">
-                                  {tournament.title}
-                                </h3>
-                              </div>
-                            </div>
-
-                            {/* Bottom section - Luxury action buttons */}
-                            <div className="card-actions justify-between gap-4">
-                              <button
-                                className={`btn flex-1 font-bold transition-all duration-300 shadow-xl border-0 tracking-wide
-                              bg-white text-black shadow-black/50"
-                          `}
-                              >
-                                <svg
-                                  className="w-4 h-4 mr-2"
-                                  fill="currentColor"
-                                  viewBox="0 0 20 20"
-                                >
-                                  <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
-                                </svg>
-                                <div
-                                  onClick={() => {
-                                    router.push("/matchmaking");
-                                  }}
-                                >
-                                  START MATCH
-                                </div>
-                              </button>
-                              <button
-                                className={`btn backdrop-blur-sm bg-black/50 border-2 border-white/80 text-white hover:bg-white hover:text-black hover:border-white transition-all duration-300 shadow-lg `}
-                              >
-                                <svg
-                                  className="w-4 h-4"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                                  />
-                                </svg>
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
                     ))}
                   </div>
-                )}
+                </div>
 
-                {/* classic games  */}
-                {!isranked && (
-                  <div className="grid grid-cols-3 gap-6">
-                    {tournaments.map((tournament, idx) => (
+                {/* Tournament Grid */}
+                <div className="p-8">
+                  <div className="flex items-center justify-between mb-8">
+                    <div>
+                      <h2 className="text-3xl font-black tracking-wider text-white mb-2">
+                        AVAILABLE ARENAS
+                      </h2>
+                      <p className="text-gray-400 font-sans">
+                        Select your Category
+                      </p>
+                    </div>
+
+                    {/* ranked and classic button  */}
+                    <div className="flex rounded-lg  px-2 py-2 justify-between ">
                       <div
-                        key={idx}
-                        className="relative group cursor-pointer"
-                        onMouseEnter={() => setHoveredCard(idx)}
-                        onMouseLeave={() => setHoveredCard(null)}
+                        onClick={() => isrank(true)}
+                        className={` w-full h-full text-xl text-center cursor-pointer font-bold rounded-lg px-2 ${
+                          isranked ? "bg-red-500" : ""
+                        }`}
                       >
+                        RANKED
+                      </div>
+                      <div
+                        onClick={() => isrank(false)}
+                        className={`w-full h-full text-xl text-center cursor-pointer font-bold rounded-lg px-2 ${
+                          isranked ? "" : "bg-red-500"
+                        }`}
+                      >
+                        CLASSIC
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* ranked games  */}
+                  {isranked && (
+                    <div className="grid grid-cols-3 gap-6">
+                      {tournaments.map((tournament, idx) => (
                         <div
-                          className={`card relative h-80 rounded-2xl overflow-hidden border transition-all duration-500 shadow-2xl ${hoveredCard === idx
-                              ? "border-black  transform scale-105"
-                              : "border-gray-800"
-                            }`}
+                          key={idx}
+                          className="relative group cursor-pointer"
+                          onMouseEnter={() => setHoveredCard(idx)}
+                          onMouseLeave={() => setHoveredCard(null)}
                         >
-                          {/* Full background image */}
-                          <div className="absolute inset-0">
-                            <img
-                              src="/image3.jpg"
-                              alt={tournament.title}
-                              className={`w-full h-full object-cover transition-all duration-700  ${hoveredCard === idx
-                                  ? "scale-110 brightness-75 opacity-100"
-                                  : "scale-100 brightness-60 opacity-90"
+                          <div
+                            className={`card relative h-80 rounded-2xl overflow-hidden border transition-all duration-500 shadow-2xl ${
+                              hoveredCard === idx
+                                ? "border-black  transform scale-105"
+                                : "border-gray-800"
+                            }`}
+                          >
+                            {/* Full background image */}
+                            <div className="absolute inset-0">
+                              <img
+                                src="/image2.jpg"
+                                alt={tournament.title}
+                                className={`w-full h-full object-cover transition-all duration-700 ${
+                                  hoveredCard === idx
+                                    ? "scale-110 brightness-75 opacity-100"
+                                    : "scale-100 brightness-60 opacity-90"
                                 }`}
-                            />
+                              />
 
-                            {/* Luxury dark overlay with subtle gold tint */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/70 to-black/40"></div>
-                          </div>
-
-                          {/* Content overlay */}
-                          <div className="card-body relative z-10 p-6 h-full flex flex-col justify-between">
-                            {/* Top section - Title and Badge */}
-                            <div className="flex gap-3 h-full items-center justify-between">
-                              <div className="flex items-start justify-center w-full">
-                                <h3 className="text-2xl font-bold text-white rounded-lg drop-shadow-2xl leading-tight tracking-wide justify-center flex">
-                                  {tournament.title}
-                                </h3>
-                              </div>
+                              {/* Luxury dark overlay with subtle gold tint */}
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/70 to-black/40"></div>
                             </div>
 
-                            {/* Bottom section - Luxury action buttons */}
-                            <div className="card-actions justify-between gap-4">
-                              <button
-                                className={`btn flex-1 font-bold transition-all duration-300 shadow-xl border-0 tracking-wide
+                            {/* Content overlay */}
+                            <div className="card-body relative z-10 p-6 h-full flex flex-col justify-between">
+                              {/* Top section - Title and Badge */}
+                              <div className="flex gap-3 h-full items-center justify-between">
+                                <div className="flex items-start justify-between w-full">
+                                  <h3 className="text-2xl font-bold text-white drop-shadow-2xl leading-tight tracking-wide justify-center  w-full flex">
+                                    {tournament.title}
+                                  </h3>
+                                </div>
+                              </div>
+
+                              {/* Bottom section - Luxury action buttons */}
+                              <div className="card-actions justify-between gap-4">
+                                <button
+                                  className={`btn flex-1 font-bold transition-all duration-300 shadow-xl border-0 tracking-wide
                               bg-white text-black shadow-black/50"
                           `}
-                              >
-                                <svg
-                                  className="w-4 h-4 mr-2"
-                                  fill="currentColor"
-                                  viewBox="0 0 20 20"
                                 >
-                                  <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
-                                </svg>
-                                <div
-                                  onClick={() => {
-                                    router.push("/matchmaking");
-                                  }}
+                                  <svg
+                                    className="w-4 h-4 mr-2"
+                                    fill="currentColor"
+                                    viewBox="0 0 20 20"
+                                  >
+                                    <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+                                  </svg>
+                                  <div
+                                    onClick={() => {
+                                      router.push("/matchmaking");
+                                    }}
+                                  >
+                                    START MATCH
+                                  </div>
+                                </button>
+                                <button
+                                  className={`btn backdrop-blur-sm bg-black/50 border-2 border-white/80 text-white hover:bg-white hover:text-black hover:border-white transition-all duration-300 shadow-lg `}
                                 >
-                                  START MATCH
-                                </div>
-                              </button>
-                              <button
-                                className={`btn backdrop-blur-sm bg-black/50 border-2 border-white/80 text-white hover:bg-white hover:text-black hover:border-white transition-all duration-300 shadow-lg `}
-                              >
-                                <svg
-                                  className="w-4 h-4"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                                  />
-                                </svg>
-                              </button>
+                                  <svg
+                                    className="w-4 h-4"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                    />
+                                  </svg>
+                                </button>
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </main>}
+                      ))}
+                    </div>
+                  )}
+
+                  {/* classic games  */}
+                  {!isranked && (
+                    <div className="grid grid-cols-3 gap-6">
+                      {tournaments.map((tournament, idx) => (
+                        <div
+                          key={idx}
+                          className="relative group cursor-pointer"
+                          onMouseEnter={() => setHoveredCard(idx)}
+                          onMouseLeave={() => setHoveredCard(null)}
+                        >
+                          <div
+                            className={`card relative h-80 rounded-2xl overflow-hidden border transition-all duration-500 shadow-2xl ${
+                              hoveredCard === idx
+                                ? "border-black  transform scale-105"
+                                : "border-gray-800"
+                            }`}
+                          >
+                            {/* Full background image */}
+                            <div className="absolute inset-0">
+                              <img
+                                src="/image3.jpg"
+                                alt={tournament.title}
+                                className={`w-full h-full object-cover transition-all duration-700  ${
+                                  hoveredCard === idx
+                                    ? "scale-110 brightness-75 opacity-100"
+                                    : "scale-100 brightness-60 opacity-90"
+                                }`}
+                              />
+
+                              {/* Luxury dark overlay with subtle gold tint */}
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/70 to-black/40"></div>
+                            </div>
+
+                            {/* Content overlay */}
+                            <div className="card-body relative z-10 p-6 h-full flex flex-col justify-between">
+                              {/* Top section - Title and Badge */}
+                              <div className="flex gap-3 h-full items-center justify-between">
+                                <div className="flex items-start justify-center w-full">
+                                  <h3 className="text-2xl font-bold text-white rounded-lg drop-shadow-2xl leading-tight tracking-wide justify-center flex">
+                                    {tournament.title}
+                                  </h3>
+                                </div>
+                              </div>
+
+                              {/* Bottom section - Luxury action buttons */}
+                              <div className="card-actions justify-between gap-4">
+                                <button
+                                  className={`btn flex-1 font-bold transition-all duration-300 shadow-xl border-0 tracking-wide
+                              bg-white text-black shadow-black/50"
+                          `}
+                                >
+                                  <svg
+                                    className="w-4 h-4 mr-2"
+                                    fill="currentColor"
+                                    viewBox="0 0 20 20"
+                                  >
+                                    <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+                                  </svg>
+                                  <div
+                                    onClick={() => {
+                                      router.push("/matchmaking");
+                                    }}
+                                  >
+                                    START MATCH
+                                  </div>
+                                </button>
+                                <button
+                                  className={`btn backdrop-blur-sm bg-black/50 border-2 border-white/80 text-white hover:bg-white hover:text-black hover:border-white transition-all duration-300 shadow-lg `}
+                                >
+                                  <svg
+                                    className="w-4 h-4"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                    />
+                                  </svg>
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </main>
+            )}
 
             {nav === "hackathon" && <Hackathon />}
 
@@ -1180,7 +1205,6 @@ export default function Home() {
                 </div>
               </div>
             </aside>
-
           </div>
         </div>
       </div>
@@ -1233,6 +1257,21 @@ export default function Home() {
           ></div>
           <div className="overflow-auto scrollbar-hide absolute z-20 flex h-full  items-center rounded-lg py-6 w-2/3 ">
             (<Settings user={user} />)
+          </div>
+        </div>
+      )}
+
+      {/* Community  */}
+      {community && (
+        <div className="w-full absolute top-0 z-10 flex justify-center items-center  h-screen  ">
+          <div
+            onClick={() => {
+              showcommunity(false);
+            }}
+            className="w-full h-full bg-black/20 backdrop-blur-xs"
+          ></div>
+          <div className="overflow-auto scrollbar-hide absolute z-20 flex h-full justify-center items-center rounded-lg py-6 w-full">
+            (<Community />)
           </div>
         </div>
       )}

@@ -54,16 +54,14 @@ export default function MatchmakingProPage() {
   const router = useRouter();
 
   useEffect(() => {
-    // --- 1. SEARCHING PHASE (0s to 10s) ---
+
     setStatus("Searching for opponent...");
 
-    // --- 2. MATCH FOUND (at 10s) ---
     const findMatchTimer = setTimeout(() => {
       setIsSearching(false);
       setStatus("Opponent found! Finalizing...");
-    }, 10000); // 10 seconds
+    }, 10000);
 
-    // --- 3. COUNTDOWN (at 12s) ---
     const countdownTimer = setTimeout(() => {
       setStatus("Match starting in 3...");
     }, 12000);
@@ -84,10 +82,9 @@ export default function MatchmakingProPage() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-zinc-900 text-white p-8 font-sans overflow-hidden">
       <div className="w-full max-w-5xl flex items-center justify-around">
-        {/* === PLAYER 1 (STATIC) === */}
+
         <Player1Card player={currentUser} />
 
-        {/* === VS TEXT === */}
         <div className="text-7xl font-extrabold  mx-8 flex gap-1">
           <div className="">V</div>
           <div className="text-red-600 ">S</div>
