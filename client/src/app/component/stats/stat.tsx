@@ -282,16 +282,18 @@ export default function PlayerStatsPage({ user }: any) {
 
   return (
     <div className="bg-[#121212] text-white h-full w-full p-8 font-sans">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto flex">
         {/* Profile Header */}
-        <div className="flex flex-col md:flex-row items-center space-y-6 md:space-y-0 md:space-x-8 mb-10">
+        <div className="flex flex-col md:flex-row items-center space-y-6 md:space-y-0 md:space-x-8 mb-10 bg-red-400">
           <img
             src={avatarUrl}
             alt={`${username}'s avatar`}
             className="w-32 h-32 rounded-full ring-4 ring-red-500 shadow-lg"
           />
           <div>
-            <h1 className="text-4xl font-bold tracking-tight">{user.username}</h1>
+            <h1 className="text-4xl font-bold tracking-tight">
+              {user.username}
+            </h1>
             <p className="text-zinc-400 mt-1">
               Global Rank: #{globalRank} | Member since {joinDate}
             </p>
@@ -302,32 +304,38 @@ export default function PlayerStatsPage({ user }: any) {
         </div>
 
         {/* Main Stats Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="flex flex-col gap-6">
           {/* Left Column: Key Stats */}
-          <div className="lg:col-span-1 space-y-6">
-            <div className="bg-[#1E1E1E] p-6 rounded-lg shadow-lg">
-              <h2 className="text-xl font-semibold mb-4 text-white">
-                Rank Progression
-              </h2>
-              <RankProgressBar
-                currentPoints={totalPoints}
-                nextRankPoints={pointsForNextRank}
-                currentRank={user.current_rank}
-                nextRank={nextRank}
-              />
+          <div className="flex">
+            <div className="lg:col-span-1 space-y-6">
+              <div className="bg-[#1E1E1E] p-6 rounded-lg shadow-lg">
+                <h2 className="text-xl font-semibold mb-4 text-white">
+                  Rank Progression
+                </h2>
+                <RankProgressBar
+                  currentPoints={totalPoints}
+                  nextRankPoints={pointsForNextRank}
+                  currentRank={user.current_rank}
+                  nextRank={nextRank}
+                />
+              </div>
+              <div className="bg-[#1E1E1E] p-6 rounded-lg shadow-lg">
+                <h2 className="text-xl font-semibold mb-4">
+                  Language Dominance
+                </h2>
+                <LanguageDonutChart stats={languageStats} />
+              </div>
             </div>
-            <div className="bg-[#1E1E1E] p-6 rounded-lg shadow-lg">
-              <h2 className="text-xl font-semibold mb-4">Language Dominance</h2>
-              <LanguageDonutChart stats={languageStats} />
-            </div>
-          </div>
 
-          {/* Center Column: Performance Graph */}
-          <div className="lg:col-span-1 bg-[#1E1E1E] p-6 rounded-lg shadow-lg flex flex-col">
-            <h2 className="text-xl font-semibold mb-2">Performance History</h2>
-            <p className="text-sm text-zinc-400 mb-4">Last 30 Days</p>
-            <div className="flex-grow flex items-center justify-center">
-              <PerformanceGraph data={performanceHistory} />
+            {/* Center Column: Performance Graph */}
+            <div className="lg:col-span-1 bg-[#1E1E1E] p-6 rounded-lg shadow-lg flex flex-col">
+              <h2 className="text-xl font-semibold mb-2">
+                Performance History
+              </h2>
+              <p className="text-sm text-zinc-400 mb-4">Last 30 Days</p>
+              <div className="flex-grow flex items-center justify-center">
+                <PerformanceGraph data={performanceHistory} />
+              </div>
             </div>
           </div>
 

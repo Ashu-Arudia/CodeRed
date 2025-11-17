@@ -12,6 +12,7 @@ import Settings from "../settings/setting";
 import Hackathon from "../hackathon/page";
 import userDetails from "../../store/UserDetails";
 import Community from "../community/page";
+import userState from "./store/stateStore";
 
 const backendUrl = process.env.NEXT_PUBLIC_API_URL;
 
@@ -39,14 +40,8 @@ export default function Home() {
   const [scrollY, setScrollY] = useState(0);
   const carouselRef = useRef<HTMLDivElement | null>(null);
   const mainRef = useRef<HTMLDivElement | null>(null);
-  const [token, setToken] = useState<string | null>(null);
-  const [verified, setVerified] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const [preview, setPreview] = useState<string | null>(null);
-  const [img, setImg] = useState<File | null>(null);
-  const [imgbase64, setImgbase64] = useState<string | ArrayBuffer | null>(null);
   const [notification, setNotification] = useState<Boolean>(false);
-  const [community, setCommunity] = useState<Boolean>(false);
   const [stat, setStat] = useState<Boolean>(false);
   const [showFriends, setShowFriends] = useState<Boolean>(false);
   const [showSettings, setShowSettings] = useState<Boolean>(false);
@@ -55,7 +50,11 @@ export default function Home() {
   const [isranked, setIsranked] = useState<Boolean>(true);
   const [nav, setNav] = useState<"home" | "hackathon" | "bonus">("home");
 
-  const setUserDetail = userDetails((state) => state.setUser)
+
+  //store
+  const setUserDetail = userDetails((s) => s.setUser)
+  const community = userState((s) => s.communityState);
+  const setCommunity = userState((s) => s.setCommunityState);
 
   //User details
   const [user, setUser] = useState({
@@ -88,9 +87,7 @@ export default function Home() {
   const setnav = (para : "home"| "hackathon" | "bonus") => {
     setNav(para);
   }
-  const showcommunity = (para : Boolean) => {
-    setCommunity(para);
-  }
+
   const shownotification = () => {
     setNotification(true);
   }
@@ -333,17 +330,75 @@ export default function Home() {
   return (
     <>
       <div
-        className={`flex-1 flex flex-col h-screen bg-black bg-no-repeat p-3 ${smoochSans.className}`}
+        className={`flex-1 flex flex-col h-screen bg-black bg-no-repeat p-3 text-white ${smoochSans.className}`}
       >
         {/* header1  */}
         <div
-          className={`gap-3 text-sm tracking-widest align-middle p-1 h-8 w-full flex flex-row font-bold ${smoochSans.className}`}
+          className={`gap-3 text-sm tracking-widest align-middle px-1 pb-2 h-fit w-full flex flex-row font-bold ${smoochSans.className}`}
         >
-          <div className="cursor-pointer opacity-80">SUPPORT</div>
-          <div className="cursor-pointer opacity-80">FAIR PLAY</div>
-          <div className="cursor-pointer opacity-80">POLICIES</div>
+          <div className="cursor-pointer opacity-80  items-center flex">SUPPORT</div>
+          <div className="cursor-pointer opacity-80 items-center flex">FAIR PLAY</div>
+          <div className="cursor-pointer opacity-80 items-center flex">POLICIES</div>
 
-          <div className="flex-1"></div>
+          {/* Team members  */}
+          <div className="flex-1 px-5 flex gap-2 justify-center items-center">
+            {/* Player1  */}
+            <div className="flex items-center gap-3 bg-zinc-900 w-fit rounded-lg pr-8">
+              <div className="avatar avatar-online ">
+                <div className="w-9 rounded-full">
+                  <img src="https://img.daisyui.com/images/profile/demo/gordon@192.webp" />
+                </div>
+              </div>
+              <div>Sunny</div>
+            </div>
+            {/* Player2  */}
+            <div className="flex items-center gap-3 bg-zinc-900 w-fit rounded-lg pr-8">
+              <div className="avatar avatar-offline">
+                <div className="w-9 rounded-full">
+                  <img src="https://img.daisyui.com/images/profile/demo/idiotsandwich@192.webp" />
+                </div>
+              </div>
+              <div>Alia</div>
+            </div>
+            {/* Player3  */}
+            <div className="flex items-center gap-3 bg-zinc-900 w-fit rounded-lg pr-15">
+              <div className="avatar">
+                <div className="w-9 rounded-full">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="30"
+                    height="34"
+                    viewBox="0 0 36 32"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M.5 31.983a.503.503 0 0 0 .612-.354c1.03-3.843 5.216-4.839 7.718-5.435c.627-.149 1.122-.267 1.444-.406c2.85-1.237 3.779-3.227 4.057-4.679a.5.5 0 0 0-.165-.473c-1.484-1.281-2.736-3.204-3.526-5.416a.5.5 0 0 0-.103-.171c-1.045-1.136-1.645-2.337-1.645-3.294c0-.559.211-.934.686-1.217a.5.5 0 0 0 .243-.408C10.042 5.036 13.67 1.026 18.12 1l.107.007c4.472.062 8.077 4.158 8.206 9.324a.5.5 0 0 0 .178.369c.313.265.459.601.459 1.057c0 .801-.427 1.786-1.201 2.772a.5.5 0 0 0-.084.158c-.8 2.536-2.236 4.775-3.938 6.145a.5.5 0 0 0-.178.483c.278 1.451 1.207 3.44 4.057 4.679c.337.146.86.26 1.523.403c2.477.536 6.622 1.435 7.639 5.232a.5.5 0 0 0 .966-.26c-1.175-4.387-5.871-5.404-8.393-5.95c-.585-.127-1.09-.236-1.336-.344c-1.86-.808-3.006-2.039-3.411-3.665c1.727-1.483 3.172-3.771 3.998-6.337c.877-1.14 1.359-2.314 1.359-3.317c0-.669-.216-1.227-.644-1.663C27.189 4.489 23.19.076 18.227.005l-.149-.002c-4.873.026-8.889 4.323-9.24 9.83c-.626.46-.944 1.105-.944 1.924c0 1.183.669 2.598 1.84 3.896c.809 2.223 2.063 4.176 3.556 5.543c-.403 1.632-1.55 2.867-3.414 3.676c-.241.105-.721.22-1.277.352c-2.541.604-7.269 1.729-8.453 6.147a.5.5 0 0 0 .354.612"
+                    />
+                  </svg>
+                </div>
+              </div>
+              <div></div>
+            </div>
+            {/* Player4  */}
+            <div className="flex items-center gap-3 bg-zinc-900 w-fit rounded-lg pr-15">
+              <div className="avatar">
+                <div className="w-9 rounded-full">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="30"
+                    height="34"
+                    viewBox="0 0 36 32"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M.5 31.983a.503.503 0 0 0 .612-.354c1.03-3.843 5.216-4.839 7.718-5.435c.627-.149 1.122-.267 1.444-.406c2.85-1.237 3.779-3.227 4.057-4.679a.5.5 0 0 0-.165-.473c-1.484-1.281-2.736-3.204-3.526-5.416a.5.5 0 0 0-.103-.171c-1.045-1.136-1.645-2.337-1.645-3.294c0-.559.211-.934.686-1.217a.5.5 0 0 0 .243-.408C10.042 5.036 13.67 1.026 18.12 1l.107.007c4.472.062 8.077 4.158 8.206 9.324a.5.5 0 0 0 .178.369c.313.265.459.601.459 1.057c0 .801-.427 1.786-1.201 2.772a.5.5 0 0 0-.084.158c-.8 2.536-2.236 4.775-3.938 6.145a.5.5 0 0 0-.178.483c.278 1.451 1.207 3.44 4.057 4.679c.337.146.86.26 1.523.403c2.477.536 6.622 1.435 7.639 5.232a.5.5 0 0 0 .966-.26c-1.175-4.387-5.871-5.404-8.393-5.95c-.585-.127-1.09-.236-1.336-.344c-1.86-.808-3.006-2.039-3.411-3.665c1.727-1.483 3.172-3.771 3.998-6.337c.877-1.14 1.359-2.314 1.359-3.317c0-.669-.216-1.227-.644-1.663C27.189 4.489 23.19.076 18.227.005l-.149-.002c-4.873.026-8.889 4.323-9.24 9.83c-.626.46-.944 1.105-.944 1.924c0 1.183.669 2.598 1.84 3.896c.809 2.223 2.063 4.176 3.556 5.543c-.403 1.632-1.55 2.867-3.414 3.676c-.241.105-.721.22-1.277.352c-2.541.604-7.269 1.729-8.453 6.147a.5.5 0 0 0 .354.612"
+                    />
+                  </svg>
+                </div>
+              </div>
+              <div></div>
+            </div>
+          </div>
 
           <div className="flex items-center text-center gap-2 px-2">
             <svg
@@ -367,35 +422,6 @@ export default function Home() {
             </div>
             139 <div className="opacity-40">PLAYERS ONLINE </div>
           </div>
-
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="22"
-            height="22"
-            viewBox="0 0 24 24"
-            className="cursor-pointer hover:scale-105"
-          >
-            <path
-              fill="#4f4d4d"
-              d="M21.81 6.227c.058-.08-.028-.185-.12-.149a8.5 8.5 0 0 1-2.05.513a4.13 4.13 0 0 0 1.72-2.02c.034-.086-.06-.163-.14-.118c-.727.401-1.51.69-2.325.857a.1.1 0 0 1-.093-.03a4.1 4.1 0 0 0-6.991 3.65a.102.102 0 0 1-.104.123a11.64 11.64 0 0 1-8.224-4.17a.098.098 0 0 0-.163.015a4.16 4.16 0 0 0-.48 1.943a4.09 4.09 0 0 0 1.82 3.41a4.05 4.05 0 0 1-1.709-.43c-.068-.035-.15.014-.147.09a4.23 4.23 0 0 0 .933 2.468A4.1 4.1 0 0 0 6.1 13.79a4 4 0 0 1-1.1.17a5 5 0 0 1-.606-.045c-.075-.01-.136.06-.11.13A4.11 4.11 0 0 0 8.06 16.73a8.22 8.22 0 0 1-5.625 1.741c-.106-.007-.155.134-.064.188a11.57 11.57 0 0 0 5.919 1.62A11.59 11.59 0 0 0 20 8.6v-.48a.1.1 0 0 1 .04-.08a8.4 8.4 0 0 0 1.77-1.813"
-            />
-          </svg>
-
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            className="cursor-pointer hover:scale-105"
-          >
-            <g fill="none" fillRule="evenodd">
-              <path d="m12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035q-.016-.005-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093q.019.005.029-.008l.004-.014l-.034-.614q-.005-.018-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z" />
-              <path
-                fill="#4f4d4d"
-                d="M18 3a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3zM8 10a1 1 0 0 0-1 1v5a1 1 0 1 0 2 0v-5a1 1 0 0 0-1-1m3-1a1 1 0 0 0-1 1v6a1 1 0 1 0 2 0v-3.66c.305-.344.82-.748 1.393-.993c.333-.142.834-.2 1.182-.09a.55.55 0 0 1 .293.188c.052.07.132.226.132.555v4a1 1 0 0 0 2 0v-4c0-.67-.17-1.266-.524-1.744a2.54 2.54 0 0 0-1.301-.907c-.902-.283-1.901-.126-2.568.16a6 6 0 0 0-.623.312A1 1 0 0 0 11 9M8 7a1 1 0 1 0 0 2a1 1 0 0 0 0-2"
-              />
-            </g>
-          </svg>
         </div>
 
         {/* header2  */}
@@ -451,7 +477,7 @@ export default function Home() {
                 clipRule="evenodd"
               />
             </svg>
-            <div className="hover:scale-101">Hackathons</div>
+            <div className="hover:scale-101">Tournaments</div>
           </div>
 
           {/* Bonus  */}
@@ -584,30 +610,9 @@ export default function Home() {
         <div className="flex-1 relative overflow-hidden p-2">
           <div className="relative flex  h-full gap-3">
             {/* LEFT SIDEBAR */}
-            <div className="h-full flex flex-col p-1 gap-3 text-lg">
-              {/* search  */}
-              {/* <label className="input bg-[#121111]">
-                <svg
-                  className="h-[1em] opacity-50"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                >
-                  <g
-                    strokeLinejoin="round"
-                    strokeLinecap="round"
-                    strokeWidth="2.5"
-                    fill="none"
-                    stroke="currentColor"
-                  >
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <path d="m21 21-4.3-4.3"></path>
-                  </g>
-                </svg>
-                <input type="search" className="grow" placeholder="Search" />
-              </label> */}
-
+            <div className="h-full flex flex-col gap-3 text-lg">
               {/* options  */}
-              <div className="rounded-lg bg-[#121111] p-4 gap-5 flex flex-col">
+              <div className="rounded-lg bg-[#121111] p-4 gap-5 flex flex-col ">
                 {/* Friends  */}
                 <div
                   className="w-full h-full cursor-pointer hover:bg-zinc-800 relative"
@@ -634,7 +639,7 @@ export default function Home() {
                 <div
                   className="w-full h-full cursor-pointer hover:bg-zinc-800 "
                   onClick={() => {
-                    showcommunity(true);
+                    setCommunity(true);
                   }}
                 >
                   <div className="flex gap-3 mr-10 cursor-pointer items-center">
@@ -748,7 +753,7 @@ export default function Home() {
                           />
                         </g>
                       </svg>
-                      Solve A Quick Bug
+                      <div className="whitespace-nowrap">Solve A Quick Bug</div>
                     </div>
                   </div>
                 </div>
@@ -756,326 +761,330 @@ export default function Home() {
             </div>
 
             {/* MAIN CONTENT */}
-            {nav === "home" && (
-              <main
-                ref={mainRef}
-                className=" backdrop-blur-sm overflow-y-auto relative rounded-lg bg-[#121111] p-4 gap-5 flex-1 "
-                style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-              >
-                <style jsx>{`
-                  main::-webkit-scrollbar {
-                    display: none;
-                  }
-                `}</style>
+            <div className="flex w-full">
+              {nav === "home" && (
+                <main
+                  ref={mainRef}
+                  className=" backdrop-blur-sm overflow-y-auto relative rounded-lg bg-[#121111] p-3 gap-5 flex-1 "
+                  style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+                >
+                  <style jsx>{`
+                    main::-webkit-scrollbar {
+                      display: none;
+                    }
+                  `}</style>
 
-                {/* Hero Carousel */}
-                <div className="relative h-60 overflow-hidden">
-                  <div
-                    className="flex transition-transform duration-700 ease-in-out h-full"
-                    style={{ transform: `translateX(-${currentSlide * 100}%)` }}
-                    ref={carouselRef}
-                  >
-                    {featuredMatches.map((match, idx) => (
-                      <div key={idx} className="min-w-full relative">
-                        <div
-                          className="absolute inset-0 bg-cover bg-center"
-                          style={{
-                            backgroundImage: `url(${match.img})`,
-                            transform: `translateY(${scrollY * 0.3}px)`,
-                          }}
+                  {/* Hero Carousel */}
+                  <div className="relative h-60 overflow-hidden rounded-t-lg">
+                    <div
+                      className="flex transition-transform duration-700 ease-in-out h-full"
+                      style={{
+                        transform: `translateX(-${currentSlide * 100}%)`,
+                      }}
+                      ref={carouselRef}
+                    >
+                      {featuredMatches.map((match, idx) => (
+                        <div key={idx} className="min-w-full relative">
+                          <div
+                            className="absolute inset-0 bg-cover bg-center"
+                            style={{
+                              backgroundImage: `url(${match.img})`,
+                              transform: `translateY(${scrollY * 0.3}px)`,
+                            }}
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-transparent" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+
+                          <div className="relative z-10 h-full flex items-center p-12">
+                            <div className="max-w-2xl">
+                              <h1 className="text-5xl font-black mb-6 text-white tracking-wider">
+                                {match.title}
+                              </h1>
+                              <h2 className="text-xl font-bold text-orange-400 mb-6 font-mono tracking-wide">
+                                {match.subtitle}
+                              </h2>
+                              <div className="flex items-center gap-8 mb-8">
+                                <div className="flex items-center gap-2">
+                                  {/* <FaTrophy className="text-yellow-400" /> */}
+                                  <span className="font-mono font-bold text-lg text-white">
+                                    {match.prize}
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <FaUsers className="text-white-400 border-2" />
+                                  <span className="font-mono text-white-400">
+                                    {match.participants.toLocaleString()}
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <FaFire className="border-2 " />
+                                  <span className="font-mono text-white">
+                                    {match.timeLeft}
+                                  </span>
+                                </div>
+                              </div>
+
+                              <div className="flex gap-4">
+                                <button className="btn btn-outline btn-warning rounded-sm">
+                                  Register
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Carousel Controls */}
+                    <button
+                      onClick={prevSlide}
+                      className="absolute left-2 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-none hover:bg-gray-500  hover:rounded-3xl flex items-center justify-center transition-all duration-300"
+                    >
+                      <FaChevronLeft className="text-white font-bold" />
+                    </button>
+                    <button
+                      onClick={nextSlide}
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-none hover:bg-gray-500  hover:rounded-3xl flex items-center justify-center transition-all duration-300"
+                    >
+                      <FaChevronRight className="text-white font-bold" />
+                    </button>
+
+                    {/* Carousel Indicators */}
+                    <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
+                      {featuredMatches.map((_, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => setCurrentSlide(idx)}
+                          className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                            idx === currentSlide
+                              ? "bg-white w-8"
+                              : "bg-gray-600 hover:bg-gray-500"
+                          }`}
                         />
-                        <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-transparent" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-
-                        <div className="relative z-10 h-full flex items-center p-12">
-                          <div className="max-w-2xl">
-                            <h1 className="text-5xl font-black mb-6 text-white tracking-wider">
-                              {match.title}
-                            </h1>
-                            <h2 className="text-xl font-bold text-orange-400 mb-6 font-mono tracking-wide">
-                              {match.subtitle}
-                            </h2>
-                            <div className="flex items-center gap-8 mb-8">
-                              <div className="flex items-center gap-2">
-                                {/* <FaTrophy className="text-yellow-400" /> */}
-                                <span className="font-mono font-bold text-lg text-white">
-                                  {match.prize}
-                                </span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <FaUsers className="text-white-400 border-2" />
-                                <span className="font-mono text-white-400">
-                                  {match.participants.toLocaleString()}
-                                </span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <FaFire className="border-2 " />
-                                <span className="font-mono text-white">
-                                  {match.timeLeft}
-                                </span>
-                              </div>
-                            </div>
-
-                            <div className="flex gap-4">
-                              <button className="btn btn-outline btn-warning rounded-sm">
-                                Register
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Carousel Controls */}
-                  <button
-                    onClick={prevSlide}
-                    className="absolute left-2 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-none hover:bg-gray-500  hover:rounded-3xl flex items-center justify-center transition-all duration-300"
-                  >
-                    <FaChevronLeft className="text-white font-bold" />
-                  </button>
-                  <button
-                    onClick={nextSlide}
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-none hover:bg-gray-500  hover:rounded-3xl flex items-center justify-center transition-all duration-300"
-                  >
-                    <FaChevronRight className="text-white font-bold" />
-                  </button>
-
-                  {/* Carousel Indicators */}
-                  <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
-                    {featuredMatches.map((_, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => setCurrentSlide(idx)}
-                        className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                          idx === currentSlide
-                            ? "bg-white w-8"
-                            : "bg-gray-600 hover:bg-gray-500"
-                        }`}
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                {/* Tournament Grid */}
-                <div className="p-8">
-                  <div className="flex items-center justify-between mb-8">
-                    <div>
-                      <h2 className="text-3xl font-black tracking-wider text-white mb-2">
-                        AVAILABLE ARENAS
-                      </h2>
-                      <p className="text-gray-400 font-sans">
-                        Select your Category
-                      </p>
-                    </div>
-
-                    {/* ranked and classic button  */}
-                    <div className="flex rounded-lg  px-2 py-2 justify-between ">
-                      <div
-                        onClick={() => isrank(true)}
-                        className={` w-full h-full text-xl text-center cursor-pointer font-bold rounded-lg px-2 ${
-                          isranked ? "bg-red-500" : ""
-                        }`}
-                      >
-                        RANKED
-                      </div>
-                      <div
-                        onClick={() => isrank(false)}
-                        className={`w-full h-full text-xl text-center cursor-pointer font-bold rounded-lg px-2 ${
-                          isranked ? "" : "bg-red-500"
-                        }`}
-                      >
-                        CLASSIC
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* ranked games  */}
-                  {isranked && (
-                    <div className="grid grid-cols-3 gap-6">
-                      {tournaments.map((tournament, idx) => (
-                        <div
-                          key={idx}
-                          className="relative group cursor-pointer"
-                          onMouseEnter={() => setHoveredCard(idx)}
-                          onMouseLeave={() => setHoveredCard(null)}
-                        >
-                          <div
-                            className={`card relative h-80 rounded-2xl overflow-hidden border transition-all duration-500 shadow-2xl ${
-                              hoveredCard === idx
-                                ? "border-black  transform scale-105"
-                                : "border-gray-800"
-                            }`}
-                          >
-                            {/* Full background image */}
-                            <div className="absolute inset-0">
-                              <img
-                                src="/image2.jpg"
-                                alt={tournament.title}
-                                className={`w-full h-full object-cover transition-all duration-700 ${
-                                  hoveredCard === idx
-                                    ? "scale-110 brightness-75 opacity-100"
-                                    : "scale-100 brightness-60 opacity-90"
-                                }`}
-                              />
-
-                              {/* Luxury dark overlay with subtle gold tint */}
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/70 to-black/40"></div>
-                            </div>
-
-                            {/* Content overlay */}
-                            <div className="card-body relative z-10 p-6 h-full flex flex-col justify-between">
-                              {/* Top section - Title and Badge */}
-                              <div className="flex gap-3 h-full items-center justify-between">
-                                <div className="flex items-start justify-between w-full">
-                                  <h3 className="text-2xl font-bold text-white drop-shadow-2xl leading-tight tracking-wide justify-center  w-full flex">
-                                    {tournament.title}
-                                  </h3>
-                                </div>
-                              </div>
-
-                              {/* Bottom section - Luxury action buttons */}
-                              <div className="card-actions justify-between gap-4">
-                                <button
-                                  className={`btn flex-1 font-bold transition-all duration-300 shadow-xl border-0 tracking-wide
-                              bg-white text-black shadow-black/50"
-                          `}
-                                >
-                                  <svg
-                                    className="w-4 h-4 mr-2"
-                                    fill="currentColor"
-                                    viewBox="0 0 20 20"
-                                  >
-                                    <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
-                                  </svg>
-                                  <div
-                                    onClick={() => {
-                                      router.push("/matchmaking");
-                                    }}
-                                  >
-                                    START MATCH
-                                  </div>
-                                </button>
-                                <button
-                                  className={`btn backdrop-blur-sm bg-black/50 border-2 border-white/80 text-white hover:bg-white hover:text-black hover:border-white transition-all duration-300 shadow-lg `}
-                                >
-                                  <svg
-                                    className="w-4 h-4"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth={2}
-                                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                                    />
-                                  </svg>
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
                       ))}
                     </div>
-                  )}
+                  </div>
 
-                  {/* classic games  */}
-                  {!isranked && (
-                    <div className="grid grid-cols-3 gap-6">
-                      {tournaments.map((tournament, idx) => (
+                  {/* Tournament Grid */}
+                  <div className="p-8">
+                    <div className="flex items-center justify-between mb-8">
+                      <div>
+                        <h2 className="text-3xl font-black tracking-wider text-white mb-2">
+                          AVAILABLE ARENAS
+                        </h2>
+                        <p className="text-gray-400 font-sans">
+                          Select your Category
+                        </p>
+                      </div>
+
+                      {/* ranked and classic button  */}
+                      <div className="flex rounded-lg  px-2 py-2 justify-between ">
                         <div
-                          key={idx}
-                          className="relative group cursor-pointer"
-                          onMouseEnter={() => setHoveredCard(idx)}
-                          onMouseLeave={() => setHoveredCard(null)}
+                          onClick={() => isrank(true)}
+                          className={` w-full h-full text-xl text-center cursor-pointer font-bold rounded-lg px-2 ${
+                            isranked ? "bg-red-500" : ""
+                          }`}
                         >
+                          RANKED
+                        </div>
+                        <div
+                          onClick={() => isrank(false)}
+                          className={`w-full h-full text-xl text-center cursor-pointer font-bold rounded-lg px-2 ${
+                            isranked ? "" : "bg-red-500"
+                          }`}
+                        >
+                          CLASSIC
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* ranked games  */}
+                    {isranked && (
+                      <div className="grid grid-cols-3 gap-6">
+                        {tournaments.map((tournament, idx) => (
                           <div
-                            className={`card relative h-80 rounded-2xl overflow-hidden border transition-all duration-500 shadow-2xl ${
-                              hoveredCard === idx
-                                ? "border-black  transform scale-105"
-                                : "border-gray-800"
-                            }`}
+                            key={idx}
+                            className="relative group cursor-pointer"
+                            onMouseEnter={() => setHoveredCard(idx)}
+                            onMouseLeave={() => setHoveredCard(null)}
                           >
-                            {/* Full background image */}
-                            <div className="absolute inset-0">
-                              <img
-                                src="/image3.jpg"
-                                alt={tournament.title}
-                                className={`w-full h-full object-cover transition-all duration-700  ${
-                                  hoveredCard === idx
-                                    ? "scale-110 brightness-75 opacity-100"
-                                    : "scale-100 brightness-60 opacity-90"
-                                }`}
-                              />
+                            <div
+                              className={`card relative h-80 rounded-2xl overflow-hidden border transition-all duration-500 shadow-2xl ${
+                                hoveredCard === idx
+                                  ? "border-black  transform scale-105"
+                                  : "border-gray-800"
+                              }`}
+                            >
+                              {/* Full background image */}
+                              <div className="absolute inset-0">
+                                <img
+                                  src="/image2.jpg"
+                                  alt={tournament.title}
+                                  className={`w-full h-full object-cover transition-all duration-700 ${
+                                    hoveredCard === idx
+                                      ? "scale-110 brightness-75 opacity-100"
+                                      : "scale-100 brightness-60 opacity-90"
+                                  }`}
+                                />
 
-                              {/* Luxury dark overlay with subtle gold tint */}
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/70 to-black/40"></div>
-                            </div>
-
-                            {/* Content overlay */}
-                            <div className="card-body relative z-10 p-6 h-full flex flex-col justify-between">
-                              {/* Top section - Title and Badge */}
-                              <div className="flex gap-3 h-full items-center justify-between">
-                                <div className="flex items-start justify-center w-full">
-                                  <h3 className="text-2xl font-bold text-white rounded-lg drop-shadow-2xl leading-tight tracking-wide justify-center flex">
-                                    {tournament.title}
-                                  </h3>
-                                </div>
+                                {/* Luxury dark overlay with subtle gold tint */}
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/70 to-black/40"></div>
                               </div>
 
-                              {/* Bottom section - Luxury action buttons */}
-                              <div className="card-actions justify-between gap-4">
-                                <button
-                                  className={`btn flex-1 font-bold transition-all duration-300 shadow-xl border-0 tracking-wide
+                              {/* Content overlay */}
+                              <div className="card-body relative z-10 p-6 h-full flex flex-col justify-between">
+                                {/* Top section - Title and Badge */}
+                                <div className="flex gap-3 h-full items-center justify-between">
+                                  <div className="flex items-start justify-between w-full">
+                                    <h3 className="text-2xl font-bold text-white drop-shadow-2xl leading-tight tracking-wide justify-center  w-full flex">
+                                      {tournament.title}
+                                    </h3>
+                                  </div>
+                                </div>
+
+                                {/* Bottom section - Luxury action buttons */}
+                                <div className="card-actions justify-between gap-4">
+                                  <button
+                                    className={`btn flex-1 font-bold transition-all duration-300 shadow-xl border-0 tracking-wide
                               bg-white text-black shadow-black/50"
                           `}
-                                >
-                                  <svg
-                                    className="w-4 h-4 mr-2"
-                                    fill="currentColor"
-                                    viewBox="0 0 20 20"
                                   >
-                                    <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
-                                  </svg>
-                                  <div
-                                    onClick={() => {
-                                      router.push("/matchmaking");
-                                    }}
+                                    <svg
+                                      className="w-4 h-4 mr-2"
+                                      fill="currentColor"
+                                      viewBox="0 0 20 20"
+                                    >
+                                      <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+                                    </svg>
+                                    <div
+                                      onClick={() => {
+                                        router.push("/matchmaking");
+                                      }}
+                                    >
+                                      START MATCH
+                                    </div>
+                                  </button>
+                                  <button
+                                    className={`btn backdrop-blur-sm bg-black/50 border-2 border-white/80 text-white hover:bg-white hover:text-black hover:border-white transition-all duration-300 shadow-lg `}
                                   >
-                                    START MATCH
-                                  </div>
-                                </button>
-                                <button
-                                  className={`btn backdrop-blur-sm bg-black/50 border-2 border-white/80 text-white hover:bg-white hover:text-black hover:border-white transition-all duration-300 shadow-lg `}
-                                >
-                                  <svg
-                                    className="w-4 h-4"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth={2}
-                                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                                    />
-                                  </svg>
-                                </button>
+                                    <svg
+                                      className="w-4 h-4"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                      />
+                                    </svg>
+                                  </button>
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </main>
-            )}
+                        ))}
+                      </div>
+                    )}
 
-            {nav === "hackathon" && <Hackathon />}
+                    {/* classic games  */}
+                    {!isranked && (
+                      <div className="grid grid-cols-3 gap-6">
+                        {tournaments.map((tournament, idx) => (
+                          <div
+                            key={idx}
+                            className="relative group cursor-pointer"
+                            onMouseEnter={() => setHoveredCard(idx)}
+                            onMouseLeave={() => setHoveredCard(null)}
+                          >
+                            <div
+                              className={`card relative h-80 rounded-2xl overflow-hidden border transition-all duration-500 shadow-2xl ${
+                                hoveredCard === idx
+                                  ? "border-black  transform scale-105"
+                                  : "border-gray-800"
+                              }`}
+                            >
+                              {/* Full background image */}
+                              <div className="absolute inset-0">
+                                <img
+                                  src="/image3.jpg"
+                                  alt={tournament.title}
+                                  className={`w-full h-full object-cover transition-all duration-700  ${
+                                    hoveredCard === idx
+                                      ? "scale-110 brightness-75 opacity-100"
+                                      : "scale-100 brightness-60 opacity-90"
+                                  }`}
+                                />
+
+                                {/* Luxury dark overlay with subtle gold tint */}
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/70 to-black/40"></div>
+                              </div>
+
+                              {/* Content overlay */}
+                              <div className="card-body relative z-10 p-6 h-full flex flex-col justify-between">
+                                {/* Top section - Title and Badge */}
+                                <div className="flex gap-3 h-full items-center justify-between">
+                                  <div className="flex items-start justify-center w-full">
+                                    <h3 className="text-2xl font-bold text-white rounded-lg drop-shadow-2xl leading-tight tracking-wide justify-center flex">
+                                      {tournament.title}
+                                    </h3>
+                                  </div>
+                                </div>
+
+                                {/* Bottom section - Luxury action buttons */}
+                                <div className="card-actions justify-between gap-4">
+                                  <button
+                                    className={`btn flex-1 font-bold transition-all duration-300 shadow-xl border-0 tracking-wide
+                              bg-white text-black shadow-black/50"
+                          `}
+                                  >
+                                    <svg
+                                      className="w-4 h-4 mr-2"
+                                      fill="currentColor"
+                                      viewBox="0 0 20 20"
+                                    >
+                                      <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+                                    </svg>
+                                    <div
+                                      onClick={() => {
+                                        router.push("/matchmaking");
+                                      }}
+                                    >
+                                      START MATCH
+                                    </div>
+                                  </button>
+                                  <button
+                                    className={`btn backdrop-blur-sm bg-black/50 border-2 border-white/80 text-white hover:bg-white hover:text-black hover:border-white transition-all duration-300 shadow-lg `}
+                                  >
+                                    <svg
+                                      className="w-4 h-4"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                      />
+                                    </svg>
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </main>
+              )}
+
+              {nav === "hackathon" && <Hackathon />}
+            </div>
 
             {/* RIGHT SIDEBAR */}
             <aside className=" rounded-2xl  gap-3 flex flex-col">
@@ -1132,7 +1141,7 @@ export default function Home() {
               <div className="flex flex-col flex-1 bg-[#121111] rounded-xl shadow-lg w-50 text-white">
                 {/* Header with Invite Button */}
                 <div className="flex justify-between items-center p-2  border-gray-700">
-                  <h1 className="font-bold">Friends</h1>
+                  <h1 className="text-lg">Friends</h1>
                   <div
                     onClick={() => showfriend(true)}
                     className="cursor-pointer text-lg font-bold text-gray-400 hover:text-white hover:bg-gray-700 rounded-full w-7 h-7 flex items-center justify-center transition-colors"
@@ -1230,7 +1239,7 @@ export default function Home() {
             className="w-full h-full bg-black opacity-50 "
           ></div>
           <div className="overflow-auto scrollbar-hide absolute z-20 flex h-full  items-center rounded-lg py-6">
-            (<Stats user={user} />)
+            <Stats user={user} />
           </div>
         </div>
       )}
@@ -1243,7 +1252,7 @@ export default function Home() {
             className="w-full h-full bg-black opacity-50 "
           ></div>
           <div className="overflow-auto scrollbar-hide absolute z-20 flex h-full  items-center rounded-lg py-6 w-2/3">
-            (<Friends addfriend={addfriends} />)
+            <Friends addfriend={addfriends} />
           </div>
         </div>
       )}
@@ -1256,7 +1265,7 @@ export default function Home() {
             className="w-full h-full bg-black/20 backdrop-blur-sm"
           ></div>
           <div className="overflow-auto scrollbar-hide absolute z-20 flex h-full  items-center rounded-lg py-6 w-2/3 ">
-            (<Settings user={user} />)
+            <Settings user={user} />
           </div>
         </div>
       )}
@@ -1266,12 +1275,12 @@ export default function Home() {
         <div className="w-full absolute top-0 z-10 flex justify-center items-center  h-screen  ">
           <div
             onClick={() => {
-              showcommunity(false);
+              setCommunity(false);
             }}
-            className="w-full h-full bg-black/20 backdrop-blur-xs"
+            className="w-full h-full"
           ></div>
-          <div className="overflow-auto scrollbar-hide absolute z-20 flex h-full justify-center items-center rounded-lg py-6 w-full">
-            (<Community />)
+          <div className=" absolute z-20 flex h-full justify-center items-center rounded-lg p-12 w-full ">
+            <Community />
           </div>
         </div>
       )}

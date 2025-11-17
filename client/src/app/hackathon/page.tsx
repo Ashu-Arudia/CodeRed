@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import AnimatedList from "../../components/AnimatedList";
 
 export default function HackathonLobby() {
   const [query, setQuery] = useState("");
@@ -48,6 +49,19 @@ export default function HackathonLobby() {
       tags: ["ranked", "team"],
     },
   ]);
+
+  const items = [
+    "1     Coding Squads      25/80",
+    "2     Coding Squads      25/80",
+    "3     Coding Squads      25/80",
+    "4     Coding Squads      25/80",
+    "5     Coding Squads      25/80",
+    "6     Coding Squads      25/80",
+    "7     Coding Squads      25/80",
+    "8     Coding Squads      25/80",
+    "9     Coding Squads      25/80",
+    "10     Coding Squads      25/80",
+  ];
 
   // Simple filter + search
   const filtered = rooms.filter((r) => {
@@ -118,51 +132,12 @@ export default function HackathonLobby() {
   }
 
   return (
-    <div className="w-full text-gray-100">
-      {/* Hero / Featured area */}
-      <div className="bg-gradient-to-r from-black/80 via-zinc-900 to-black/80 rounded-2xl p-6 mb-8">
-        <div className="flex items-center justify-between gap-6">
-          <div className="flex-1">
-            <h2 className="text-4xl font-extrabold tracking-wide">
-              Featured Hackathon
-            </h2>
-            <p className="text-sm text-zinc-400 mt-2">
-              C++ Virtual Storm — Championship Finals
-            </p>
-            <div className="mt-5 flex items-center gap-3">
-              <div className="rounded-md border border-zinc-700 px-4 py-2 text-sm">
-                240 Pts
-              </div>
-              <div className="rounded-md border border-zinc-700 px-4 py-2 text-sm">
-                2,847 viewers
-              </div>
-              <div className="rounded-md border border-zinc-700 px-4 py-2 text-sm">
-                2h 45m
-              </div>
-            </div>
-            <div className="mt-6">
-              <button className="px-5 py-2 rounded-md bg-amber-500 text-black font-semibold">
-                Register
-              </button>
-            </div>
-          </div>
-
-          <div className="w-2/5 rounded-xl overflow-hidden relative">
-            <div className="h-40 bg-gradient-to-br from-red-900 via-zinc-800 to-black flex items-center justify-center">
-              {/* Placeholder for banner image or carousel */}
-              <div className="text-center text-zinc-200">
-                Banner / Carousel Area
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
+    <div className="w-full bg-[#121111] h-full p-3 rounded-t-lg text-gray-100 flex flex-col ">
       {/* Controls */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
+      <div className="flex items-center w-full mb-6">
+        <div className="flex items-center gap-3 w-full">
           <input
-            className="bg-zinc-900 px-4 py-2 rounded-md placeholder:text-zinc-500 outline-none"
+            className="bg-zinc-900 flex-1 flex px-4 py-2 rounded-md text-lg placeholder:text-zinc-500 outline-none"
             placeholder="Search hackathons, hosts or modes..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -179,131 +154,18 @@ export default function HackathonLobby() {
             <option value="team">Team</option>
             <option value="algorithms">Algorithms</option>
           </select>
-
-          <button
-            className="px-4 py-2 rounded-md border border-zinc-700 text-sm"
-            onClick={() => {
-              setQuery("");
-              setFilter("all");
-            }}
-          >
-            Reset
-          </button>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <div className="text-zinc-400 text-sm">Quick Match</div>
-          <button
-            className="px-4 py-2 rounded-md bg-red-600 text-white text-sm"
-            onClick={() => alert("Quick-joining best open room...")}
-          >
-            Quick Join
-          </button>
         </div>
       </div>
 
-      {/* Rooms grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filtered.map((r) => (
-          <div
-            key={r.id}
-            className="bg-zinc-900 rounded-xl p-4 border border-zinc-800 shadow-lg flex flex-col justify-between"
-          >
-            <div>
-              <div className="flex items-start justify-between">
-                <div>
-                  <h3 className="text-xl font-bold tracking-tight">
-                    {r.title}
-                  </h3>
-                  <p className="text-xs text-zinc-400 mt-1">
-                    {r.mode} • Host: {r.host}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <div className="text-sm font-semibold">{r.prize}</div>
-                  <div className="text-xs text-zinc-400">
-                    {r.viewers} viewers
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-4 flex items-center gap-3 text-sm">
-                <div className="px-3 py-1 bg-black/30 rounded-md">
-                  {r.players}/{r.maxPlayers} players
-                </div>
-                <div className="px-3 py-1 bg-black/30 rounded-md">
-                  {r.timeLeft}
-                </div>
-                <div
-                  className={`px-3 py-1 rounded-md ${
-                    r.status === "open" ? "bg-green-700/60" : "bg-red-700/50"
-                  }`}
-                >
-                  {" "}
-                  {r.status}
-                </div>
-              </div>
-
-              <div className="mt-3 flex gap-2 flex-wrap">
-                {r.tags.map((t) => (
-                  <span
-                    key={t}
-                    className="text-xs px-2 py-1 rounded-md border border-zinc-700"
-                  >
-                    {t}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div className="mt-5 flex items-center justify-between">
-              <div className="text-zinc-400 text-xs">Room ID: {r.id}</div>
-
-              <div className="flex items-center gap-2">
-                <button
-                  className="px-3 py-1 rounded-md bg-zinc-800 border border-zinc-700 text-sm"
-                  onClick={() => alert("Viewing details")}
-                >
-                  Details
-                </button>
-                <button
-                  className="px-4 py-1 rounded-md bg-amber-500 text-black font-semibold"
-                  onClick={() => alert(`Joining ${r.title}`)}
-                >
-                  Join
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
+      <div className="flex w-full flex-1 min-h-0 ">
+        <AnimatedList
+          items={items}
+          onItemSelect={(item:String, index:Number) => console.log(item, index)}
+          showGradients={true}
+          enableArrowNavigation={true}
+          displayScrollbar={true}
+        />
       </div>
-
-      {/* Floating Create Button */}
-      <button
-        onClick={() => setShowCreate(true)}
-        className="fixed bottom-8 right-8 bg-red-600 hover:bg-red-700 text-white px-5 py-3 rounded-full shadow-2xl flex items-center gap-3"
-        title="Create Hackathon"
-      >
-        + Create
-      </button>
-
-      {/* Create Modal */}
-      {showCreate && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div
-            className="absolute inset-0 bg-black/70"
-            onClick={() => setShowCreate(false)}
-          />
-          <div className="relative z-10 w-[720px] max-w-[95%] bg-zinc-900 rounded-xl p-6 border border-zinc-800">
-            <h3 className="text-2xl font-bold mb-2">Create Hackathon</h3>
-            <CreateForm
-              onSubmit={createHackathon}
-              loading={creating}
-              onCancel={() => setShowCreate(false)}
-            />
-          </div>
-        </div>
-      )}
     </div>
   );
 }
