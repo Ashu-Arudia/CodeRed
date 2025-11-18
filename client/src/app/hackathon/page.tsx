@@ -132,41 +132,76 @@ export default function HackathonLobby() {
   }
 
   return (
-    <div className="w-full bg-[#121111] h-full p-3 rounded-t-lg text-gray-100 flex flex-col ">
-      {/* Controls */}
-      <div className="flex items-center w-full mb-6">
-        <div className="flex items-center gap-3 w-full">
-          <input
-            className="bg-zinc-900 flex-1 flex px-4 py-2 rounded-md text-lg placeholder:text-zinc-500 outline-none"
-            placeholder="Search hackathons, hosts or modes..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
+    <>
+      <div className="w-full bg-[#121111] h-full p-3 rounded-t-lg text-gray-100 flex flex-col ">
+        {/* Controls */}
+        <div className="flex items-center w-full mb-6">
+          <div className="flex items-center gap-3 w-full">
+            <input
+              className="bg-zinc-900 flex-1 flex px-4 py-2 rounded-md text-lg placeholder:text-zinc-500 outline-none"
+              placeholder="Search hackathons, hosts or modes..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
 
-          <select
-            className="bg-zinc-900 px-3 py-2 rounded-md"
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-          >
-            <option value="all">All</option>
-            <option value="ranked">Ranked</option>
-            <option value="casual">Casual</option>
-            <option value="team">Team</option>
-            <option value="algorithms">Algorithms</option>
-          </select>
+            <select
+              className="bg-zinc-900 px-4 py-3 rounded-md"
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+            >
+              <option value="all">All</option>
+              <option value="ranked">Ranked</option>
+              <option value="casual">Casual</option>
+              <option value="team">Team</option>
+              <option value="algorithms">Algorithms</option>
+            </select>
+
+            <div
+              className="cursor-pointer  text-4xl flex px-3 rounded-md placeholder:text-zinc-500 outline-none"
+              onClick={() => {
+                setShowCreate(true);
+              }}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  fill="currentColor"
+                  d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10s10-4.477 10-10S17.523 2 12 2m5 11h-4v4h-2v-4H7v-2h4V7h2v4h4z"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex w-full flex-1 min-h-0 ">
+          <AnimatedList
+            items={items}
+            onItemSelect={(item: String, index: Number) =>
+              console.log(item, index)
+            }
+            showGradients={true}
+            enableArrowNavigation={true}
+            displayScrollbar={true}
+          />
         </div>
       </div>
 
-      <div className="flex w-full flex-1 min-h-0 ">
-        <AnimatedList
-          items={items}
-          onItemSelect={(item:String, index:Number) => console.log(item, index)}
-          showGradients={true}
-          enableArrowNavigation={true}
-          displayScrollbar={true}
-        />
-      </div>
-    </div>
+      {showCreate && (
+        <div className="fixed inset-0 z-50 flex p-16">
+          <div className="p-6 bg-zinc-600 rounded-lg w-full h-full">
+            <CreateForm
+              onSubmit={createHackathon}
+              loading={creating}
+              onCancel={() => setShowCreate(false)}
+            />
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -199,55 +234,17 @@ function CreateForm({ onSubmit, loading, onCancel }: CreateFormProps) {
         e.preventDefault();
         onSubmit(form);
       }}
-      className="space-y-4"
+      className="space-y-4 h-full w-full  flex-col flex"
     >
-      <div className="grid grid-cols-2 gap-4">
-        <input
-          required
-          className="bg-zinc-800 px-3 py-2 rounded-md"
-          placeholder="Title"
-          value={form.title}
-          onChange={(e) => setForm((s) => ({ ...s, title: e.target.value }))}
-        />
-        <input
-          className="bg-zinc-800 px-3 py-2 rounded-md"
-          placeholder="Mode (e.g. Ranked, Casual)"
-          value={form.mode}
-          onChange={(e) => setForm((s) => ({ ...s, mode: e.target.value }))}
-        />
-      </div>
-
-      <div className="grid grid-cols-3 gap-4">
-        <input
-          className="bg-zinc-800 px-3 py-2 rounded-md"
-          placeholder="Host"
-          value={form.host}
-          onChange={(e) => setForm((s) => ({ ...s, host: e.target.value }))}
-        />
-        <input
-          className="bg-zinc-800 px-3 py-2 rounded-md"
-          placeholder="Max Players"
-          value={form.maxPlayers}
-          onChange={(e) =>
-            setForm((s) => ({ ...s, maxPlayers: e.target.value }))
-          }
-        />
-        <input
-          className="bg-zinc-800 px-3 py-2 rounded-md"
-          placeholder="Prize"
-          value={form.prize}
-          onChange={(e) => setForm((s) => ({ ...s, prize: e.target.value }))}
-        />
-      </div>
 
       <input
-        className="bg-zinc-800 px-3 py-2 rounded-md w-full"
+        className="bg-zinc-800 px-3 py-2 rounded-md w-full flex"
         placeholder="Tags (comma separated)"
         value={form.tags}
         onChange={(e) => setForm((s) => ({ ...s, tags: e.target.value }))}
       />
 
-      <div className="flex items-center justify-end gap-3">
+      <div className="flex-1 flex items-end p-5 justify-end gap-3">
         <button
           type="button"
           onClick={onCancel}

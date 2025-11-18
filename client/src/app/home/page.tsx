@@ -49,6 +49,7 @@ export default function Home() {
   const [addfriends, setaddfriends] = useState<Boolean>(false);
   const [isranked, setIsranked] = useState<Boolean>(true);
   const [nav, setNav] = useState<"home" | "hackathon" | "bonus">("home");
+  const [addedFriends, setAddedFriends] = useState<String[]>([]);
 
 
   //store
@@ -336,29 +337,80 @@ export default function Home() {
         <div
           className={`gap-3 text-sm tracking-widest align-middle px-1 pb-2 h-fit w-full flex flex-row font-bold ${smoochSans.className}`}
         >
-          <div className="cursor-pointer opacity-80  items-center flex">SUPPORT</div>
-          <div className="cursor-pointer opacity-80 items-center flex">FAIR PLAY</div>
-          <div className="cursor-pointer opacity-80 items-center flex">POLICIES</div>
+          <div className="cursor-pointer opacity-80  items-center flex">
+            SUPPORT
+          </div>
+          <div className="cursor-pointer opacity-80 items-center flex">
+            FAIR PLAY
+          </div>
+          <div className="cursor-pointer opacity-80 items-center flex">
+            POLICIES
+          </div>
 
           {/* Team members  */}
           <div className="flex-1 px-5 flex gap-2 justify-center items-center">
             {/* Player1  */}
-            <div className="flex items-center gap-3 bg-zinc-900 w-fit rounded-lg pr-8">
+            <div className="flex items-center gap-3 bg-zinc-900 w-fit rounded-lg">
               <div className="avatar avatar-online ">
                 <div className="w-9 rounded-full">
-                  <img src="https://img.daisyui.com/images/profile/demo/gordon@192.webp" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="30"
+                    height="34"
+                    viewBox="0 0 36 32"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M.5 31.983a.503.503 0 0 0 .612-.354c1.03-3.843 5.216-4.839 7.718-5.435c.627-.149 1.122-.267 1.444-.406c2.85-1.237 3.779-3.227 4.057-4.679a.5.5 0 0 0-.165-.473c-1.484-1.281-2.736-3.204-3.526-5.416a.5.5 0 0 0-.103-.171c-1.045-1.136-1.645-2.337-1.645-3.294c0-.559.211-.934.686-1.217a.5.5 0 0 0 .243-.408C10.042 5.036 13.67 1.026 18.12 1l.107.007c4.472.062 8.077 4.158 8.206 9.324a.5.5 0 0 0 .178.369c.313.265.459.601.459 1.057c0 .801-.427 1.786-1.201 2.772a.5.5 0 0 0-.084.158c-.8 2.536-2.236 4.775-3.938 6.145a.5.5 0 0 0-.178.483c.278 1.451 1.207 3.44 4.057 4.679c.337.146.86.26 1.523.403c2.477.536 6.622 1.435 7.639 5.232a.5.5 0 0 0 .966-.26c-1.175-4.387-5.871-5.404-8.393-5.95c-.585-.127-1.09-.236-1.336-.344c-1.86-.808-3.006-2.039-3.411-3.665c1.727-1.483 3.172-3.771 3.998-6.337c.877-1.14 1.359-2.314 1.359-3.317c0-.669-.216-1.227-.644-1.663C27.189 4.489 23.19.076 18.227.005l-.149-.002c-4.873.026-8.889 4.323-9.24 9.83c-.626.46-.944 1.105-.944 1.924c0 1.183.669 2.598 1.84 3.896c.809 2.223 2.063 4.176 3.556 5.543c-.403 1.632-1.55 2.867-3.414 3.676c-.241.105-.721.22-1.277.352c-2.541.604-7.269 1.729-8.453 6.147a.5.5 0 0 0 .354.612"
+                    />
+                  </svg>
                 </div>
               </div>
-              <div>Sunny</div>
+              <div>{addedFriends?.[0] || "User"}</div>
+              {!addedFriends?.[0] && (
+                <div className="flex-1 justify-center flex cursor-pointer mx-3 rounded-full w-5 h-5"></div>
+              )}
+              {addedFriends?.[0] && (
+                <div
+                  className="flex-1 justify-center flex items-center  cursor-pointer mx-3 rounded-full w-5 h-5"
+                  onClick={() => {
+                    setAddedFriends((prev) =>
+                      prev.filter((name) => name != addedFriends[0])
+                    );
+                  }}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="13"
+                    height="13"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      fill="#b50000"
+                      d="M15.854 12.854L11 8l4.854-4.854a.503.503 0 0 0 0-.707L13.561.146a.5.5 0 0 0-.707 0L8 5L3.146.146a.5.5 0 0 0-.707 0L.146 2.439a.5.5 0 0 0 0 .707L5 8L.146 12.854a.5.5 0 0 0 0 .707l2.293 2.293a.5.5 0 0 0 .707 0L8 11l4.854 4.854a.5.5 0 0 0 .707 0l2.293-2.293a.5.5 0 0 0 0-.707"
+                    />
+                  </svg>
+                </div>
+              )}
             </div>
             {/* Player2  */}
             <div className="flex items-center gap-3 bg-zinc-900 w-fit rounded-lg pr-8">
               <div className="avatar avatar-offline">
                 <div className="w-9 rounded-full">
-                  <img src="https://img.daisyui.com/images/profile/demo/idiotsandwich@192.webp" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="30"
+                    height="34"
+                    viewBox="0 0 36 32"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M.5 31.983a.503.503 0 0 0 .612-.354c1.03-3.843 5.216-4.839 7.718-5.435c.627-.149 1.122-.267 1.444-.406c2.85-1.237 3.779-3.227 4.057-4.679a.5.5 0 0 0-.165-.473c-1.484-1.281-2.736-3.204-3.526-5.416a.5.5 0 0 0-.103-.171c-1.045-1.136-1.645-2.337-1.645-3.294c0-.559.211-.934.686-1.217a.5.5 0 0 0 .243-.408C10.042 5.036 13.67 1.026 18.12 1l.107.007c4.472.062 8.077 4.158 8.206 9.324a.5.5 0 0 0 .178.369c.313.265.459.601.459 1.057c0 .801-.427 1.786-1.201 2.772a.5.5 0 0 0-.084.158c-.8 2.536-2.236 4.775-3.938 6.145a.5.5 0 0 0-.178.483c.278 1.451 1.207 3.44 4.057 4.679c.337.146.86.26 1.523.403c2.477.536 6.622 1.435 7.639 5.232a.5.5 0 0 0 .966-.26c-1.175-4.387-5.871-5.404-8.393-5.95c-.585-.127-1.09-.236-1.336-.344c-1.86-.808-3.006-2.039-3.411-3.665c1.727-1.483 3.172-3.771 3.998-6.337c.877-1.14 1.359-2.314 1.359-3.317c0-.669-.216-1.227-.644-1.663C27.189 4.489 23.19.076 18.227.005l-.149-.002c-4.873.026-8.889 4.323-9.24 9.83c-.626.46-.944 1.105-.944 1.924c0 1.183.669 2.598 1.84 3.896c.809 2.223 2.063 4.176 3.556 5.543c-.403 1.632-1.55 2.867-3.414 3.676c-.241.105-.721.22-1.277.352c-2.541.604-7.269 1.729-8.453 6.147a.5.5 0 0 0 .354.612"
+                    />
+                  </svg>
                 </div>
               </div>
-              <div>Alia</div>
+              <div>User</div>
             </div>
             {/* Player3  */}
             <div className="flex items-center gap-3 bg-zinc-900 w-fit rounded-lg pr-15">
@@ -380,7 +432,7 @@ export default function Home() {
               <div></div>
             </div>
             {/* Player4  */}
-            <div className="flex items-center gap-3 bg-zinc-900 w-fit rounded-lg pr-15">
+            {/* <div className="flex items-center gap-3 bg-zinc-900 w-fit rounded-lg pr-15">
               <div className="avatar">
                 <div className="w-9 rounded-full">
                   <svg
@@ -397,7 +449,7 @@ export default function Home() {
                 </div>
               </div>
               <div></div>
-            </div>
+            </div> */}
           </div>
 
           <div className="flex items-center text-center gap-2 px-2">
@@ -1088,56 +1140,6 @@ export default function Home() {
 
             {/* RIGHT SIDEBAR */}
             <aside className=" rounded-2xl  gap-3 flex flex-col">
-              {/* <div className=" flex flex-col h-56 w-50 rounded-xl  shadow-lg bg-[#121111]">
-                <h1 className="text-center p-2 font-bold text-white">
-                  Top Performers
-                </h1>
-
-                <div className="flex-1 overflow-y-auto gap-1 scrollbar-hide">
-                  <div className="w-full p-2 flex text-lg gap-2">
-                    <div>1.</div>
-                    <img
-                      className="w-7 h-7 rounded-full"
-                      src="https://i.pravatar.cc/150?u=a042581f4e29026704b"
-                      alt="Avatar"
-                    />
-                    <div>Aarav</div>
-                    <div className="flex-1"></div>
-                    <div className="pr-2 text-red-600">2045 Pts</div>
-                  </div>
-                  <div className="w-full p-2 flex text-lg gap-2">
-                    <div>2.</div>
-                    <img
-                      className="w-7 h-7 rounded-full"
-                      src="https://i.pravatar.cc/150?u=a042581f4e29026704b"
-                      alt="Avatar"
-                    />
-                    <div>Himanshu</div>
-                    <div className="flex-1"></div>
-                    <div className="pr-2 text-red-600">1945 Pts</div>
-                  </div>
-                  <div className="w-full p-2 flex text-lg gap-2">
-                    <div>3.</div>
-                    <img
-                      className="w-7 h-7 rounded-full"
-                      src="https://i.pravatar.cc/150?u=a042581f4e29026704b"
-                      alt="Avatar"
-                    />
-                    <div>Mahatma Gand...</div>
-                    <div className="flex-1"></div>
-                    <div className="pr-2 text-red-600">1745 Pts</div>
-                  </div>
-                </div>
-
-                <div className="border border-gray-500 rounded-b-lg">
-                  <div className="w-full p-2 flex text-lg">
-                    <div>#102. Hunter07</div>
-                    <div className="flex-1"></div>
-                    <div className="pr-2 text-white">{user.current_rating} Pts</div>
-                  </div>
-                </div>
-              </div> */}
-
               <div className="flex flex-col flex-1 bg-[#121111] rounded-xl shadow-lg w-50 text-white">
                 {/* Header with Invite Button */}
                 <div className="flex justify-between items-center p-2  border-gray-700">
@@ -1153,7 +1155,7 @@ export default function Home() {
                 {/* Friends List Container */}
                 <div className="flex-grow p-2 overflow-y-auto">
                   {/* Friend Item 1 (Online) */}
-                  <div className="flex items-center p-2 hover:bg-zinc-800 rounded-lg cursor-pointer">
+                  <div className="flex items-center p-2 hover:bg-zinc-800 rounded-lg cursor-pointer ">
                     <div className="relative">
                       <img
                         className="w-10 h-10 rounded-full"
@@ -1164,6 +1166,14 @@ export default function Home() {
                     </div>
                     <div className="ml-3">
                       <p className="text-lg">Alice</p>
+                    </div>
+                    <div
+                      className="flex-1 flex justify-end text-3xl mr-3"
+                      onClick={() => {
+                        setAddedFriends((prev) => [...prev, "Alice"]);
+                      }}
+                    >
+                      +
                     </div>
                   </div>
 
@@ -1179,6 +1189,14 @@ export default function Home() {
                     </div>
                     <div className="ml-3">
                       <p className="text-lg">Bob</p>
+                    </div>
+                    <div
+                      className="flex-1 flex justify-end text-3xl mr-3"
+                      onClick={() => {
+                        setAddedFriends((prev) => [...prev, "Bob"]);
+                      }}
+                    >
+                      +
                     </div>
                   </div>
 
