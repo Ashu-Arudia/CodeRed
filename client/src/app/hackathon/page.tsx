@@ -2,51 +2,77 @@
 import React, { useState } from "react";
 import AnimatedList from "../../components/AnimatedList";
 
+type Room = {
+  id: string;
+  title: string;
+  players: number;
+  maxPlayers: number;
+  viewers: number;
+  timeLeft: string;
+  status: "open" | "in-progress" | "closed";
+  tags: string[];
+  languages?: string[];
+  durationMinutes?: number | null;
+  hintAllowed?: boolean;
+  minRank?: string | null;
+  levels?: string[]; // multi-select buckets like "<10", "10-20"
+  description?: string;
+  // settings
+  mode?: "Single" | "Duo" | "Squad";
+  questionLevel?: "Easy" | "Medium" | "Hard" | "Legend";
+  perQuestionTime?: number | null;
+  numQuestions?: number | null;
+  questionTypes?: string[];
+};
+
 export default function HackathonLobby() {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState("all");
   const [showCreate, setShowCreate] = useState(false);
   const [creating, setCreating] = useState(false);
 
-  const [rooms, setRooms] = useState([
+  const [rooms, setRooms] = useState<Room[]>([
     {
       id: "h-001",
       title: "C++ Virtual Storm",
-      mode: "Championship Finals",
-      host: "XUser",
       players: 12,
       maxPlayers: 16,
-      prize: "240 Pts",
       viewers: 2847,
       timeLeft: "2h 45m",
       status: "open",
       tags: ["ranked", "algorithms"],
+      languages: ["C++"],
+      durationMinutes: 50,
+      hintAllowed: false,
+      minRank: "Gold",
+      levels: ["10-20"],
+      description: "Championship style tournament focused on C++ algorithms.",
+      mode: "Single",
+      questionLevel: "Medium",
+      perQuestionTime: 20,
+      numQuestions: 3,
+      questionTypes: ["DSA"],
     },
     {
       id: "h-002",
       title: "Fastest Debugger",
-      mode: "Qualifier",
-      host: "Alice",
       players: 4,
       maxPlayers: 8,
-      prize: "50 Pts",
       viewers: 312,
       timeLeft: "1h 10m",
       status: "open",
       tags: ["casual", "debugging"],
-    },
-    {
-      id: "h-003",
-      title: "2v2 Code Clash",
-      mode: "Ranked Match",
-      host: "Bob",
-      players: 8,
-      maxPlayers: 8,
-      prize: "120 Pts",
-      viewers: 198,
-      timeLeft: "15m",
-      status: "in-progress",
-      tags: ["ranked", "team"],
+      languages: ["JavaScript"],
+      durationMinutes: 15,
+      hintAllowed: true,
+      minRank: "Bronze",
+      levels: ["<10"],
+      description: "Quick debugging rounds for speed and finesse.",
+      mode: "Duo",
+      questionLevel: "Easy",
+      perQuestionTime: 15,
+      numQuestions: 2,
+      questionTypes: ["Programming"],
     },
   ]);
 
@@ -70,54 +96,84 @@ export default function HackathonLobby() {
     const q = query.toLowerCase();
     return (
       r.title.toLowerCase().includes(q) ||
-      r.mode.toLowerCase().includes(q) ||
-      r.host.toLowerCase().includes(q)
+      (r.description || "").toLowerCase().includes(q)
     );
   });
 
-  interface HackathonForm {
+  // Form shape
+  type HackathonForm = {
     title: string;
-    mode: string;
-    host: string;
-    maxPlayers: string | number;
-    prize: string;
+    description: string;
     tags: string;
-  }
+    maxPlayers: number;
+    durationMinutes?: number | null;
+    minRank?: string | null;
+    levels?: string[]; // multi-select
 
-  async function createHackathon(form : HackathonForm) {
+    // settings moved here
+    languages: string[];
+    hintAllowed?: boolean;
+    mode?: "Single" | "Duo" | "Squad";
+
+    // settings tab (existing)
+    questionLevel?: "Easy" | "Medium" | "Hard" | "Legend";
+    perQuestionTime?: number | null;
+    numQuestions?: number | null;
+    questionTypes?: string[];
+  };
+
+  async function createHackathon(form: HackathonForm) {
     setCreating(true);
     try {
-      // Example POST — change URL to your backend endpoint
       const payload = {
         title: form.title,
-        mode: form.mode,
-        host: form.host,
-        maxPlayers: Number(form.maxPlayers) || 16,
-        prize: form.prize,
-        tags: form.tags.split(",").map((tag) => tag.trim()),
+        description: form.description,
+        tags: form.tags
+          .split(",")
+          .map((t) => t.trim())
+          .filter(Boolean),
+        maxPlayers: Number(form.maxPlayers) || 20,
+        languages: form.languages,
+        durationMinutes: form.durationMinutes ?? null,
+        hintAllowed: !!form.hintAllowed,
+        minRank: form.minRank ?? null,
+        levels: form.levels ?? [],
+        mode: form.mode ?? "Single",
+        questionLevel: form.questionLevel ?? null,
+        perQuestionTime: form.perQuestionTime ?? null,
+        numQuestions: form.numQuestions ?? null,
+        questionTypes: form.questionTypes ?? [],
       };
 
-      // Send JSON to backend
+      // POST - change to your endpoint
       await fetch("/api/hackathons", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
-      // Optimistic UI: add to rooms
+      // optimistic UI add
       setRooms((s) => [
         {
           id: `h-${Math.random().toString(36).slice(2, 7)}`,
           title: payload.title,
-          mode: payload.mode,
-          host: payload.host,
           players: 1,
           maxPlayers: payload.maxPlayers,
-          prize: payload.prize,
           viewers: 0,
           timeLeft: "--",
           status: "open",
           tags: payload.tags,
+          languages: payload.languages,
+          durationMinutes: payload.durationMinutes,
+          hintAllowed: payload.hintAllowed,
+          minRank: payload.minRank ?? undefined,
+          levels: payload.levels,
+          description: payload.description,
+          mode: payload.mode as Room["mode"],
+          questionLevel: payload.questionLevel ?? undefined,
+          perQuestionTime: payload.perQuestionTime ?? undefined,
+          numQuestions: payload.numQuestions ?? undefined,
+          questionTypes: payload.questionTypes,
         },
         ...s,
       ]);
@@ -125,7 +181,9 @@ export default function HackathonLobby() {
       setShowCreate(false);
     } catch (err) {
       console.error(err);
-      alert("Failed to create hackathon — check console and your backend URL.");
+      alert(
+        "Failed to create tournament — check console and your backend URL."
+      );
     } finally {
       setCreating(false);
     }
@@ -139,7 +197,7 @@ export default function HackathonLobby() {
           <div className="flex items-center gap-3 w-full">
             <input
               className="bg-zinc-900 flex-1 flex px-4 py-2 rounded-md text-lg placeholder:text-zinc-500 outline-none"
-              placeholder="Search hackathons, hosts or modes..."
+              placeholder="Search tournaments or descriptions..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />
@@ -157,10 +215,11 @@ export default function HackathonLobby() {
             </select>
 
             <div
-              className="cursor-pointer  text-4xl flex px-3 rounded-md placeholder:text-zinc-500 outline-none"
+              className="cursor-pointer text-4xl flex px-3 rounded-md placeholder:text-zinc-500 outline-none"
               onClick={() => {
                 setShowCreate(true);
               }}
+              title="Create tournament"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -192,7 +251,12 @@ export default function HackathonLobby() {
 
       {showCreate && (
         <div className="fixed inset-0 z-50 flex p-16">
-          <div className="p-6 bg-zinc-600 rounded-lg w-full h-full">
+          <div
+            className="absolute inset-0 bg-black/50"
+            // optional: clicking the dim area closes the modal
+            onClick={() => setShowCreate(false)}
+          />
+          <div className="relative z-10 p-6 bg-zinc-900 rounded-lg w-full h-full overflow-auto">
             <CreateForm
               onSubmit={createHackathon}
               loading={creating}
@@ -206,45 +270,552 @@ export default function HackathonLobby() {
 }
 
 type CreateFormProps = {
-  onSubmit: (form: {
-    title: string;
-    mode: string;
-    host: string;
-    maxPlayers: string | number;
-    prize: string;
-    tags: string;
-  }) => void;
+  onSubmit: (form: HackathonForm) => void;
   loading: boolean;
   onCancel: () => void;
 };
 
+type HackathonForm = {
+  title: string;
+  description: string;
+  tags: string;
+  maxPlayers: number;
+  durationMinutes?: number | null;
+  minRank?: string | null;
+  levels?: string[]; // multi-select
+
+  // settings moved here
+  languages: string[];
+  hintAllowed?: boolean;
+  mode?: "Single" | "Duo" | "Squad";
+
+  // settings
+  questionLevel?: "Easy" | "Medium" | "Hard" | "Legend";
+  perQuestionTime?: number | null;
+  numQuestions?: number | null;
+  questionTypes?: string[];
+};
+
 function CreateForm({ onSubmit, loading, onCancel }: CreateFormProps) {
-  const [form, setForm] = useState({
+  const [activeTab, setActiveTab] = useState<"details" | "settings">("details");
+
+  // defaults
+  const [form, setForm] = useState<HackathonForm>({
     title: "",
-    mode: "Casual",
-    host: "You",
-    maxPlayers: "8",
-    prize: "0 Pts",
+    description: "",
     tags: "casual",
+    maxPlayers: 20,
+    durationMinutes: 15,
+    minRank: "Bronze",
+    levels: ["<10"],
+    // moved defaults
+    languages: ["JavaScript"],
+    hintAllowed: false,
+    mode: "Single",
+    // settings defaults
+    questionLevel: "Medium",
+    perQuestionTime: 15,
+    numQuestions: 1,
+    questionTypes: ["DSA"],
   });
+
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const languagesList = [
+    "JavaScript",
+    "Python",
+    "C++",
+    "Java",
+  ];
+
+  const levelBuckets = ["<10", "10-20", "20-30", ">30"];
+  const durations = [
+    { label: "15 min", value: 15 },
+    { label: "20 min", value: 20 },
+    { label: "50 min", value: 50 },
+    { label: "1 hour", value: 60 },
+    { label: "1.5 hour", value: 90 },
+    { label: "2 hour", value: 120 },
+  ];
+  const playerOptions = [20, 30, 40, 50];
+  const rankOptions = [
+    "Bronze",
+    "Silver",
+    "Gold",
+    "Grandmaster",
+    "CodeRed Champion",
+  ];
+
+  const questionLevelOptions = ["Easy", "Medium", "Hard", "Legend"] as const;
+  const perQuestionTimeOptions = [15, 20, 30, 40];
+  const numQuestionsOptions = [1, 2, 3, 4];
+  const questionTypeOptions = ["DSA", "Programming"];
+  const modeOptions: HackathonForm["mode"][] = ["Single", "Duo", "Squad"];
+
+  function toggleLevel(level: string) {
+    setForm((s) => {
+      const has = s.levels?.includes(level);
+      return {
+        ...s,
+        levels: has
+          ? s.levels!.filter((l) => l !== level)
+          : [...(s.levels || []), level],
+      };
+    });
+  }
+
+  function toggleQuestionType(t: string) {
+    setForm((s) => {
+      const has = s.questionTypes?.includes(t);
+      return {
+        ...s,
+        questionTypes: has
+          ? s.questionTypes!.filter((x) => x !== t)
+          : [...(s.questionTypes || []), t],
+      };
+    });
+  }
+
+  function toggleLanguage(lang: string) {
+    setForm((s) => {
+      const has = s.languages.includes(lang);
+      return {
+        ...s,
+        languages: has
+          ? s.languages.filter((l) => l !== lang)
+          : [...s.languages, lang],
+      };
+    });
+  }
+
+  function validate(): boolean {
+    const e: Record<string, string> = {};
+    if (!form.title.trim()) e.title = "Title is required";
+    if (!form.maxPlayers || !playerOptions.includes(Number(form.maxPlayers)))
+      e.maxPlayers = `Max players must be one of ${playerOptions.join(", ")}`;
+    if (!form.levels || form.levels.length === 0)
+      e.levels = "Choose at least one level bucket";
+    // settings validation (languages/hint/mode moved to settings)
+    if (!form.languages || form.languages.length === 0)
+      e.languages = "Choose at least one language";
+    if (!form.mode) e.mode = "Choose a tournament mode";
+    // settings tab validation
+    if (!form.questionLevel) e.questionLevel = "Choose a question level";
+    if (
+      !form.perQuestionTime ||
+      !perQuestionTimeOptions.includes(Number(form.perQuestionTime))
+    )
+      e.perQuestionTime = `Choose per-question time from ${perQuestionTimeOptions.join(
+        ", "
+      )}`;
+    if (
+      !form.numQuestions ||
+      !numQuestionsOptions.includes(Number(form.numQuestions))
+    )
+      e.numQuestions = "Choose number of questions";
+    if (!form.questionTypes || form.questionTypes.length === 0)
+      e.questionTypes = "Choose at least one question type";
+
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  }
+
+  // if validation fails in settings we switch tabs to show errors
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const ok = validate();
+    if (!ok) {
+      // prefer showing settings tab if any settings-related errors exist
+      const settingsKeys = [
+        "languages",
+        "mode",
+        "questionLevel",
+        "perQuestionTime",
+        "numQuestions",
+        "questionTypes",
+      ];
+      if (
+        settingsKeys.some(
+          (k) =>
+            Object.keys(errors).includes(k) ||
+            (k === "languages" && !form.languages.length)
+        )
+      ) {
+        setActiveTab("settings");
+      } else {
+        setActiveTab("details");
+      }
+      return;
+    }
+    onSubmit(form);
+  }
 
   return (
     <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        onSubmit(form);
-      }}
-      className="space-y-4 h-full w-full  flex-col flex"
+      onSubmit={handleSubmit}
+      className="space-y-4 h-full w-full flex flex-col"
     >
+      {/* Tabs */}
+      <div className="flex gap-2 border-b border-zinc-800 pb-2">
+        <button
+          type="button"
+          className={`px-4 py-2 rounded-t-md ${
+            activeTab === "details" ? "bg-zinc-800" : "bg-transparent"
+          }`}
+          onClick={() => setActiveTab("details")}
+        >
+          Tournament Details
+        </button>
+        <button
+          type="button"
+          className={`px-4 py-2 rounded-t-md ${
+            activeTab === "settings" ? "bg-zinc-800" : "bg-transparent"
+          }`}
+          onClick={() => setActiveTab("settings")}
+        >
+          Tournament Settings
+        </button>
+      </div>
 
-      <input
-        className="bg-zinc-800 px-3 py-2 rounded-md w-full flex"
-        placeholder="Tags (comma separated)"
-        value={form.tags}
-        onChange={(e) => setForm((s) => ({ ...s, tags: e.target.value }))}
-      />
+      {/* DETAILS TAB */}
+      {activeTab === "details" && (
+        <>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-lg text-zinc-400">Title</label>
+              <input
+                className="bg-zinc-800 px-3 py-2 rounded-md w-full"
+                placeholder="Tournament title"
+                value={form.title}
+                onChange={(e) =>
+                  setForm((s) => ({ ...s, title: e.target.value }))
+                }
+              />
+              {errors.title && (
+                <div className="text-rose-400 text-sm mt-1">{errors.title}</div>
+              )}
+            </div>
 
-      <div className="flex-1 flex items-end p-5 justify-end gap-3">
+            <div>
+              <label className="text-lg text-zinc-400">Players</label>
+              <select
+                className="bg-zinc-800 px-3 py-2 rounded-md w-full"
+                value={form.maxPlayers}
+                onChange={(e) =>
+                  setForm((s) => ({ ...s, maxPlayers: Number(e.target.value) }))
+                }
+              >
+                {[20, 30, 40, 50].map((p) => (
+                  <option key={p} value={p}>
+                    {p} players
+                  </option>
+                ))}
+              </select>
+              {errors.maxPlayers && (
+                <div className="text-rose-400 text-sm mt-1">
+                  {errors.maxPlayers}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div>
+            <label className="text-lg text-zinc-400">Description</label>
+            <textarea
+              className="bg-zinc-800 px-3 py-2 rounded-md w-full min-h-[100px]"
+              placeholder="Describe the tournament, rules, scoring, etc."
+              value={form.description}
+              onChange={(e) =>
+                setForm((s) => ({ ...s, description: e.target.value }))
+              }
+            />
+          </div>
+
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <label className="text-lg text-zinc-400">
+                Tags (comma separated)
+              </label>
+              <input
+                className="bg-zinc-800 px-3 py-2 rounded-md w-full"
+                placeholder="e.g. Java,algorithms"
+                value={form.tags}
+                onChange={(e) =>
+                  setForm((s) => ({ ...s, tags: e.target.value }))
+                }
+              />
+            </div>
+
+            <div>
+              <label className="text-lg text-zinc-400">Duration</label>
+              <select
+                className="bg-zinc-800 px-3 py-2 rounded-md w-full"
+                value={form.durationMinutes ?? 15}
+                onChange={(e) =>
+                  setForm((s) => ({
+                    ...s,
+                    durationMinutes: Number(e.target.value),
+                  }))
+                }
+              >
+                {[
+                  { label: "15 min", value: 15 },
+                  { label: "20 min", value: 20 },
+                  { label: "50 min", value: 50 },
+                  { label: "1 hour", value: 60 },
+                  { label: "1.5 hour", value: 90 },
+                  { label: "2 hour", value: 120 },
+                ].map((d) => (
+                  <option key={d.value} value={d.value}>
+                    {d.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="text-lg text-zinc-400">Minimum rank</label>
+              <select
+                className="bg-zinc-800 px-3 py-2 rounded-md w-full"
+                value={form.minRank ?? "Bronze"}
+                onChange={(e) =>
+                  setForm((s) => ({ ...s, minRank: e.target.value }))
+                }
+              >
+                {[
+                  "Bronze",
+                  "Silver",
+                  "Gold",
+                  "Grandmaster",
+                  "CodeRed Champion",
+                ].map((r) => (
+                  <option key={r} value={r}>
+                    {r}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label className="text-lg text-zinc-400">
+              Minimum Level
+            </label>
+            <div className="flex flex-wrap gap-2 mt-2">
+              {["<10", "10-20", "20-30", ">30"].map((lvl) => {
+                const active = form.levels?.includes(lvl);
+                return (
+                  <button
+                    type="button"
+                    key={lvl}
+                    onClick={() => {
+                      const has = form.levels!.includes(lvl);
+                      setForm((s) => ({
+                        ...s,
+                        levels: has
+                          ? s.levels!.filter((l) => l !== lvl)
+                          : [...(s.levels || []), lvl],
+                      }));
+                    }}
+                    className={`px-3 py-1 rounded-md border ${
+                      active ? "bg-amber-400 text-black" : "border-zinc-700"
+                    }`}
+                  >
+                    {lvl}
+                  </button>
+                );
+              })}
+            </div>
+            {errors.levels && (
+              <div className="text-rose-400 text-sm mt-1">{errors.levels}</div>
+            )}
+          </div>
+        </>
+      )}
+
+      {/* SETTINGS TAB */}
+      {activeTab === "settings" && (
+        <>
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <label className="text-lg text-zinc-400">Languages</label>
+              <div className="flex flex-wrap gap-2 mt-2">
+                {languagesList.map((lang) => {
+                  const active = form.languages.includes(lang);
+                  return (
+                    <button
+                      type="button"
+                      key={lang}
+                      onClick={() => toggleLanguage(lang)}
+                      className={`px-3 py-1 rounded-md border ${
+                        active ? "bg-amber-400 text-black" : "border-zinc-700"
+                      }`}
+                    >
+                      {lang}
+                    </button>
+                  );
+                })}
+              </div>
+              {errors.languages && (
+                <div className="text-rose-400 text-sm mt-1">
+                  {errors.languages}
+                </div>
+              )}
+            </div>
+
+            <div>
+              <label className="text-lg text-zinc-400">Allow hints</label>
+              <div className="mt-2">
+                <label className="inline-flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={!!form.hintAllowed}
+                    onChange={(e) =>
+                      setForm((s) => ({ ...s, hintAllowed: e.target.checked }))
+                    }
+                  />
+                  <span className="text-lg text-zinc-300">Enable hints</span>
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <label className="text-lg text-zinc-400">Tournament mode</label>
+              <select
+                className="bg-zinc-800 px-3 py-2 rounded-md w-full"
+                value={form.mode ?? "Single"}
+                onChange={(e) =>
+                  setForm((s) => ({
+                    ...s,
+                    mode: e.target.value as HackathonForm["mode"],
+                  }))
+                }
+              >
+                {["Single", "Duo", "Squad"].map((m) => (
+                  <option key={m} value={m}>
+                    {m}
+                  </option>
+                ))}
+              </select>
+              {errors.mode && (
+                <div className="text-rose-400 text-sm mt-1">{errors.mode}</div>
+              )}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 mt-4">
+            <div>
+              <label className="text-lg text-zinc-400">Questions level</label>
+              <select
+                className="bg-zinc-800 px-3 py-2 rounded-md w-full"
+                value={form.questionLevel}
+                onChange={(e) =>
+                  setForm((s) => ({
+                    ...s,
+                    questionLevel: e.target
+                      .value as HackathonForm["questionLevel"],
+                  }))
+                }
+              >
+                {["Easy", "Medium", "Hard", "Legend"].map((q) => (
+                  <option key={q} value={q}>
+                    {q}
+                  </option>
+                ))}
+              </select>
+              {errors.questionLevel && (
+                <div className="text-rose-400 text-sm mt-1">
+                  {errors.questionLevel}
+                </div>
+              )}
+            </div>
+
+            <div>
+              <label className="text-lg text-zinc-400">
+                Per-question time limit
+              </label>
+              <select
+                className="bg-zinc-800 px-3 py-2 rounded-md w-full"
+                value={form.perQuestionTime ?? 15}
+                onChange={(e) =>
+                  setForm((s) => ({
+                    ...s,
+                    perQuestionTime: Number(e.target.value),
+                  }))
+                }
+              >
+                {[15, 20, 30, 40].map((t) => (
+                  <option key={t} value={t}>
+                    {t} min
+                  </option>
+                ))}
+              </select>
+              {errors.perQuestionTime && (
+                <div className="text-rose-400 text-sm mt-1">
+                  {errors.perQuestionTime}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 mt-4">
+            <div>
+              <label className="text-lg text-zinc-400">
+                Number of questions
+              </label>
+              <select
+                className="bg-zinc-800 px-3 py-2 rounded-md w-full"
+                value={form.numQuestions ?? 1}
+                onChange={(e) =>
+                  setForm((s) => ({
+                    ...s,
+                    numQuestions: Number(e.target.value),
+                  }))
+                }
+              >
+                {[1, 2, 3, 4].map((n) => (
+                  <option key={n} value={n}>
+                    {n}
+                  </option>
+                ))}
+              </select>
+              {errors.numQuestions && (
+                <div className="text-rose-400 text-sm mt-1">
+                  {errors.numQuestions}
+                </div>
+              )}
+            </div>
+
+            <div>
+              <label className="text-lg text-zinc-400">Type of questions</label>
+              <div className="flex gap-2 mt-2">
+                {["DSA", "Programming"].map((t) => {
+                  const active = form.questionTypes?.includes(t);
+                  return (
+                    <button
+                      key={t}
+                      type="button"
+                      onClick={() => toggleQuestionType(t)}
+                      className={`px-3 py-1 rounded-md border ${
+                        active ? "bg-amber-400 text-black" : "border-zinc-700"
+                      }`}
+                    >
+                      {t}
+                    </button>
+                  );
+                })}
+              </div>
+              {errors.questionTypes && (
+                <div className="text-rose-400 text-sm mt-1">
+                  {errors.questionTypes}
+                </div>
+              )}
+            </div>
+          </div>
+        </>
+      )}
+
+      <div className="flex-1 flex items-end justify-end gap-3">
         <button
           type="button"
           onClick={onCancel}
@@ -255,9 +826,9 @@ function CreateForm({ onSubmit, loading, onCancel }: CreateFormProps) {
         <button
           type="submit"
           disabled={loading}
-          className="px-5 py-2 rounded-md bg-amber-500 text-black font-semibold"
+          className="px-5 py-2 rounded-md bg-amber-500 text-black font-semibold disabled:opacity-60"
         >
-          {loading ? "Creating..." : "Create"}
+          {loading ? "Creating..." : "Create Tournament"}
         </button>
       </div>
     </form>

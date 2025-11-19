@@ -14,13 +14,13 @@ import {
   Code, // For Code Editor
   Trophy, // For Achievements
   Zap, // For "The Idea" icons
-  Heart, // For "The Idea" icons
-  Award, // For "The Idea" icons
-  Check, // For Why CodeRed list
+  Heart, 
+  Award,
+  Check,
   ArrowRight,
   ChevronRight,
-  UserCircle, // <-- RE-ADDED for avatars
-  // Calendar, <-- REMOVED
+  UserCircle,
+
 } from "lucide-react";
 import { Metal_Mania } from "next/font/google";
 import { useRouter } from "next/navigation";
@@ -261,7 +261,7 @@ export default function App() {
 
       {/* Main Content */}
       <main className="overflow-hidden">
-     
+
         <section className="container mx-auto px-6 py-16 md:py-24">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             {/* Hero Text Content */}

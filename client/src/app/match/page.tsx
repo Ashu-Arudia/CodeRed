@@ -341,7 +341,7 @@ int main() {
 
 
   return (
-    <div className="h-screen flex flex-col bg-zinc-950" ref={containerRef}>
+    <div className="h-screen flex flex-col bg-zinc-950 text-white" ref={containerRef}>
       {/* header */}
       <div className="w-full bg-zinc-950 h-10 my-2 items-center flex justify-between px-2">
         <div
