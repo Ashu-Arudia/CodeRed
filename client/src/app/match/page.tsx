@@ -239,7 +239,7 @@ int main() {
             "ngrok-skip-browser-warning": "true",
           },
         };
-        const response = await axios.get(`${backendUrl}/api/v1/problems/1`, config);
+        const response = await axios.get(`${backendUrl}/api/v1/problems/101`, config);
 
         setQuestion({
           title: response.data.title,
@@ -439,7 +439,7 @@ int main() {
                         onClick={(e) => {
                           e.stopPropagation();
                           alert(`Clicked ${btn.title}`);
-                          setOpen(false); // optional: close after click
+                          setOpen(false);
                         }}
                         tabIndex={open ? 0 : -1}
                         aria-hidden={!open}
@@ -451,9 +451,9 @@ int main() {
                           opacity: open ? 1 : 0,
                           transition:
                             "transform 220ms cubic-bezier(.2,.9,.2,1), opacity 180ms",
-                          pointerEvents: open ? "auto" : "none", // IMPORTANT: prevent clicks when closed
+                          pointerEvents: open ? "auto" : "none",
                           zIndex: open ? 20 : 5,
-                          // position them centered relative to main button
+                   
                           right: 0,
                           bottom: 0,
                         }}

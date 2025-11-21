@@ -56,6 +56,9 @@ export default function Home() {
   const setUserDetail = userDetails((s) => s.setUser)
   const community = userState((s) => s.communityState);
   const setCommunity = userState((s) => s.setCommunityState);
+  const setting = userState((s) => s.settingState);
+  const setSetting = userState((s) => s.setSettingState);
+
 
   //User details
   const [user, setUser] = useState({
@@ -110,12 +113,6 @@ export default function Home() {
     setShowFriends(false);
   }
 
-  const showsettings = () => {
-    setShowSettings(true);
-  }
-  const dontshowsettings = () => {
-    setShowSettings(false);
-  }
   const isrank = (para : Boolean) => {
     setIsranked(para);
   }
@@ -763,7 +760,7 @@ export default function Home() {
                 {/* settings  */}
                 <div
                   className="w-full h-full cursor-pointer hover:bg-zinc-800 "
-                  onClick={showsettings}
+                  onClick={()=>{setSetting(true)}}
                 >
                   <div className="flex gap-3 mr-10 cursor-pointer items-center">
                     <svg
@@ -1276,13 +1273,12 @@ export default function Home() {
       )}
 
       {/* Settings  */}
-      {showSettings && (
+      {setting && (
         <div className="w-full absolute top-0 z-10 flex justify-center items-center  h-screen  ">
           <div
-            onClick={dontshowsettings}
-            className="w-full h-full bg-black/20 backdrop-blur-sm"
+            className="w-full h-full bg-black opacity-60"
           ></div>
-          <div className="overflow-auto scrollbar-hide absolute z-20 flex h-full  items-center rounded-lg py-6 w-2/3 ">
+          <div className="overflow-auto scrollbar-hide absolute z-20 flex h-full items-center rounded-lg p-12 w-full ">
             <Settings user={user} />
           </div>
         </div>

@@ -1,4 +1,5 @@
 'use client'
+import userState from "../home/store/stateStore";
 
 type ToggleSwitchProps = {
   label: string;
@@ -11,21 +12,35 @@ const ToggleSwitch = ({ label }: ToggleSwitchProps) => (
   </label>
 );
 
-export default function SettingsPage({user}: any) {
-  return (
-    <div className="bg-[#121212] w-full text-white h-full overflow-y-auto scrollbar-hide  p-8 font-sans rounded-lg">
-      <div className="w-full mx-auto scrollbar-hide h-full ">
-        {/* Header */}
-        <div className="mb-5  p-5">
-          <h1 className="text-3xl font-bold">Settings</h1>
-          <p className="text-zinc-400 mt-1">
-            Manage your account and preferences.
-          </p>
-        </div>
+export default function SettingsPage({ user }: any) {
 
-        <div className="overflow-y-auto  scrollbar-hide p-3 ">
+  //store
+  const setting = userState((s) => s.settingState);
+  const setSetting = userState((s) => s.setSettingState);
+  return (
+    <div className="bg-zinc-900 w-full text-white h-full scrollbar-hide p-5 font-sans rounded-lg">
+      <div className="w-full scrollbar-hide h-full flex flex-col ">
+        {/* Header */}
+        <div className="flex items-center w-full pb-4 border-zinc-700 border-b justify-end">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              className="cursor-pointer text-zinc-500 hover:text-white transition-colors"
+              onClick={() => {
+                setSetting(false);
+              }}
+            >
+              <g fill="currentColor" fillRule="evenodd" clipRule="evenodd">
+                <path d="M5.47 5.47a.75.75 0 0 1 1.06 0l12 12a.75.75 0 1 1-1.06 1.06l-12-12a.75.75 0 0 1 0-1.06" />
+                <path d="M18.53 5.47a.75.75 0 0 1 0 1.06l-12 12a.75.75 0 0 1-1.06-1.06l12-12a.75.75 0 0 1 1.06 0" />
+              </g>
+            </svg>
+        </div>
+        <div className="overflow-y-auto w-full flex-1 flex flex-col scrollbar-hide p-3 ">
           {/* Profile Settings Section */}
-          <div className="bg-[#1E1E1E] p-6 rounded-lg shadow-lg ">
+          <div className="bg-zinc-800 p-6 rounded-lg shadow-lg ">
             <h2 className="text-xl font-semibold border-b border-zinc-700 pb-4">
               Profile
             </h2>
@@ -61,7 +76,7 @@ export default function SettingsPage({user}: any) {
           </div>
 
           {/* Account Security Section */}
-          <div className="bg-[#1E1E1E] p-6 rounded-lg shadow-lg mt-8">
+          <div className="bg-zinc-800 p-6 rounded-lg shadow-lg mt-8">
             <h2 className="text-xl font-semibold border-b border-zinc-700 pb-4">
               Account Security
             </h2>
@@ -90,7 +105,7 @@ export default function SettingsPage({user}: any) {
           </div>
 
           {/* Notifications Section */}
-          <div className="bg-[#1E1E1E] p-6 rounded-lg shadow-lg mt-8">
+          <div className="bg-zinc-800 p-6 rounded-lg shadow-lg mt-8">
             <h2 className="text-xl font-semibold border-b border-zinc-700 pb-4">
               Notifications
             </h2>
@@ -102,7 +117,7 @@ export default function SettingsPage({user}: any) {
           </div>
 
           {/* Danger Zone Section */}
-          <div className="bg-[#1E1E1E] border border-red-700 p-6 rounded-lg shadow-lg mt-8">
+          <div className="bg-zinc-800 border border-red-700 p-6 rounded-lg shadow-lg mt-8">
             <h2 className="text-xl font-semibold text-red-500">Danger Zone</h2>
             <div className="mt-6 flex justify-between items-center">
               <div>

@@ -253,7 +253,6 @@ export default function HackathonLobby() {
         <div className="fixed inset-0 z-50 flex p-16">
           <div
             className="absolute inset-0 bg-black/50"
-            // optional: clicking the dim area closes the modal
             onClick={() => setShowCreate(false)}
           />
           <div className="relative z-10 p-6 bg-zinc-900 rounded-lg w-full h-full overflow-auto">
