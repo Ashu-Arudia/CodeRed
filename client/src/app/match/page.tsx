@@ -40,8 +40,8 @@ int main() {
   // question
   interface SampleTestCase {
     test_cases_id : number,
-    input_data: string;
-    expected_output: string;
+    input: string;
+    output: string;
   }
 
   interface Question {
@@ -53,7 +53,7 @@ int main() {
     sample_test_cases: SampleTestCase[];
   }
   const [question, setQuestion] = useState<Question>({
-    title: "Sum of Two Numbers",
+    title: "Sum of Twooo Numbers",
     description:
       "Given two integers A and B, return their sum. The input contains two integers separated by space. Output the sum as a single integer.",
     difficulty_Level: "easy",
@@ -62,13 +62,13 @@ int main() {
     sample_test_cases: [
       {
         test_cases_id: 1,
-        input_data: "3 5",
-        expected_output: "8",
+        input: "3 5",
+        output: "8",
       },
       {
         test_cases_id: 2,
-        input_data: "10 20",
-        expected_output: "30",
+        input: "10 20",
+        output: "30",
       },
     ],
   });
@@ -259,6 +259,10 @@ int main() {
     fun();
   },[])
 
+
+  useEffect(() => {
+    console.log("Cureent question: ",question);
+  },[question])
 
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -453,7 +457,7 @@ int main() {
                             "transform 220ms cubic-bezier(.2,.9,.2,1), opacity 180ms",
                           pointerEvents: open ? "auto" : "none",
                           zIndex: open ? 20 : 5,
-                   
+
                           right: 0,
                           bottom: 0,
                         }}
@@ -714,7 +718,7 @@ int main() {
                   <div className="flex ">
                     <div>Input: </div>
                     <div>
-                      {`${question.sample_test_cases[0].input_data.replace(
+                      {`${question.sample_test_cases[0].input.replace(
                         /\\n/g,
                         "\n"
                       )}`}
@@ -723,7 +727,7 @@ int main() {
 
                   <div className="flex">
                     <div>Output: </div>
-                    {`${question.sample_test_cases[0].expected_output.replace(
+                    {`${question.sample_test_cases[0].output.replace(
                       /\\n/g,
                       "\n"
                     )}`}
@@ -739,7 +743,7 @@ int main() {
                   <div className="flex ">
                     <div>Input: </div>
                     <div>
-                      {`${question.sample_test_cases[1].input_data.replace(
+                      {`${question.sample_test_cases[1].input.replace(
                         /\\n/g,
                         "\n"
                       )}`}
@@ -748,7 +752,7 @@ int main() {
 
                   <div className="flex">
                     <div>Output: </div>
-                    {`${question.sample_test_cases[1].expected_output.replace(
+                    {`${question.sample_test_cases[1].output.replace(
                       /\\n/g,
                       "\n"
                     )}`}

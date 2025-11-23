@@ -7,6 +7,7 @@ import {
   Poppins,
 } from "next/font/google";
 import "./global.css";
+import ClientLayout from '../hydrationFix/clientLayout'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -47,7 +48,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={poppins.className}>
-      <body>{children}</body>
+      <body>
+        <ClientLayout> {children}</ClientLayout>
+      </body>
     </html>
   );
 }

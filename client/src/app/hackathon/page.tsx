@@ -15,9 +15,8 @@ type Room = {
   durationMinutes?: number | null;
   hintAllowed?: boolean;
   minRank?: string | null;
-  levels?: string[]; // multi-select buckets like "<10", "10-20"
+  levels?: string[]; 
   description?: string;
-  // settings
   mode?: "Single" | "Duo" | "Squad";
   questionLevel?: "Easy" | "Medium" | "Hard" | "Legend";
   perQuestionTime?: number | null;
