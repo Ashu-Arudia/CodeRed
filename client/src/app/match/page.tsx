@@ -11,8 +11,7 @@ const metalMania = Metal_Mania({
 });
 
 const backendUrl = process.env.NEXT_PUBLIC_API_URL;
-const token =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxNSIsImV4cCI6MTc2MjQzODA3N30.JyluIZT3TbwqupeXqSrfSzckD7YJKaSExnfjHwKgUmU";
+const token = localStorage.getItem("token");
 
 export default function CodeEditor() {
   const cppDefaultCode = `#include <iostream>
@@ -24,7 +23,6 @@ int main() {
 
   const [code, setCode] = useState<string>(cppDefaultCode);
   const [message, setMessage] = useState<string | null>(null);
-  const [result, setResult] = useState<string>("");
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -35,6 +33,7 @@ int main() {
   const editorRef = useRef<any>(null);
   const monacoDisposableRef = useRef<any[]>([]);
   const [counter, setCounter] = useState(0);
+  const [showTestCase, setShowTestCase] = useState(true);
 
 
   // question
@@ -47,7 +46,7 @@ int main() {
   interface Question {
     title: string;
     description: string;
-    difficulty_Level: "easy" | "medium" | "hard"; // or string
+    difficulty_Level: "easy" | "medium" | "hard";
     topic_id: number;
     time_Limit: number;
     sample_test_cases: SampleTestCase[];
@@ -74,49 +73,18 @@ int main() {
   });
 
 
+  interface result {
+    actual_output: String;
+    compile_output: null;
+    expected_output: String;
+    input: String;
+    status: String;
+    stderr: null;
+    test_case_index: number;
+  }
+  const [result, setResult] = useState<result[]>();
 
-  //test cases
-  type TestCase = {
-    id: number;
-    title?: string;
-    input: string;
-    expected: string;
-    output: string;
-    passed: boolean;
-  };
-
-  const sampleData: TestCase[] = [
-    {
-      id: 1,
-      title: "Case 1",
-      input: `nums = [2, 7, 11, 15]\ntarget = 9`,
-      expected: `[0, 1]`,
-      output: `[0, 1]`,
-      passed: true,
-    },
-    {
-      id: 2,
-      title: "Case 2",
-      input: `nums = [3, 2, 4]\ntarget = 6`,
-      expected: `[1, 2]`,
-      output: `[2, 1]`,
-      passed: false,
-    },
-    {
-      id: 3,
-      title: "Case 3",
-      input: `nums = [3, 3]\ntarget = 6`,
-      expected: `[0, 1]`,
-      output: `[0, 1]`,
-      passed: true,
-    },
-  ];
-
-  const [cases] = useState<TestCase[]>(sampleData);
   const [activeIndex, setActiveIndex] = useState<number>(0);
-
-  const passedCount = cases.filter((c) => c.passed).length;
-  const failedCount = cases.length - passedCount;
 
   const [time, setTime] = useState({
     hours: 0,
@@ -161,7 +129,7 @@ int main() {
 
   const buttons = [
     { id: 1, icon: "A", title: "Question" },
-    { id: 2, icon: "S", title: "Submit" },
+    { id: 2, icon: "S", title: "Mode" },
     { id: 3, icon: "Q", title: "Run" },
     { id: 4, icon: "W", title: "Comments" },
   ];
@@ -175,17 +143,7 @@ int main() {
     let shiftHeld = false;
 
     function onKeyDown(e: KeyboardEvent) {
-      // ignore if typing in input/textarea
-      const tg = (e.target as HTMLElement) || null;
-      if (
-        tg &&
-        (tg.tagName === "INPUT" ||
-          tg.tagName === "TEXTAREA" ||
-          tg.isContentEditable)
-      ) {
-        return;
-      }
-
+      // const tg = (e.target as HTMLElement) || null;
       if (e.shiftKey) {
         setIsShiftHeld(true);
         setOpen(true);
@@ -193,6 +151,13 @@ int main() {
 
       if (e.key.toLowerCase() === "a" && e.shiftKey) {
         setIsOpen((prev) => !prev);
+      }
+      if (e.key.toLowerCase() === "s" && e.shiftKey) {
+        setShowTestCase((prev) => !prev);
+      }
+      if (e.key.toLowerCase() === "enter" && e.shiftKey) {
+        e.preventDefault();
+        runCode();
       }
 
     }
@@ -249,6 +214,7 @@ int main() {
           time_Limit: response.data.time_Limit,
           sample_test_cases: response.data.sample_test_cases ?? [],
         });
+
         console.log("response from backend : ", response.data);
 
       } catch (err)
@@ -261,8 +227,8 @@ int main() {
 
 
   useEffect(() => {
-    console.log("Cureent question: ",question);
-  },[question])
+    console.log("Cureent result: ",result);
+  },[result])
 
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -278,13 +244,11 @@ int main() {
   const runCode = () => {
     const fun = async () => {
       try {
-        localStorage.setItem("userCode", code);
+        localStorage.setItem("userCode", editorRef.current?.getValue() ?? code);
         const data = {
-          source_code: code,
+          source_code: editorRef.current?.getValue() ?? code,
           language_id: 7,
-          stdin: "3 2 4\n6",
-          problem_id: null,
-          match_id: null,
+          problem_id: 101,
         };
         const config = {
           headers: {
@@ -292,6 +256,7 @@ int main() {
             "ngrok-skip-browser-warning": "true",
           },
         };
+        console.log("code: ", editorRef.current?.getValue() ?? "code");
         const response = await axios.post(
           `${backendUrl}/api/v1/submission/run`,
           data,
@@ -299,7 +264,7 @@ int main() {
         );
 
         console.log("Result from backend: ", response.data);
-        setResult(response.data.stdout);
+        setResult(response.data.results);
       } catch (err) {
         setMessage(" Failed to save locally.");
       }
@@ -310,25 +275,30 @@ int main() {
   function handleEditorMount(editor: any, monaco: any) {
     editorRef.current = editor;
 
-    // a) Monaco command for Shift + A — ONLY toggles the panel
     const cmd = editor.addCommand(
       monaco.KeyMod.Shift | monaco.KeyCode.KeyA,
       () => {
-        setIsOpen((prev) => !prev); // toggle problem panel
+        setIsOpen((prev) => !prev);
+      }
+    );
+    const ModeCmd = editor.addCommand(
+      monaco.KeyMod.Shift | monaco.KeyCode.KeyS,
+      () => {
+        setShowTestCase((prev) => !prev);
       }
     );
     monacoDisposableRef.current.push({
       dispose: () => editor._standaloneKeybindingService?.removeCommand(cmd),
     });
+    monacoDisposableRef.current.push({
+      dispose: () => editor._standaloneKeybindingService?.removeCommand(ModeCmd),
+    });
 
-    // b) Listen to keydown/up events on the editor itself to catch Shift presses
-    // editor.onKeyDown / onKeyUp receive Monaco keyboard events
     const d1 = editor.onKeyDown((ev: any) => {
-      // Monaco event has browserEvent property for the real DOM KeyboardEvent
       const browserEvent = ev.browserEvent as KeyboardEvent;
       if (!browserEvent) return;
       if (browserEvent.key === "Shift") {
-        setOpen(true); // open flower on Shift down while editor focused
+        setOpen(true);
       }
     });
 
@@ -336,16 +306,18 @@ int main() {
       const browserEvent = ev.browserEvent as KeyboardEvent;
       if (!browserEvent) return;
       if (browserEvent.key === "Shift") {
-        setOpen(false); // close flower on Shift release
+        setOpen(false);
       }
     });
 
     monacoDisposableRef.current.push(d1, d2);
   }
 
-
   return (
-    <div className="h-screen flex flex-col bg-zinc-950 text-white" ref={containerRef}>
+    <div
+      className="h-screen flex flex-col bg-zinc-950 text-white"
+      ref={containerRef}
+    >
       {/* header */}
       <div className="w-full bg-zinc-950 h-10 my-2 items-center flex justify-between px-2">
         <div
@@ -380,25 +352,7 @@ int main() {
                       <span>{String(time.seconds).padStart(2, "0")}</span>
                     </div>
 
-                    {/* Submit  */}
-                    <div
-                      className="items-center bg-zinc-700 cursor-pointer hover:scale-102 mr-5 p-1 rounded"
-                      onClick={runCode}
-                      title="Run code"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="20"
-                        height="20"
-                        viewBox="0 0 24 24"
-                        className=" m-1"
-                      >
-                        <path
-                          fill="white"
-                          d="M21.409 9.353a2.998 2.998 0 0 1 0 5.294L8.597 21.614C6.534 22.737 4 21.277 4 18.968V5.033c0-2.31 2.534-3.769 4.597-2.648z"
-                        />
-                      </svg>
-                    </div>
+                    <div></div>
                   </div>
 
                   <div className="h-full w-[70vw] transition-all duration-150 flex flex-col">
@@ -487,124 +441,78 @@ int main() {
                   </button>
                 </div>
               </div>
-
             </div>
           </div>
         </div>
 
         {/* test cases  */}
-        <div className="flex-1 h-full">
-          <div className="h-full max-h-full min-w-[320px] bg-zinc-900 text-gray-200 rounded-lg overflow-hidden flex flex-col">
-            {/* Tab row */}
-            <div className="border-b border-zinc-800">
-              <div className="flex items-center gap-2 px-3 py-2 overflow-x-auto no-scrollbar">
-                {/* render case tabs */}
-                {cases.map((c, idx) => {
-                  const active = activeIndex === idx;
-                  return (
-                    <button
-                      key={c.id}
-                      onClick={() => setActiveIndex(idx)}
-                      className={`flex-shrink-0 px-3 py-1 rounded-md text-sm font-medium transition ${
-                        active
-                          ? "bg-zinc-800 text-white shadow"
-                          : "text-zinc-400 hover:text-white hover:bg-zinc-800"
-                      }`}
-                      title={c.title ?? `Test Case ${c.id}`}
+        {showTestCase && (
+          <div className="flex-1 h-full pb-2 pr-2">
+            <div className="h-full max-h-full min-w-[320px] bg-zinc-900 text-gray-200 rounded-lg overflow-hidden flex flex-col">
+              {/* Tab row */}
+              <div className="border-b border-zinc-800">
+                <div className="flex items-center gap-2 px-3 py-2 overflow-x-auto no-scrollbar justify-between">
+                  <div>
+                    {/* render case tabs */}
+                    {question.sample_test_cases.map((c, idx) => {
+                      const active = activeIndex === idx;
+                      const status = result?.[idx]?.status;
+
+                      return (
+                        <button
+                          key={idx}
+                          onClick={() => setActiveIndex(idx)}
+                          className={`
+        flex-shrink-0 px-3 py-1 rounded-md text-sm font-medium transition mr-2
+        ${
+          active
+            ? " text-white shadow"
+            : "text-white hover:text-white opacity-70"
+        }
+        ${status === "Passed" ? "bg-green-700" : ""}
+        ${status === "Failed" ? "bg-red-700" : ""}
+      `}
+
+                        >
+                          {`Case ${idx + 1}`}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Submit  */}
+                  <div
+                    className="items-center bg-zinc-700 cursor-pointer hover:scale-102 mr-5 p-1 rounded"
+                    onClick={runCode}
+                    title="Run code"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      className=" m-1"
                     >
-                      {c.title ?? `Case ${c.id}`}
-                      <span className="ml-2 text-xs">
-                        {c.passed ? "✓" : "✕"}
-                      </span>
-                    </button>
-                  );
-                })}
-
-                {/* Results Tab */}
-                <button
-                  onClick={() => setActiveIndex(-1)}
-                  className={`flex-shrink-0 ml-2 px-3 py-1 rounded-md text-sm font-medium transition ${
-                    activeIndex === -1
-                      ? "bg-green-800 text-white shadow"
-                      : "text-green-300 hover:bg-green-900 hover:text-white"
-                  }`}
-                >
-                  Results
-                </button>
-              </div>
-            </div>
-
-            {/* Content area */}
-            <div className="p-4 overflow-y-auto h-full">
-              {activeIndex === -1 ? (
-                // Results view
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold">Summary</h3>
-                    <div className="text-sm text-zinc-300">
-                      <span className="font-medium text-green-400">
-                        {passedCount} Passed
-                      </span>
-                      <span className="mx-2 text-zinc-500">|</span>
-                      <span className="font-medium text-red-400">
-                        {failedCount} Failed
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                    <div className="bg-zinc-800 rounded p-3">
-                      <div className="text-xs text-zinc-400">Passed</div>
-                      <div className="text-2xl font-semibold text-green-300">
-                        {passedCount}
-                      </div>
-                    </div>
-                    <div className="bg-zinc-800 rounded p-3">
-                      <div className="text-xs text-zinc-400">Failed</div>
-                      <div className="text-2xl font-semibold text-red-300">
-                        {failedCount}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-zinc-800 rounded p-3 text-sm text-zinc-300">
-                    <div className="font-medium mb-2">Details</div>
-                    <ul className="list-disc list-inside space-y-1">
-                      {cases.map((c) => (
-                        <li key={c.id}>
-                          <span className="font-medium">Case {c.id}:</span>{" "}
-                          <span
-                            className={
-                              c.passed ? "text-green-300" : "text-red-300"
-                            }
-                          >
-                            {c.passed ? "Passed" : "Failed"}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
+                      <path
+                        fill="white"
+                        d="M21.409 9.353a2.998 2.998 0 0 1 0 5.294L8.597 21.614C6.534 22.737 4 21.277 4 18.968V5.033c0-2.31 2.534-3.769 4.597-2.648z"
+                      />
+                    </svg>
                   </div>
                 </div>
-              ) : (
-                // Single test case view
-                (() => {
-                  const t = cases[activeIndex];
+              </div>
+
+              {/* Content area */}
+              <div className="p-4 overflow-y-auto h-full">
+                {(() => {
+                  const t = question.sample_test_cases[activeIndex];
                   if (!t) return <div>Case not found</div>;
                   return (
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <h3 className="text-lg font-semibold">
-                          Test Case {t.id}
+                          Test Case {activeIndex + 1}
                         </h3>
-                        <span
-                          className={`text-sm font-medium px-2 py-1 rounded ${
-                            t.passed
-                              ? "bg-green-800 text-green-200"
-                              : "bg-red-800 text-red-200"
-                          }`}
-                        >
-                          {t.passed ? "Passed" : "Failed"}
-                        </span>
                       </div>
 
                       {/* Input  */}
@@ -616,72 +524,70 @@ int main() {
                       </div>
 
                       {/* Expected Output and your output  */}
-                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                        <div
-                          className={`rounded p-3 ${
-                            t.passed ? "bg-green-900/10" : "bg-red-900/10"
-                          }`}
-                        >
-                          <div className="text-xs text-zinc-400 mb-1">
-                            Your Output
-                          </div>
-                          <pre className="whitespace-pre-wrap text-sm bg-zinc-900 p-3 rounded text-zinc-200">
-                            {t.output}
-                          </pre>
-                        </div>
-
+                      <div className="flex flex-col gap-3 ">
+                        {/* Expected output  */}
                         <div className="bg-zinc-800 rounded p-3">
                           <div className="text-xs text-zinc-400 mb-1">
                             Expected Output
                           </div>
                           <pre className="whitespace-pre-wrap text-sm bg-zinc-900 p-3 rounded text-zinc-200">
-                            {t.expected}
+                            {t.output}
                           </pre>
                         </div>
-                      </div>
-
-                      {/* prev next  */}
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() =>
-                            setActiveIndex((i) => Math.max(0, i - 1))
-                          }
-                          className="px-3 py-1 rounded-md bg-zinc-800 text-sm hover:bg-zinc-700"
-                        >
-                          Prev
-                        </button>
-                        <button
-                          onClick={() =>
-                            setActiveIndex((i) =>
-                              Math.min(cases.length - 1, i + 1)
-                            )
-                          }
-                          className="px-3 py-1 rounded-md bg-zinc-800 text-sm hover:bg-zinc-700"
-                        >
-                          Next
-                        </button>
-                        <div className="ml-auto text-xs text-zinc-400 flex items-center gap-3">
-                          <div>
-                            Runtime:{" "}
-                            <span className="text-zinc-200 font-medium">
-                              52ms
-                            </span>
+                        {/* user output  */}
+                        {result && (
+                          <div
+                            className={`rounded p-3
+                             bg-zinc-800
+                            `}
+                          >
+                            <div className="text-xs text-zinc-400 mb-1">
+                              Your Output
+                            </div>
+                            <pre className="whitespace-pre-wrap text-sm h-fit bg-zinc-900 p-3 rounded text-zinc-200 max-h-[150px] overflow-y-auto ">
+                              {result[activeIndex]?.actual_output}
+                            </pre>
                           </div>
-                          <div>
-                            Memory:{" "}
-                            <span className="text-zinc-200 font-medium">
-                              14.2MB
-                            </span>
-                          </div>
-                        </div>
+                        )}
                       </div>
                     </div>
                   );
-                })()
-              )}
+                })()}
+              </div>
             </div>
           </div>
-        </div>
+        )}
+
+        {/* personal test cases  */}
+        {!showTestCase && (
+          <div className="flex-1 h-full pb-2 pr-2">
+            {/* Manual test case (reference) */}
+            <div className="h-full bg-zinc-900 rounded-lg p-4 space-y-3">
+              <div className="text-lg font-semibold text-white mb-8">
+                Beat your own test case
+              </div>
+
+              {/* Manual Input */}
+              <div>
+                <div className="text-sm text-zinc-400 mb-1 font-bold">
+                  Manual Input
+                </div>
+                <textarea
+                  className="w-full min-h-[100px] resize-none bg-zinc-800 rounded p-2 text-sm text-zinc-200 outline-none focus:ring-1 focus:ring-zinc-600"
+                  placeholder="Type the input you want to test"
+                />
+              </div>
+
+              {/* Manual Expected Output */}
+              <div>
+                <div className="text-sm text-zinc-400 mb-1 font-bold">
+                  Output
+                </div>
+                <div className="w-full min-h-[80px] bg-zinc-800 rounded p-2 text-sm text-zinc-200 outline-none focus:ring-1 focus:ring-zinc-600"></div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {isOpen && (
@@ -703,13 +609,6 @@ int main() {
                 {question.description}
               </p>
 
-              {/* <p className="text-base leading-relaxed mb-4">
-                You may assume that each input would have{" "}
-                <strong>exactly one solution</strong>, and you may not use the
-                same element twice. You can return the answer in any order.
-              </p> */}
-
-              {/* Example Section */}
               <div className="bg-zinc-800 rounded-lg p-4 mb-4">
                 <h2 className="text-lg font-semibold text-white mb-2">
                   Example 1:
