@@ -1,28 +1,11 @@
 "use client";
 import React, { useState } from "react";
 import AnimatedList from "../../components/AnimatedList";
-
-type Room = {
-  id: string;
-  title: string;
-  players: number;
-  maxPlayers: number;
-  viewers: number;
-  timeLeft: string;
-  status: "open" | "in-progress" | "closed";
-  tags: string[];
-  languages?: string[];
-  durationMinutes?: number | null;
-  hintAllowed?: boolean;
-  minRank?: string | null;
-  levels?: string[]; 
-  description?: string;
-  mode?: "Single" | "Duo" | "Squad";
-  questionLevel?: "Easy" | "Medium" | "Hard" | "Legend";
-  perQuestionTime?: number | null;
-  numQuestions?: number | null;
-  questionTypes?: string[];
-};
+import {
+  useHackathonStore,
+  Room,
+  HackathonForm,
+} from "./store/stateStore";
 
 export default function HackathonLobby() {
   const [query, setQuery] = useState("");
@@ -273,26 +256,25 @@ type CreateFormProps = {
   onCancel: () => void;
 };
 
-type HackathonForm = {
-  title: string;
-  description: string;
-  tags: string;
-  maxPlayers: number;
-  durationMinutes?: number | null;
-  minRank?: string | null;
-  levels?: string[]; // multi-select
+// type HackathonForm = {
+//   title: string;
+//   description: string;
+//   tags: string;
+//   maxPlayers: number;
+//   durationMinutes?: number | null;
+//   minRank?: string | null;
+//   levels?: string[];
 
-  // settings moved here
-  languages: string[];
-  hintAllowed?: boolean;
-  mode?: "Single" | "Duo" | "Squad";
 
-  // settings
-  questionLevel?: "Easy" | "Medium" | "Hard" | "Legend";
-  perQuestionTime?: number | null;
-  numQuestions?: number | null;
-  questionTypes?: string[];
-};
+//   languages: string[];
+//   hintAllowed?: boolean;
+//   mode?: "Single" | "Duo" | "Squad";
+
+//   questionLevel?: "Easy" | "Medium" | "Hard" | "Legend";
+//   perQuestionTime?: number | null;
+//   numQuestions?: number | null;
+//   questionTypes?: string[];
+// };
 
 function CreateForm({ onSubmit, loading, onCancel }: CreateFormProps) {
   const [activeTab, setActiveTab] = useState<"details" | "settings">("details");

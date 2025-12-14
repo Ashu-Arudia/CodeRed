@@ -8,20 +8,21 @@ import {
 } from "next/font/google";
 import "./global.css";
 import ClientLayout from '../hydrationFix/clientLayout'
+import { WebSocketProvider } from "@/app/context/WebSocketContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
 const metalMania = Metal_Mania({
-  subsets: ["latin"], // include only the subsets you need
-  weight: "400", // Metal Mania only has one weight
+  subsets: ["latin"],
+  weight: "400",
   variable: "--font-metal-mania",
 });
 
 const michroma = Michroma({
   subsets: ["latin"],
-  weight: "400", // Michroma only has one weight
+  weight: "400",
   variable: "--font-michroma",
 });
 
@@ -45,11 +46,15 @@ export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
-}) {
+  }) {
+
+  const token = "";
   return (
     <html lang="en" className={poppins.className}>
       <body>
-        <ClientLayout> {children}</ClientLayout>
+        <ClientLayout>
+          <WebSocketProvider token={token}>{children}</WebSocketProvider>
+        </ClientLayout>
       </body>
     </html>
   );
