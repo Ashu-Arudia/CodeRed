@@ -1,9 +1,24 @@
 "use client";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { Search, UserPlus, UserCheck, Clock, UserX } from "lucide-react";
+import {api} from "../../lib/axios"
 
 // --- Types for placeholder data ---
 type FriendStatus = "friends" | "pending" | "not_friends";
+type ApiUser = {
+  username: string;
+};
+type FriendsApiResponse = {
+  friends: {
+    username: string;
+  }[];
+};
+
+type PaginatedUsersResponse = {
+  users: ApiUser[];
+  next_cursor: number | null;
+};
+
 
 type User = {
   id: number;
@@ -66,6 +81,7 @@ const searchResults: User[] = [
   },
 ];
 
+
 // --- Helper Components ---
 const UserCard = ({ user }: { user: User }) => {
   const getStatusButton = (status: FriendStatus) => {
@@ -112,11 +128,87 @@ const UserCard = ({ user }: { user: User }) => {
   );
 };
 
-export default function FriendsPage(props : FriendsProps) {
+export default function FriendsPage(props: FriendsProps) {
+  const [searchResults, setSearchResults] = useState<User[]>([]);
+  const [cursor, setCursor] = useState<number | null>(0);
+  const [loading, setLoading] = useState(false);
+
+  const [myFriends, setMyFriends] = useState<User[]>([]);
+  const [friendsLoading, setFriendsLoading] = useState(false);
+
+
   const [activeTab, setActiveTab] = useState<"my_friends" | "add_friends">(props.addfriend ? "add_friends" : "my_friends");
 
+  const fetchUsers = async () => {
+    if (loading || cursor === null) return;
+
+    try {
+      setLoading(true);
+
+      const res = await api.get<PaginatedUsersResponse>(`/users/show_users`, {
+        params: {
+          limit: 20,
+          cursor: cursor,
+        },
+      });
+
+      // map backend users → UI users
+      const mappedUsers: User[] = res.data.users.map((u) => ({
+        id: Math.random(),
+        username: u.username,
+        avatarUrl: `https://i.pravatar.cc/150?u=${u.username}`,
+        isOnline: false,
+        status: "not_friends",
+      }));
+
+      setSearchResults((prev) => [...prev, ...mappedUsers]);
+      setCursor(res.data.next_cursor);
+    } catch (err) {
+      console.error("Failed to fetch users", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  //For fetching users
+  useEffect(() => {
+    if (activeTab === "add_friends") {
+      fetchUsers();
+    }
+  }, [activeTab]);
+
+  //For fetching Friends
+  useEffect(() => {
+    if (activeTab === "my_friends") {
+      fetchMyFriends();
+    }
+  }, [activeTab]);
+
+  const fetchMyFriends = async () => {
+    try {
+      setFriendsLoading(true);
+
+      const res = await api.get<FriendsApiResponse>("/users/my_friends");
+
+      const mappedFriends: User[] = res.data.friends.map((f) => ({
+        id: Math.random(),
+        username: f.username,
+        avatarUrl: `https://i.pravatar.cc/150?u=${f.username}`,
+        isOnline: true,
+        status: "friends",
+      }));
+
+      setMyFriends(mappedFriends);
+    } catch (err) {
+      console.error("Failed to fetch friends", err);
+    } finally {
+      setFriendsLoading(false);
+    }
+  };
+
+
   return (
-    <div className="w-full bg-[#121212] text-white h-full p-8 font-sans">
+    <div className="w-full bg-[#121212] text-white h-full p-8 font-sans rounded-lg">
       <div className=" mx-auto">
         <h1 className="text-3xl font-bold mb-6">Friends</h1>
 
@@ -149,31 +241,66 @@ export default function FriendsPage(props : FriendsProps) {
           {activeTab === "my_friends" && (
             <div className="space-y-4">
               <h2 className="text-xl font-semibold mb-2">
-                Your Friends ({myFriends.length})
+                Your Friends
               </h2>
-              {myFriends.map((friend) => (
-                <UserCard key={friend.id} user={friend} />
-              ))}
+
+              {/* Loading state */}
+              {friendsLoading && (
+                <p className="text-zinc-400 text-sm">Loading your friends...</p>
+              )}
+
+              {/* Empty state */}
+              {!friendsLoading && myFriends.length === 0 && (
+                <p className="text-zinc-400 text-sm">
+                  You don’t have any friends yet
+                </p>
+              )}
+
+              {/* Friends list */}
+              {!friendsLoading &&
+                myFriends.map((friend) => (
+                  <UserCard key={friend.id} user={friend} />
+                ))}
             </div>
           )}
 
           {activeTab === "add_friends" && (
             <div>
-              <h2 className="text-xl font-semibold mb-4">Find New Friends</h2>
+              {/* Search box */}
               <div className="relative mb-6">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
                 <input
                   type="text"
-                  placeholder="Search by username or UID"
+                  placeholder="Search by username"
                   className="w-full bg-[#1E1E1E] border border-zinc-700 rounded-lg pl-12 pr-4 py-3 text-md text-white focus:ring-red-500 focus:border-red-500"
                 />
               </div>
+
+              {/* Results */}
               <div className="space-y-4">
-                {/* Search results would dynamically appear here */}
+                {loading && (
+                  <p className="text-zinc-400 text-sm">Loading users...</p>
+                )}
+
+                {!loading && searchResults.length === 0 && (
+                  <p className="text-zinc-400 text-sm">No users found</p>
+                )}
+
                 {searchResults.map((user) => (
                   <UserCard key={user.id} user={user} />
                 ))}
               </div>
+
+              {/* Load more */}
+              {cursor !== null && (
+                <button
+                  onClick={fetchUsers}
+                  disabled={loading}
+                  className="w-full mt-6 bg-zinc-800 hover:bg-zinc-700 disabled:opacity-50 py-2 rounded-md"
+                >
+                  {loading ? "Loading..." : "Load more"}
+                </button>
+              )}
             </div>
           )}
         </div>

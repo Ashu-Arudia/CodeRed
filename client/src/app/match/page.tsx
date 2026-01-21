@@ -445,7 +445,7 @@ int main() {
                       </div>
 
                       {/* Problem Description */}
-                      <p className="text-base leading-relaxed mb-4">
+                      <p className=" text-sm leading-relaxed mb-4">
                         {question.description}
                       </p>
 

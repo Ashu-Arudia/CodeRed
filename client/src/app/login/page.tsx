@@ -108,7 +108,7 @@ export default function LoginPage() {
         };
         const response = await axios.post(
           `${backendUrl}/api/v1/auth/login`,
-          userData
+        userData, {withCredentials: true}
         );
         console.log("response from backend: ", response)
         if (response.status === 200) {

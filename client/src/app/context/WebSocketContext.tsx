@@ -10,20 +10,11 @@ const WSContext = createContext<WSContextType>({ socket: null });
 
 export const useWebSocket = () => useContext(WSContext);
 
-export function WebSocketProvider({
-  children,
-  token,
-}: {
-  children: React.ReactNode;
-  token: string;
-}) {
+export function WebSocketProvider({ children }: { children: React.ReactNode }) {
   const socketRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    if (!token) return;
-
-    const ws = new WebSocket(`ws://localhost:8000/ws?token=${token}`);
-
+    const ws = new WebSocket("ws://localhost:8000/ws");
     socketRef.current = ws;
 
     ws.onopen = () => {
@@ -39,10 +30,14 @@ export function WebSocketProvider({
       console.log("WebSocket disconnected");
     };
 
+    ws.onerror = (err) => {
+      console.error("WS error:", err);
+    };
+
     return () => {
       ws.close();
     };
-  }, [token]);
+  }, []);
 
   return (
     <WSContext.Provider value={{ socket: socketRef.current }}>

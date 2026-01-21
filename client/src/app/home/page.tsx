@@ -126,15 +126,14 @@ export default function Home() {
     const fetchdata = async () => {
       try {
         const config = {
+          withCredentials: true,
           headers: {
-            Authorization: `Bearer ${token}`,
             "ngrok-skip-browser-warning": "true",
           },
         };
-        const url = `${backendUrl}/api/v1/auth/me`;
         const response = await axios.get(
           `${backendUrl}/api/v1/auth/me`,
-          config
+          config,
         );
 
         setUser((prevUser) => ({
@@ -1266,7 +1265,7 @@ export default function Home() {
             onClick={dontshowfriend}
             className="w-full h-full bg-black opacity-50 "
           ></div>
-          <div className="overflow-auto scrollbar-hide absolute z-20 flex h-full  items-center rounded-lg py-6 w-2/3">
+          <div className="overflow-auto scrollbar-hide absolute z-20 flex h-full  items-center rounded-lg py-6 w-4/5">
             <Friends addfriend={addfriends} />
           </div>
         </div>
