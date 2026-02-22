@@ -113,7 +113,7 @@ export default function LoginPage() {
         console.log("response from backend: ", response)
         if (response.status === 200) {
           localStorage.setItem("token", response.data.access_token);
-          router.replace("/home");
+          router.replace("app/home");
         }
         else {
           alert("Password is incorrect!");

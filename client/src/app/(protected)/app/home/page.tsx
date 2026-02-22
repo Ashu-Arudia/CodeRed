@@ -4,10 +4,10 @@ import { Metal_Mania, Oswald, Smooch_Sans } from "next/font/google";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { FaChevronLeft, FaChevronRight, FaFire, FaUsers } from "react-icons/fa";
-import userDetails from "../../store/UserDetails";
+import userDetails from "@/store/UserDetails";
 import Community from "../community/page";
-import Notification from "../component/notification/notific";
-import Stats from "../component/stats/stat";
+import Notification from "@/components/notification/notific";
+import Stats from "@/components/stats/stat";
 import Friends from "../hackathon/friends/page";
 import Hackathon from "../hackathon/page";
 import Settings from "../settings/setting";
@@ -57,28 +57,8 @@ export default function Home() {
   const setSetting = userState((s) => s.setSettingState);
 
   //User details
-  const [user, setUser] = useState({
-    bio: "I'm a codeRed champion",
-    country: null,
-    created_at: "",
-    current_rank: "Grandmaster",
-    current_rating: 1256,
-    date_of_birth: "2024-12-10",
-    email: "testuser@gmail.com",
-    first_name: "Test",
-    is_verified: true,
-    last_login: null,
-    last_name: "User",
-    matches_won: 12,
-    preferred_language: "Cpp",
-    problems_solved: 10,
-    profile_complete: true,
-    timezone: "",
-    total_matches: 23,
-    user_id: 2,
-    username: "XUser",
-    win_rate: 45,
-  });
+  const user = userDetails((s) => s.user);
+  const setUserDetails = userDetails((s) => s.setUser);
 
   const inputclick = () => {
     inputRef.current?.click();
@@ -113,40 +93,9 @@ export default function Home() {
     setIsranked(para);
   };
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    console.log("Tokenn: ", token);
-    if (!token) {
-      router.replace("/login");
-    }
-    const fetchdata = async () => {
-      try {
-        const config = {
-          withCredentials: true,
-          headers: {
-            "ngrok-skip-browser-warning": "true",
-          },
-        };
-        const response = await axios.get(
-          `${backendUrl}/api/v1/auth/me`,
-          config
-        );
 
-        setUser((prevUser) => ({
-          ...prevUser,
-          ...response.data,
-        }));
-        setUserDetail(response.data);
-        console.log("response from backend: ", response.data);
-      } catch (err) {
-        console.log("Error occured: ", err);
-      }
-    };
-    fetchdata();
 
-    setUserDetail(user);
-  }, []);
-
+  // User info update
   useEffect(() => {
     console.log("User state has been updated:", user);
   }, [user]);
@@ -571,7 +520,7 @@ export default function Home() {
                   />
                 </svg>
                 <div className="stat-value cursor-pointer" onClick={showstat}>
-                  {user.current_rating}
+                  {user?.current_rating}
                 </div>
                 <div className="">PTS</div>
               </div>
@@ -608,7 +557,7 @@ export default function Home() {
                   </div>
                 </div>
 
-                <div className="pr-3">{user.username}</div>
+                <div className="pr-3">{user?.username}</div>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"

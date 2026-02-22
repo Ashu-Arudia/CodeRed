@@ -46,7 +46,7 @@ const useUserStore = create<UserStore>()(
       clearUser: () => set({ user: null }),
     }),
     {
-      name: "codred-user",
+      name: "codered-user",
     }
   )
 );

@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import userState from "../home/store/stateStore";
 import { useState } from "react";
-import ElectricBorder from "../../components/ElectricBorder";
+import ElectricBorder from "@/components/ElectricBorder";
 
 // --- Types ---
 type Clan = {

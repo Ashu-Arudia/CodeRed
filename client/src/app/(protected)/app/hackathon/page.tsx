@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import AnimatedList from "../../components/AnimatedList";
+import AnimatedList from "@/components/AnimatedList";
 import {
   useHackathonStore,
   Room,

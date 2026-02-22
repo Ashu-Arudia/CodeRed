@@ -48,7 +48,6 @@ export default function RootLayout({
   children: React.ReactNode;
   }) {
 
-  const token = "";
   return (
     <html lang="en">
       <body>
