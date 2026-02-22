@@ -1,17 +1,16 @@
 "use client";
 import axios from "axios";
 import { Metal_Mania, Oswald, Smooch_Sans } from "next/font/google";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { FaChevronLeft, FaChevronRight, FaFire, FaUsers } from "react-icons/fa";
-import Logo from "../component/logo";
-import { useRouter } from "next/navigation";
-import Notification from "../component/notification/notific";
-import Stats from "../component/stats/stat";
-import Friends from "../friends/page";
-import Settings from "../settings/setting";
-import Hackathon from "../hackathon/page";
 import userDetails from "../../store/UserDetails";
 import Community from "../community/page";
+import Notification from "../component/notification/notific";
+import Stats from "../component/stats/stat";
+import Friends from "../hackathon/friends/page";
+import Hackathon from "../hackathon/page";
+import Settings from "../settings/setting";
 import userState from "./store/stateStore";
 
 const backendUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -33,7 +32,6 @@ const oswald = Oswald({
   variable: "--font-oswald",
 });
 
-
 export default function Home() {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -51,14 +49,12 @@ export default function Home() {
   const [nav, setNav] = useState<"home" | "hackathon" | "bonus">("home");
   const [addedFriends, setAddedFriends] = useState<String[]>([]);
 
-
   //store
-  const setUserDetail = userDetails((s) => s.setUser)
+  const setUserDetail = userDetails((s) => s.setUser);
   const community = userState((s) => s.communityState);
   const setCommunity = userState((s) => s.setCommunityState);
   const setting = userState((s) => s.settingState);
   const setSetting = userState((s) => s.setSettingState);
-
 
   //User details
   const [user, setUser] = useState({
@@ -88,34 +84,34 @@ export default function Home() {
     inputRef.current?.click();
   };
 
-  const setnav = (para : "home"| "hackathon" | "bonus") => {
+  const setnav = (para: "home" | "hackathon" | "bonus") => {
     setNav(para);
-  }
+  };
 
   const shownotification = () => {
     setNotification(true);
-  }
+  };
   const dontshownotification = () => {
     setNotification(false);
-  }
+  };
   const showstat = () => {
     setStat(true);
-  }
+  };
   const dontshowstat = () => {
     setStat(false);
-  }
+  };
 
   const showfriend = (add: boolean) => {
     setaddfriends(add);
     setShowFriends(true);
-  }
+  };
   const dontshowfriend = () => {
     setShowFriends(false);
-  }
+  };
 
-  const isrank = (para : Boolean) => {
+  const isrank = (para: Boolean) => {
     setIsranked(para);
-  }
+  };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -133,7 +129,7 @@ export default function Home() {
         };
         const response = await axios.get(
           `${backendUrl}/api/v1/auth/me`,
-          config,
+          config
         );
 
         setUser((prevUser) => ({
@@ -160,6 +156,14 @@ export default function Home() {
       setCurrentSlide((prev) => (prev + 1) % featuredMatches.length);
     }, 5000);
     return () => clearInterval(interval);
+  }, []);
+
+  //websocket connection
+  useEffect(() => {
+    const ws = new WebSocket(`ws://${backendUrl}/ws`);
+    ws.onopen = () => console.log("connected");
+
+    return () => ws.close();
   }, []);
 
   const featuredMatches = [
@@ -759,7 +763,9 @@ export default function Home() {
                 {/* settings  */}
                 <div
                   className="w-full h-full cursor-pointer hover:bg-zinc-800 "
-                  onClick={()=>{setSetting(true)}}
+                  onClick={() => {
+                    setSetting(true);
+                  }}
                 >
                   <div className="flex gap-3 mr-10 cursor-pointer items-center">
                     <svg
@@ -1274,9 +1280,7 @@ export default function Home() {
       {/* Settings  */}
       {setting && (
         <div className="w-full absolute top-0 z-10 flex justify-center items-center  h-screen  ">
-          <div
-            className="w-full h-full bg-black opacity-60"
-          ></div>
+          <div className="w-full h-full bg-black opacity-60"></div>
           <div className="overflow-auto scrollbar-hide absolute z-20 flex h-full items-center rounded-lg p-12 w-full ">
             <Settings user={user} />
           </div>

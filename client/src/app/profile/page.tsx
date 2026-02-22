@@ -13,7 +13,7 @@ export default function CompleteProfilePage() {
   const [dob, setDob] = useState("");
   const [experienceLevel, setExperienceLevel] = useState("");
   const [primaryLanguage, setPrimaryLanguage] = useState("");
-  const [goals, setGoals] = useState(""); // This will be our "bio"
+  const [goals, setGoals] = useState(""); 
   const [profilePhoto, setProfilePhoto] = useState<File | null>(null);
   const [profilePhotoPreview, setProfilePhotoPreview] = useState<string | null>(
     null
@@ -148,6 +148,10 @@ export default function CompleteProfilePage() {
             <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.818l-2.651 2.651a1.2 1.2 0 1 1-1.697-1.697L8.303 10 5.651 7.349a1.2 1.2 0 1 1 1.697-1.697L10 8.182l2.651-2.651a1.2 1.2 0 1 1 1.697 1.697L11.697 10l2.651 2.651a1.2 1.2 0 0 1 0 1.698z" />
           </svg>
         </span>
+      </div>
+
+      <div className="items-center justify-center ">
+
       </div>
 
       <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">

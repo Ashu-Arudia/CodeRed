@@ -1,7 +1,7 @@
 "use client";
-import { useState,useEffect } from "react";
-import { Search, UserPlus, UserCheck, Clock, UserX } from "lucide-react";
-import {api} from "../../lib/axios"
+import { Clock, Search, UserCheck, UserPlus } from "lucide-react";
+import { useEffect, useState } from "react";
+import { api } from "../../../lib/axios";
 
 // --- Types for placeholder data ---
 type FriendStatus = "friends" | "pending" | "not_friends";
@@ -18,7 +18,6 @@ type PaginatedUsersResponse = {
   users: ApiUser[];
   next_cursor: number | null;
 };
-
 
 type User = {
   id: number;
@@ -81,7 +80,6 @@ const searchResults: User[] = [
   },
 ];
 
-
 // --- Helper Components ---
 const UserCard = ({ user }: { user: User }) => {
   const getStatusButton = (status: FriendStatus) => {
@@ -136,8 +134,9 @@ export default function FriendsPage(props: FriendsProps) {
   const [myFriends, setMyFriends] = useState<User[]>([]);
   const [friendsLoading, setFriendsLoading] = useState(false);
 
-
-  const [activeTab, setActiveTab] = useState<"my_friends" | "add_friends">(props.addfriend ? "add_friends" : "my_friends");
+  const [activeTab, setActiveTab] = useState<"my_friends" | "add_friends">(
+    props.addfriend ? "add_friends" : "my_friends"
+  );
 
   const fetchUsers = async () => {
     if (loading || cursor === null) return;
@@ -206,7 +205,6 @@ export default function FriendsPage(props: FriendsProps) {
     }
   };
 
-
   return (
     <div className="w-full bg-[#121212] text-white h-full p-8 font-sans rounded-lg">
       <div className=" mx-auto">
@@ -240,9 +238,7 @@ export default function FriendsPage(props: FriendsProps) {
         <div>
           {activeTab === "my_friends" && (
             <div className="space-y-4">
-              <h2 className="text-xl font-semibold mb-2">
-                Your Friends
-              </h2>
+              <h2 className="text-xl font-semibold mb-2">Your Friends</h2>
 
               {/* Loading state */}
               {friendsLoading && (
