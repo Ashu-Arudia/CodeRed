@@ -3,25 +3,22 @@
 import { Clock, Search, UserCheck, UserPlus } from "lucide-react";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useFetchFriends, useFetchUserFriends } from "@/features/friends/queries";
 
 /* ---------------- TYPES ---------------- */
 
 type FriendStatus = "friends" | "pending" | "not_friends";
 
-type FriendFromApi = {
+type userFriends = {
   friend_id: number;
   friend_username: string;
-  current_rank: string;
+  avatarUrl: string;
+  isOnline: boolean;
+  status: FriendStatus;
 };
 
-type UserFromApi = {
+type friends = {
   user_id: number;
-  username: string;
-  current_rank: string;
-};
-
-type User = {
-  id: number;
   username: string;
   avatarUrl: string;
   isOnline: boolean;
@@ -33,10 +30,9 @@ type FriendsProps = {
 };
 
 const backendUrl = process.env.NEXT_PUBLIC_API_URL;
-
 /* ---------------- USER CARD ---------------- */
 
-const UserCard = ({ user }: { user: User }) => {
+const UserFriendCard = ({ user }: { user: userFriends }) => {
   const getStatusButton = (status: FriendStatus) => {
     switch (status) {
       case "friends":
@@ -59,7 +55,48 @@ const UserCard = ({ user }: { user: User }) => {
         );
     }
   };
-
+  return (
+    <div className="flex items-center justify-between bg-[#1E1E1E] p-4 rounded-lg">
+      <div className="flex items-center">
+        <div className="relative">
+          <img
+            src={user.avatarUrl}
+            alt={user.friend_username}
+            className="w-12 h-12 rounded-full"
+          />
+          {user.isOnline && (
+            <span className="absolute bottom-0 right-0 block h-3 w-3 rounded-full bg-green-500 ring-2 ring-[#1E1E1E]" />
+          )}
+        </div>
+          <p className="ml-4 text-white">{user.friend_username}</p>
+      </div>
+      {getStatusButton(user.status)}
+    </div>
+  );
+};
+const FriendCard = ({ user }: { user: friends }) => {
+  const getStatusButton = (status: FriendStatus) => {
+    switch (status) {
+      case "friends":
+        return (
+          <button className="flex items-center text-sm bg-zinc-700 text-green-400 font-semibold px-3 py-1.5 rounded-md">
+            <UserCheck size={16} className="mr-2" /> Friends
+          </button>
+        );
+      case "pending":
+        return (
+          <button className="flex items-center text-sm bg-zinc-700 text-yellow-400 font-semibold px-3 py-1.5 rounded-md cursor-not-allowed">
+            <Clock size={16} className="mr-2" /> Pending
+          </button>
+        );
+      default:
+        return (
+          <button className="flex items-center text-sm bg-red-600 hover:bg-red-700 text-white font-semibold px-3 py-1.5 rounded-md transition-colors">
+            <UserPlus size={16} className="mr-2" /> Add Friend
+          </button>
+        );
+    }
+  };
   return (
     <div className="flex items-center justify-between bg-[#1E1E1E] p-4 rounded-lg">
       <div className="flex items-center">
@@ -81,74 +118,90 @@ const UserCard = ({ user }: { user: User }) => {
 };
 
 export default function FriendsPage({ addfriend }: FriendsProps) {
-  const [myFriends, setMyFriends] = useState<User[]>([]);
+  const [myFriends, setMyFriends] = useState<userFriends[]>([]);
+  const [friends, setFriends] = useState<friends[]>([]);
   const [friendsLoading, setFriendsLoading] = useState(false);
 
   const [activeTab, setActiveTab] = useState<"my_friends" | "add_friends">(
     addfriend ? "add_friends" : "my_friends"
   );
+  const {
+    data: friendData,
+    isLoading: friendLoading,
+    isError: friendError,
+  } = useFetchFriends();
+  const {
+    data: userfriendData,
+    isLoading: userfriendLoading,
+    isError: userfriendError,
+  } = useFetchUserFriends();
 
 
-  const fetchMyFriends = async () => {
-    try {
-      setFriendsLoading(true);
+  // const fetchMyFriends = async () => {
+  //   try {
+  //     setFriendsLoading(true);
 
-      const res = await axios.get<FriendFromApi[]>(
-        `${backendUrl}/api/v1/friends/friendlist`,
-        { withCredentials: true }
-      );
-      console.log("rsponse from backend: ", res.data);
+  //     const res = await axios.get<FriendFromApi[]>(
+  //       `${backendUrl}/api/v1/friends/friendlist`,
+  //       { withCredentials: true }
+  //     );
+  //     console.log("rsponse from backend: ", res.data);
 
-      const mappedFriends: User[] = res.data.map((f) => ({
-        id: f.friend_id,
-        username: f.friend_username,
-        avatarUrl: `https://i.pravatar.cc/150?u=${f.friend_username}`,
-        isOnline: true,
-        status: "friends",
-      }));
+  //     const mappedFriends: userFriends[] =
 
-      setMyFriends(mappedFriends);
-    } catch (err) {
-      console.error("Failed to fetch friends", err);
-    } finally {
-      setFriendsLoading(false);
-    }
-  };
-
-  const fetchUsers = async () => {
-    try {
-      setFriendsLoading(true);
-
-      const res = await axios.get<UserFromApi[]>(
-        `${backendUrl}/api/v1/friends/add-friend`,
-        { withCredentials: true }
-      );
-      console.log("rsponse from backend: ", res.data);
-
-      const mappedFriends: User[] = res.data.map((f) => ({
-        id: f.user_id,
-        username: f.username,
-        avatarUrl: `https://i.pravatar.cc/150?u=${f.username}`,
-        isOnline: true,
-        status: "friends",
-      }));
-
-      setMyFriends(mappedFriends);
-    } catch (err) {
-      console.error("Failed to fetch friends", err);
-    } finally {
-      setFriendsLoading(false);
-    }
-  };
-
+  //     setMyFriends(mappedFriends);
+  //   } catch (err) {
+  //     console.error("Failed to fetch friends", err);
+  //   } finally {
+  //     setFriendsLoading(false);
+  //   }
+  // };
   useEffect(() => {
-    if (activeTab === "my_friends") {
-      fetchMyFriends();
+    if (userfriendData) {
+      setMyFriends(userfriendData);
     }
-    else {
-      fetchUsers();
+  }, [userfriendData]);
+  useEffect(() => {
+    if (friendData) {
+      setFriends(friendData)
     }
-  }, [activeTab]);
+  }, [friendData]);
+
+
+  // const fetchUsers = async () => {
+  //   try {
+  //     setFriendsLoading(true);
+
+  //     const res = await axios.get<UserFromApi[]>(
+  //       `${backendUrl}/api/v1/friends/add-friend`,
+  //       { withCredentials: true }
+  //     );
+  //     console.log("rsponse from backend: ", res.data);
+
+  //     const mappedFriends: User[] = res.data.map((f) => ({
+  //       id: f.user_id,
+  //       username: f.username,
+  //       avatarUrl: `https://i.pravatar.cc/150?u=${f.username}`,
+  //       isOnline: true,
+  //       status: "friends",
+  //     }));
+
+  //     setMyFriends(mappedFriends);
+  //   } catch (err) {
+  //     console.error("Failed to fetch friends", err);
+  //   } finally {
+  //     setFriendsLoading(false);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   if (activeTab === "my_friends") {
+  //     fetchMyFriends();
+  //   }
+  //   else {
+  //     fetchUsers();
+  //   }
+  // }, [activeTab]);
 
   return (
     <div className="w-full bg-[#121212] text-white h-full p-8 font-sans rounded-lg">
@@ -197,7 +250,7 @@ export default function FriendsPage({ addfriend }: FriendsProps) {
 
             {!friendsLoading &&
               myFriends.map((friend) => (
-                <UserCard key={friend.id} user={friend} />
+                <UserFriendCard key={friend.friend_id} user={friend} />
               ))}
           </div>
         )}
@@ -213,8 +266,8 @@ export default function FriendsPage({ addfriend }: FriendsProps) {
               />
             </div>
 
-            {myFriends.map((friend) => (
-                <UserCard key={friend.id} user={friend} />
+            {friends.map((friend) => (
+                <FriendCard key={friend.user_id} user={friend} />
             ))}
 
           </div>

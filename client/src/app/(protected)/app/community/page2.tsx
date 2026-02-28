@@ -1,6 +1,6 @@
 "use client";
-import { Search, Users, BarChart, Tv } from "lucide-react";
-import userState from "../home/store/stateStore";
+import { BarChart, Search, Users } from "lucide-react";
+import userState from "../../../../store/stateStore";
 
 type Clan = {
   name: string;

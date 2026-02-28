@@ -1,20 +1,17 @@
 "use client";
 import {
-  Search,
-  Users,
   BarChart,
-  Tv,
-  Trophy,
-  Target,
-  Settings as SettingsIcon,
-  Gift,
-  Shield,
   Bell,
+  Gift,
   LogOut,
+  Settings as SettingsIcon,
+  Shield,
+  Trophy,
+  Tv,
+  Users,
 } from "lucide-react";
-import userState from "../home/store/stateStore";
 import { useState } from "react";
-import ElectricBorder from "@/components/ElectricBorder";
+import userState from "../../../../store/stateStore";
 
 // --- Types ---
 type Clan = {
@@ -146,29 +143,27 @@ export default function CommunityPage() {
     "Clan" | "Settings" | "Rewards" | "Leaderboard"
   >("Clan");
 
-
   const ClanView = () => (
     <div className="flex gap-6 h-full">
       {/* Clan Header */}
 
-        <div className="bg-zinc-800 p-6 rounded-xl flex items-center gap-6 border border-zinc-700 shadow-lg">
-          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center text-3xl shadow-inner">
-            SA
-          </div>
-          <div>
-            <h2 className="text-3xl font-bold text-white">Syntax Assassins</h2>
-            <p className="text-zinc-400">Rank #1 • Level 45</p>
-            <div className="flex gap-4 mt-3">
-              <div className="bg-zinc-900 px-3 py-1 rounded-md text-sm text-zinc-300 border border-zinc-700 flex items-center gap-2">
-                <Users size={14} /> 128 Members
-              </div>
-              <div className="bg-zinc-900 px-3 py-1 rounded-md text-sm text-yellow-500 border border-zinc-700 flex items-center gap-2">
-                <Trophy size={14} /> 154,000 Pts
-              </div>
+      <div className="bg-zinc-800 p-6 rounded-xl flex items-center gap-6 border border-zinc-700 shadow-lg">
+        <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center text-3xl shadow-inner">
+          SA
+        </div>
+        <div>
+          <h2 className="text-3xl font-bold text-white">Syntax Assassins</h2>
+          <p className="text-zinc-400">Rank #1 • Level 45</p>
+          <div className="flex gap-4 mt-3">
+            <div className="bg-zinc-900 px-3 py-1 rounded-md text-sm text-zinc-300 border border-zinc-700 flex items-center gap-2">
+              <Users size={14} /> 128 Members
+            </div>
+            <div className="bg-zinc-900 px-3 py-1 rounded-md text-sm text-yellow-500 border border-zinc-700 flex items-center gap-2">
+              <Trophy size={14} /> 154,000 Pts
             </div>
           </div>
-
         </div>
+      </div>
 
       <div className="flex flex-col gap-6 flex-1 min-h-0">
         {/* Feed */}

@@ -1,19 +1,18 @@
 "use client";
-import axios from "axios";
+import Notification from "@/components/notification/notific";
+import Stats from "@/components/stats/stat";
+import userDetails from "@/store/UserDetails";
 import { Metal_Mania, Oswald, Smooch_Sans } from "next/font/google";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { FaChevronLeft, FaChevronRight, FaFire, FaUsers } from "react-icons/fa";
-import userDetails from "@/store/UserDetails";
+import userState from "@/store/stateStore";
 import Community from "../community/page";
-import Notification from "@/components/notification/notific";
-import Stats from "@/components/stats/stat";
 import Friends from "../hackathon/friends/page";
 import Hackathon from "../hackathon/page";
 import Settings from "../settings/setting";
-import userState from "./store/stateStore";
-
-const backendUrl = process.env.NEXT_PUBLIC_API_URL;
+import { useUserDetails } from "@/features/auth/queries";
+import { useFetchUserFriends } from "@/features/friends/queries";
 
 const metalMania = Metal_Mania({
   subsets: ["latin"],
@@ -32,6 +31,15 @@ const oswald = Oswald({
   variable: "--font-oswald",
 });
 
+type AddFriendCardProps = {
+  friend_id: number,
+  friend_username: string;
+  avatarUrl: string;
+  isOnline?: boolean;
+  onAdd: (username: string) => void;
+};
+
+
 export default function Home() {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -49,16 +57,22 @@ export default function Home() {
   const [nav, setNav] = useState<"home" | "hackathon" | "bonus">("home");
   const [addedFriends, setAddedFriends] = useState<String[]>([]);
 
-  //store
-  const setUserDetail = userDetails((s) => s.setUser);
+
+  const {
+      data: userfriendData = [],
+      isLoading: userfriendLoading,
+      isError: userfriendError,
+    } = useFetchUserFriends();
+
+  //user state for settings and community
   const community = userState((s) => s.communityState);
   const setCommunity = userState((s) => s.setCommunityState);
   const setting = userState((s) => s.settingState);
   const setSetting = userState((s) => s.setSettingState);
 
   //User details
-  const user = userDetails((s) => s.user);
-  const setUserDetails = userDetails((s) => s.setUser);
+  const { data, isLoading, isError } = useUserDetails();
+  const user = data;
 
   const inputclick = () => {
     inputRef.current?.click();
@@ -93,13 +107,6 @@ export default function Home() {
     setIsranked(para);
   };
 
-
-
-  // User info update
-  useEffect(() => {
-    console.log("User state has been updated:", user);
-  }, [user]);
-
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % featuredMatches.length);
@@ -107,13 +114,33 @@ export default function Home() {
     return () => clearInterval(interval);
   }, []);
 
-  //websocket connection
-  useEffect(() => {
-    const ws = new WebSocket(`ws://${backendUrl}/ws`);
-    ws.onopen = () => console.log("connected");
+  const AddFriendCard = ({ user }: { user: AddFriendCardProps }) => {
+  return (
+    <div className="flex items-center p-2 mt-1 hover:bg-zinc-800 rounded-lg cursor-pointer">
+      <div className="relative">
+        <img
+          className="w-10 h-10 rounded-full"
+          src={user.avatarUrl}
+          alt={user.friend_username}
+        />
+        {user.isOnline && (
+          <span className="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-green-500 ring-2 ring-gray-800" />
+        )}
+      </div>
 
-    return () => ws.close();
-  }, []);
+      <div className="ml-3">
+        <p className="text-lg">{user.friend_username}</p>
+      </div>
+
+      <div
+        className="flex-1 flex justify-end text-3xl mr-3 hover:text-red-500 transition-colors"
+      >
+        +
+      </div>
+    </div>
+  );
+};
+
 
   const featuredMatches = [
     {
@@ -553,7 +580,7 @@ export default function Home() {
               <div className="rounded-full bg-zinc-900 border border-zinc-500 flex items-center gap-3">
                 <div className="avatar pl-3 py-2">
                   <div className="w-8 rounded-xl">
-                    <img src="https://img.daisyui.com/images/profile/demo/yellingwoman@192.webp" />
+                    <img src={user?.profile_picture} />
                   </div>
                 </div>
 
@@ -1105,81 +1132,10 @@ export default function Home() {
 
                 {/* Friends List Container */}
                 <div className="flex-grow p-2 overflow-y-auto">
-                  {/* Friend Item 1 (Online) */}
-                  <div className="flex items-center p-2 hover:bg-zinc-800 rounded-lg cursor-pointer ">
-                    <div className="relative">
-                      <img
-                        className="w-10 h-10 rounded-full"
-                        src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
-                        alt="Avatar"
-                      />
-                      <span className="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-green-500 ring-2 ring-gray-800"></span>
-                    </div>
-                    <div className="ml-3">
-                      <p className="text-lg">Alice</p>
-                    </div>
-                    <div
-                      className="flex-1 flex justify-end text-3xl mr-3"
-                      onClick={() => {
-                        setAddedFriends((prev) => [...prev, "Alice"]);
-                      }}
-                    >
-                      +
-                    </div>
-                  </div>
-
-                  {/* Friend Item 2 (Online) */}
-                  <div className="flex items-center p-2 mt-1 hover:bg-zinc-800 rounded-lg cursor-pointer">
-                    <div className="relative">
-                      <img
-                        className="w-10 h-10 rounded-full"
-                        src="https://i.pravatar.cc/150?u=a042581f4e29026704a"
-                        alt="Avatar"
-                      />
-                      <span className="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-green-500 ring-2 ring-gray-800"></span>
-                    </div>
-                    <div className="ml-3">
-                      <p className="text-lg">Bob</p>
-                    </div>
-                    <div
-                      className="flex-1 flex justify-end text-3xl mr-3"
-                      onClick={() => {
-                        setAddedFriends((prev) => [...prev, "Bob"]);
-                      }}
-                    >
-                      +
-                    </div>
-                  </div>
-
-                  {/* Friend Item 3 (Offline) */}
-                  <div className="flex items-center p-2 mt-1 hover:bg-zinc-800 rounded-lg cursor-pointer opacity-70">
-                    <div className="relative">
-                      <img
-                        className="w-10 h-10 rounded-full"
-                        src="https://i.pravatar.cc/150?u=a042581f4e29026704b"
-                        alt="Avatar"
-                      />
-                      <span className="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-gray-500 ring-2 ring-gray-800"></span>
-                    </div>
-                    <div className="ml-3">
-                      <p className="text-lg">Charlie</p>
-                    </div>
-                  </div>
-
-                  {/* Friend Item 4 (Offline) */}
-                  <div className="flex items-center p-2 mt-1 hover:bg-zinc-800 rounded-lg cursor-pointer opacity-70">
-                    <div className="relative">
-                      <img
-                        className="w-10 h-10 rounded-full"
-                        src="https://i.pravatar.cc/150?u=a042581f4e29026704c"
-                        alt="Avatar"
-                      />
-                      <span className="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-gray-500 ring-2 ring-gray-800"></span>
-                    </div>
-                    <div className="ml-3">
-                      <p className="text-lg">David</p>
-                    </div>
-                  </div>
+                  {!userfriendLoading && userfriendData?.map(( friend : AddFriendCardProps ) =>(
+                    <AddFriendCard key ={friend.friend_username} user = {friend} />
+                  ))
+                  }
                 </div>
               </div>
             </aside>

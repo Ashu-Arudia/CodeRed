@@ -1,12 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import useUserStore from "@/store/UserDetails";
 import { useWebSocketStore } from "@/store/webSocketStore";
-import axios from "axios";
-
-const backendUrl = process.env.NEXT_PUBLIC_API_URL;
+import Loader from "@/components/GameLoader";
+import { useUserDetails } from "@/features/auth/queries";
 
 export default function ProtectedLayout({
   children,
@@ -14,41 +12,47 @@ export default function ProtectedLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const setUser = useUserStore((state) => state.setUser);
 
   const connect = useWebSocketStore((s) => s.connect);
   const disconnect = useWebSocketStore((s) => s.disconnect);
 
-  const [loading, setLoading] = useState(true);
+  const {
+    data: user,
+    isLoading: userLoading,
+    isError: userError,
+  } = useUserDetails();
 
+  //check user is valid or not
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const response = await axios.get(`${backendUrl}/api/v1/auth/me`, {
-          withCredentials: true,
-          headers: {
-            "ngrok-skip-browser-warning": "true",
-          },
-        });
+    if (userError) {
+      router.replace("/login");
+    }
+  }, [userError]);
 
-        setUser(response.data);
-
-        connect();
-
-        setLoading(false);
-      } catch (error) {
-        router.push("/login");
-      }
-    };
-
-    checkAuth();
+  //if user valid then connect websokcet
+  useEffect(() => {
+    if (!userLoading) console.log("User: ", user);
+    if (user && !userLoading) {
+      connect();
+    }
+    if (!userLoading && !user)
+    {
+      router.replace("/login");
+    }
 
     return () => {
       disconnect();
     };
-  }, []);
+  }, [user]);
 
-  if (loading) return null;
+  //if user not complete their user info then route to profile page
+  useEffect(() => {
+    if (!userLoading && user && user.profile_complete === false) {
+      router.replace("/app/profile");
+    }
+  }, [userLoading, user]);
+
+  if (userLoading) return <Loader />;
 
   return <>{children}</>;
 }

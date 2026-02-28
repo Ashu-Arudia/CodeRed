@@ -53,7 +53,7 @@ export default function CodeEditor() {
     sample_test_cases: SampleTestCase[];
   }
   const [question, setQuestion] = useState<Question>({
-    title: "Sum of Twooo Numbers",
+    title: "Sum of Two Numbers",
     description:
       "Given two integers A and B, return their sum. The input contains two integers separated by space. Output the sum as a single integer.",
     difficulty_Level: "easy",

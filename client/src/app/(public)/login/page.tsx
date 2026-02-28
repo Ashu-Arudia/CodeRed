@@ -12,6 +12,7 @@ import {
   Zap,
   Users,
 } from "lucide-react";
+import { useSignUp, useLogin } from "@/features/auth/mutations";
 
 import { Metal_Mania } from "next/font/google";
 
@@ -21,7 +22,6 @@ const metalMania = Metal_Mania({
 });
 
 const backendUrl = process.env.NEXT_PUBLIC_API_URL;
-
 
 const GoogleIcon = () => (
   <svg
@@ -59,6 +59,8 @@ export default function LoginPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const router = useRouter();
+  const signupMutation = useSignUp();
+  const loginMutation = useLogin();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -79,52 +81,28 @@ export default function LoginPage() {
   const handlesubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!isLogin) {
-
-      try {
-        const userData = {
-          email: email,
-          password: password,
-        };
-        const response = await axios.post(
-          `${backendUrl}/api/v1/auth/register`,
-          userData
-        );
-        console.log("response from backend: ", response);
-        if (response.status === 201) {
-          console.log(response.data.access_token);
-          localStorage.setItem("token", response.data.access_token);
-          router.push("/profile");
+      signupMutation.mutate({ email, password }, {
+        onSuccess: () => {
+          router.replace("/app/profile");
         }
-      } catch (err) {
-        console.log("Error in sending req to backend: ", err);
-      }
+      })
     }
     else {
-
-      try {
-        const userData = {
-          email: email,
-          password: password,
-        };
-        const response = await axios.post(
-          `${backendUrl}/api/v1/auth/login`,
-        userData, {withCredentials: true}
-        );
-        console.log("response from backend: ", response)
-        if (response.status === 200) {
-          localStorage.setItem("token", response.data.access_token);
-          router.replace("app/home");
+      loginMutation.mutate(
+        { email, password },
+        {
+          onSuccess: () => {
+            router.replace("/app/home");
+          },
         }
-        else {
-          alert("Password is incorrect!");
-        }
-
-      } catch (err) {
-        console.log("Error : ", err);
-      }
+      );
     }
 
   };
+
+  const googleAuth = async() => {
+    window.location.href = `${backendUrl}/api/v1/auth/google/login`
+  }
 
   return (
     <div className="min-h-screen bg-white text-gray-100 flex items-center justify-center p-4">
@@ -362,6 +340,7 @@ export default function LoginPage() {
             <button
 
               className="w-full flex items-center justify-center bg-gray-700 hover:bg-gray-600 text-white font-medium py-3 rounded-md transition-colors duration-300 border border-gray-600 shadow-sm"
+              onClick={googleAuth}
             >
               <GoogleIcon />
               Continue with Google

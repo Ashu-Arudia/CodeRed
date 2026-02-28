@@ -2,8 +2,9 @@
 
 import React, { useState } from "react";
 import { Camera, Calendar } from "lucide-react";
-import axios from "axios";
 import { useRouter } from "next/navigation";
+import { useCompleteProfile } from "@/features/auth/mutations";
+import { AxiosError } from "axios";
 
 export default function CompleteProfilePage() {
 
@@ -13,7 +14,7 @@ export default function CompleteProfilePage() {
   const [dob, setDob] = useState("");
   const [experienceLevel, setExperienceLevel] = useState("");
   const [primaryLanguage, setPrimaryLanguage] = useState("");
-  const [goals, setGoals] = useState(""); 
+  const [goals, setGoals] = useState("");
   const [profilePhoto, setProfilePhoto] = useState<File | null>(null);
   const [profilePhotoPreview, setProfilePhotoPreview] = useState<string | null>(
     null
@@ -26,74 +27,41 @@ export default function CompleteProfilePage() {
   const [participated, setParticipated] = useState<string | null>(null);
   const [preferredDuration, setPreferredDuration] = useState("");
 
-  const backendUrl = process.env.NEXT_PUBLIC_API_URL;
-
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       setProfilePhoto(file);
-      // Create a preview URL
       setProfilePhotoPreview(URL.createObjectURL(file));
     }
   };
   const router = useRouter();
 
   // Handle form submission
+  const mutation = useCompleteProfile();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const token = localStorage.getItem('token');
-    console.log("Tokennn: ", token);
-    const userProfileData = {
-      username: username,
-      first_name: firstName,
-      last_name: lastName,
-      date_of_birth: dob,
-      bio: goals,
-      preferred_language: primaryLanguage,
-      profile_photo: profilePhoto ? profilePhoto.name : null,
-      experienceLevel: experienceLevel,
-      participated: participated
-    };
-    console.log("User data - ", userProfileData, "\n and token - ",token)
 
-    try {
+    const formData = new FormData();
 
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      };
+    formData.append("username", username);
+    formData.append("first_name", firstName);
+    formData.append("last_name", lastName);
+    formData.append("date_of_birth", dob);
+    formData.append("bio", goals);
+    formData.append("preferred_language", primaryLanguage);
+    formData.append("experience_level", experienceLevel);
+    formData.append("participated", participated ?? "");
+    formData.append("preferred_duration", preferredDuration);
 
-      const response = await axios.post(
-        `${backendUrl}/api/v1/auth/complete-profile`,
-        userProfileData,
-        config
-      );
-
-      console.log("res from backend ", response);
-      if (response.status === 200) {
-        localStorage.setItem("token", response.data.access_token);
-      }
-      alert(response.data.message);
-      router.replace("/home");
-
-    } catch (err) {
-      console.log("Error: ",err)
+    if (profilePhoto) {
+      formData.append("profile_picture", profilePhoto);
     }
-
-    console.log(userProfileData);
-
-    const alertBox = document.getElementById("alert-box");
-    const alertMessage = document.getElementById("alert-message");
-    if (alertBox && alertMessage) {
-      alertMessage.textContent = "Profile data submitted! Check the console.";
-      alertBox.classList.remove("hidden");
-      setTimeout(() => {
-        alertBox.classList.add("hidden");
-      }, 3000);
-    } else {
-      console.log("Profile data submitted! Check the console.");
-    }
+    mutation.mutate(formData, {
+      onSuccess: () => {
+        router.replace("/app/home");
+      },
+    });
   };
 
   const Checkbox = ({
@@ -150,9 +118,7 @@ export default function CompleteProfilePage() {
         </span>
       </div>
 
-      <div className="items-center justify-center ">
-
-      </div>
+      <div className="items-center justify-center "></div>
 
       <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl w-full bg-zinc-900 p-8 md:p-12 shadow-xl rounded-lg">
@@ -295,7 +261,6 @@ export default function CompleteProfilePage() {
                     name="experience-level"
                     value={experienceLevel}
                     onChange={(e) => setExperienceLevel(e.target.value)}
-
                     className="mt-1 block w-full pl-3 pr-10 py-3 text-base bg-zinc-800 text-white border-gray-700 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm rounded-md"
                   >
                     <option value="" disabled>
@@ -541,14 +506,34 @@ export default function CompleteProfilePage() {
             <div className="flex justify-center pt-8 border-t border-gray-700">
               <button
                 type="submit"
-                className="w-1/2 py-3 px-6 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                disabled={mutation.isPending}
+                className="w-1/2 py-3 px-6 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 disabled:opacity-50"
               >
-                Create Profile
+                {mutation.isPending ? "Creating..." : "Create Profile"}
               </button>
             </div>
           </form>
         </div>
       </div>
+
+      {mutation.isError && (
+        <div className="fixed inset-0 z-[9999] flex bg-black/80 backdrop-blur-sm items-center justify-center">
+          <div className="bg-zinc-900 border border-red-500 w-2xl h-4xl px-8 py-6 rounded-xl shadow-2xl text-red-500 text-lg font-semibold">
+            <div className="bg-black/60 border border-red-400 p-4 rounded-md text-sm text-red-300 max-h-60 overflow-auto m-2">
+              Something Went Wrong!!
+            </div>
+
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => mutation.reset()}
+                className="hover:bg-gray-700 px-3 py-1 rounded-md transition"
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

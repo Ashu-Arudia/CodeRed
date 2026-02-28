@@ -9,6 +9,7 @@ import type { Metadata } from "next";
 import "./global.css";
 import ClientLayout from '../hydrationFix/clientLayout'
 import { WebSocketProvider } from "@/app/context/WebSocketContext";
+import { QueryProvider } from "@/providers/query-provider";
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -52,7 +53,9 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <ClientLayout>
-          <WebSocketProvider>{children}</WebSocketProvider>
+          <QueryProvider>
+            <WebSocketProvider>{children}</WebSocketProvider>
+          </QueryProvider>
         </ClientLayout>
       </body>
     </html>

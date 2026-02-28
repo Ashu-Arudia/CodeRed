@@ -1,5 +1,5 @@
-'use client'
-import userState from "../home/store/stateStore";
+"use client";
+import userState from "../../../../store/stateStore";
 
 type ToggleSwitchProps = {
   label: string;
@@ -13,7 +13,6 @@ const ToggleSwitch = ({ label }: ToggleSwitchProps) => (
 );
 
 export default function SettingsPage({ user }: any) {
-
   //store
   const setting = userState((s) => s.settingState);
   const setSetting = userState((s) => s.setSettingState);
@@ -22,21 +21,21 @@ export default function SettingsPage({ user }: any) {
       <div className="w-full scrollbar-hide h-full flex flex-col ">
         {/* Header */}
         <div className="flex items-center w-full pb-4 border-zinc-700 border-b justify-end">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              className="cursor-pointer text-zinc-500 hover:text-white transition-colors"
-              onClick={() => {
-                setSetting(false);
-              }}
-            >
-              <g fill="currentColor" fillRule="evenodd" clipRule="evenodd">
-                <path d="M5.47 5.47a.75.75 0 0 1 1.06 0l12 12a.75.75 0 1 1-1.06 1.06l-12-12a.75.75 0 0 1 0-1.06" />
-                <path d="M18.53 5.47a.75.75 0 0 1 0 1.06l-12 12a.75.75 0 0 1-1.06-1.06l12-12a.75.75 0 0 1 1.06 0" />
-              </g>
-            </svg>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            className="cursor-pointer text-zinc-500 hover:text-white transition-colors"
+            onClick={() => {
+              setSetting(false);
+            }}
+          >
+            <g fill="currentColor" fillRule="evenodd" clipRule="evenodd">
+              <path d="M5.47 5.47a.75.75 0 0 1 1.06 0l12 12a.75.75 0 1 1-1.06 1.06l-12-12a.75.75 0 0 1 0-1.06" />
+              <path d="M18.53 5.47a.75.75 0 0 1 0 1.06l-12 12a.75.75 0 0 1-1.06-1.06l12-12a.75.75 0 0 1 1.06 0" />
+            </g>
+          </svg>
         </div>
         <div className="overflow-y-auto w-full flex-1 flex flex-col scrollbar-hide p-3 ">
           {/* Profile Settings Section */}

@@ -17,6 +17,7 @@ export type User = {
   preferred_language: string;
   problems_solved: number;
   profile_complete: boolean;
+  profile_picture: string;
   timezone: string;
   total_matches: number;
   user_id: number;
