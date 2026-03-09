@@ -34,7 +34,7 @@ const oswald = Oswald({
 type AddFriendCardProps = {
   friend_id: number,
   friend_username: string;
-  avatarUrl: string;
+  avatarUrl?: string;
   isOnline?: boolean;
   onAdd: (username: string) => void;
 };
@@ -62,7 +62,7 @@ export default function Home() {
       data: userfriendData = [],
       isLoading: userfriendLoading,
       isError: userfriendError,
-    } = useFetchUserFriends();
+  } = useFetchUserFriends();
 
   //user state for settings and community
   const community = userState((s) => s.communityState);
@@ -116,7 +116,7 @@ export default function Home() {
 
   const AddFriendCard = ({ user }: { user: AddFriendCardProps }) => {
   return (
-    <div className="flex items-center p-2 mt-1 hover:bg-zinc-800 rounded-lg cursor-pointer">
+    <div className="flex items-center p-2 mt-1 hover:bg-zinc-800 rounded-lg border-gray-500 cursor-pointer border">
       <div className="relative">
         <img
           className="w-10 h-10 rounded-full"
@@ -133,7 +133,7 @@ export default function Home() {
       </div>
 
       <div
-        className="flex-1 flex justify-end text-3xl mr-3 hover:text-red-500 transition-colors"
+        className="flex-1 flex justify-end text-3xl mr-3 transition-colors"
       >
         +
       </div>
@@ -988,7 +988,7 @@ export default function Home() {
                                     </svg>
                                     <div
                                       onClick={() => {
-                                        router.push("/matchmaking");
+                                        router.push("/app/matchmaking");
                                       }}
                                     >
                                       START MATCH
@@ -1132,10 +1132,13 @@ export default function Home() {
 
                 {/* Friends List Container */}
                 <div className="flex-grow p-2 overflow-y-auto">
-                  {!userfriendLoading && userfriendData?.map(( friend : AddFriendCardProps ) =>(
-                    <AddFriendCard key ={friend.friend_username} user = {friend} />
-                  ))
-                  }
+                  {!userfriendLoading &&
+                    userfriendData?.map((friend: AddFriendCardProps) => (
+                      <AddFriendCard
+                        key={friend.friend_id}
+                        user={friend}
+                      />
+                    ))}
                 </div>
               </div>
             </aside>

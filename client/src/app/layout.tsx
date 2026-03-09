@@ -54,7 +54,7 @@ export default function RootLayout({
       <body>
         <ClientLayout>
           <QueryProvider>
-            <WebSocketProvider>{children}</WebSocketProvider>
+           {children}
           </QueryProvider>
         </ClientLayout>
       </body>

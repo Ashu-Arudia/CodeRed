@@ -136,29 +136,10 @@ export default function FriendsPage({ addfriend }: FriendsProps) {
     isError: userfriendError,
   } = useFetchUserFriends();
 
-
-  // const fetchMyFriends = async () => {
-  //   try {
-  //     setFriendsLoading(true);
-
-  //     const res = await axios.get<FriendFromApi[]>(
-  //       `${backendUrl}/api/v1/friends/friendlist`,
-  //       { withCredentials: true }
-  //     );
-  //     console.log("rsponse from backend: ", res.data);
-
-  //     const mappedFriends: userFriends[] =
-
-  //     setMyFriends(mappedFriends);
-  //   } catch (err) {
-  //     console.error("Failed to fetch friends", err);
-  //   } finally {
-  //     setFriendsLoading(false);
-  //   }
-  // };
   useEffect(() => {
     if (userfriendData) {
       setMyFriends(userfriendData);
+      if (userfriendData) console.log("User friend data;;; ", userfriendData);
     }
   }, [userfriendData]);
   useEffect(() => {

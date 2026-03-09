@@ -29,7 +29,7 @@ export default function ProtectedLayout({
     }
   }, [userError]);
 
-  //if user valid then connect websokcet
+  //if user valid then connect websocket
   useEffect(() => {
     if (!userLoading) console.log("User: ", user);
     if (user && !userLoading) {

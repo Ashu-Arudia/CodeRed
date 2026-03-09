@@ -22,6 +22,7 @@ const metalMania = Metal_Mania({
 });
 
 const backendUrl = process.env.NEXT_PUBLIC_API_URL;
+// const FrontendUrl = process.env.NEXT_PUBLIC_Frotnend_URL;
 
 const GoogleIcon = () => (
   <svg
@@ -92,7 +93,9 @@ export default function LoginPage() {
         { email, password },
         {
           onSuccess: () => {
-            router.replace("/app/home");
+            console.log("yeahh");
+            router.replace(`/app/home`);
+            console.log("maa chuda");
           },
         }
       );

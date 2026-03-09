@@ -5,6 +5,7 @@ import { useState, useEffect, useRef, act } from "react";
 import axios from "axios";
 import { div } from "framer-motion/client";
 import { number } from "framer-motion";
+import { useWebSocketStore } from "@/store/webSocketStore";
 
 const metalMania = Metal_Mania({
   subsets: ["latin"],
@@ -35,6 +36,7 @@ export default function CodeEditor() {
   const [Language, setLanguage] = useState<"c" | "cpp" | "python" | "javascript" | "java">("c")
 
   const [showQuestion, setShowQuestion] = useState<Boolean>(true);
+  const opponentInfo = useWebSocketStore((s) => s.opponent_info);
 
 
   // question
@@ -396,6 +398,28 @@ int main() {
           <div className="flex gap-2">
             {" "}
             Code <p className="text-red-600">Red </p>
+          </div>
+        </div>
+
+        <div className="flex">
+          <div className="flex bg-gray-900 border-2 border-red-400 w-40 rounded-lg rounded-bl-3xl rounded-tl-3xl items-center">
+            <img
+              src={opponentInfo?.avatar}
+              alt=""
+              className="w-10 h-10 rounded-full"
+            />
+            <div className="px-4 p-2 font-mono flex-1 justify-center items-center flex">
+              {opponentInfo?.username}
+            </div>
+          </div>
+        </div>
+
+        <div className="flex gap-3">
+          <div className=" text-white cursor-pointer p-1 px-3 rounded-lg bg-red-600">
+            Exit
+          </div>
+          <div className=" text-black cursor-pointer p-1 px-2 rounded-lg bg-white">
+            Submit
           </div>
         </div>
       </div>
