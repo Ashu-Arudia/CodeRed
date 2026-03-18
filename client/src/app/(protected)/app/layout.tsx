@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useWebSocketStore } from "@/store/webSocketStore";
 import Loader from "@/components/GameLoader";
 import { useUserDetails } from "@/features/auth/queries";
+import ResumeMatchModal from "@/components/resume_match/resume_match";
 
 export default function ProtectedLayout({
   children,
@@ -14,6 +15,8 @@ export default function ProtectedLayout({
   const router = useRouter();
 
   const connect = useWebSocketStore((s) => s.connect);
+  const sendEvent = useWebSocketStore((s) => s.sendEvent);
+  const connected = useWebSocketStore((s) => s.connected);
   const disconnect = useWebSocketStore((s) => s.disconnect);
 
   const {
@@ -27,23 +30,26 @@ export default function ProtectedLayout({
     if (userError) {
       router.replace("/login");
     }
-  }, [userError]);
+  }, [userError,router]);
 
   //if user valid then connect websocket
   useEffect(() => {
-    if (!userLoading) console.log("User: ", user);
     if (user && !userLoading) {
       connect();
     }
-    if (!userLoading && !user)
-    {
-      router.replace("/login");
-    }
+  }, [user, userLoading]);
 
+  useEffect(() => {
     return () => {
       disconnect();
     };
-  }, [user]);
+  }, []);
+
+  useEffect(() => {
+    if (connected) {
+      sendEvent({ type: "resume_match" });
+    }
+  }, [connected,router]);
 
   //if user not complete their user info then route to profile page
   useEffect(() => {
@@ -54,5 +60,10 @@ export default function ProtectedLayout({
 
   if (userLoading) return <Loader />;
 
-  return <>{children}</>;
+  return (
+    <>
+      <ResumeMatchModal />
+      {children}
+    </>
+  );
 }

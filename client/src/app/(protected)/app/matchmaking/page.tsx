@@ -36,10 +36,7 @@ const dummyOpponents: Player[] = [
 
 export default function MatchmakingProPage() {
   const router = useRouter();
-
-  const sendEvent = useWebSocketStore((s) => s.sendEvent);
   const matchId = useWebSocketStore((s) => s.matchId);
-  const connected = useWebSocketStore((s) => s.connected);
   const opponentInfo = useWebSocketStore((s) => s.opponent_info);
 
   const [isSearching, setIsSearching] = useState(true);
@@ -56,18 +53,6 @@ export default function MatchmakingProPage() {
       }
     : null;
 
-  // send matchmaking request
-  useEffect(() => {
-    if (!connected) return;
-
-    setStatus("Searching for opponent...");
-
-    sendEvent({
-      type: "join_queue",
-      payload: { mode: "ranked" },
-    });
-  }, [connected, sendEvent]);
-
   // set opponent from websocket
   useEffect(() => {
     if (!opponentInfo) return;
@@ -79,7 +64,7 @@ export default function MatchmakingProPage() {
     });
   }, [opponentInfo]);
 
-  // when match found
+  // sending to  match
   useEffect(() => {
     if (!matchId) return;
 
@@ -87,8 +72,8 @@ export default function MatchmakingProPage() {
     setStatus("Opponent found! Preparing match...");
 
     const timer = setTimeout(() => {
-      router.push(`match/${matchId}`);
-    }, 5000);
+      router.replace(`match/${matchId}`);
+    }, 10000);
 
     return () => clearTimeout(timer);
   }, [matchId, router]);

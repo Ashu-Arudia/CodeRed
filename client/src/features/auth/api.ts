@@ -15,7 +15,6 @@ export const userDetails = async () => {
 
 //POST
 export const completeProfile = async (formData: FormData) => {
-  console.log("Formdata: ",formData);
   const res = await axios.post(
     `${backendUrl}/api/v1/auth/complete-profile`,
     formData,

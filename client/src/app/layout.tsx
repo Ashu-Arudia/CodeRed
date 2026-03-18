@@ -8,7 +8,6 @@ import type { Metadata } from "next";
 // } from "next/font/google";
 import "./global.css";
 import ClientLayout from '../hydrationFix/clientLayout'
-import { WebSocketProvider } from "@/app/context/WebSocketContext";
 import { QueryProvider } from "@/providers/query-provider";
 
 // const geistSans = Geist({

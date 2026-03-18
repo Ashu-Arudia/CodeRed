@@ -13,6 +13,9 @@ import Hackathon from "../hackathon/page";
 import Settings from "../settings/setting";
 import { useUserDetails } from "@/features/auth/queries";
 import { useFetchUserFriends } from "@/features/friends/queries";
+import { useWebSocketStore } from "@/store/webSocketStore";
+import { start } from "repl";
+import { div } from "framer-motion/client";
 
 const metalMania = Metal_Mania({
   subsets: ["latin"],
@@ -56,6 +59,9 @@ export default function Home() {
   const [isranked, setIsranked] = useState<Boolean>(true);
   const [nav, setNav] = useState<"home" | "hackathon" | "bonus">("home");
   const [addedFriends, setAddedFriends] = useState<String[]>([]);
+  const [selectCard, setSelectCard] = useState<number>(0);
+
+  const [searching, setSearching] = useState(false);
 
 
   const {
@@ -63,6 +69,12 @@ export default function Home() {
       isLoading: userfriendLoading,
       isError: userfriendError,
   } = useFetchUserFriends();
+
+  //For matchmaking
+  const sendEvent = useWebSocketStore((s) => s.sendEvent);
+  const connected = useWebSocketStore((s) => s.connected);
+  const matchId = useWebSocketStore((s) => s.matchId);
+  const matchSource = useWebSocketStore((s) => s.matchSource);
 
   //user state for settings and community
   const community = userState((s) => s.communityState);
@@ -113,6 +125,15 @@ export default function Home() {
     }, 5000);
     return () => clearInterval(interval);
   }, []);
+
+  // check Match found or not
+  useEffect(() => {
+    if (!matchId) return;
+      if (matchSource === "found") {
+        setSearching(false);
+        router.push("/app/matchmaking");
+      }
+    }, [matchId]);
 
   const AddFriendCard = ({ user }: { user: AddFriendCardProps }) => {
   return (
@@ -221,41 +242,6 @@ export default function Home() {
     },
   ];
 
-  const friends = [
-    {
-      name: "Shadow_Viper",
-      status: "In Match",
-      rank: "Supreme",
-      img: "https://randomuser.me/api/portraits/men/32.jpg",
-      online: true,
-      game: "de_dust2",
-    },
-    {
-      name: "Night_Hawk",
-      status: "Lobby",
-      rank: "Global Elite",
-      img: "https://randomuser.me/api/portraits/women/45.jpg",
-      online: true,
-      game: "Waiting",
-    },
-    {
-      name: "Storm_Rider",
-      status: "Offline",
-      rank: "Legendary Eagle",
-      img: "https://randomuser.me/api/portraits/men/67.jpg",
-      online: false,
-      game: "Last seen 2h",
-    },
-    {
-      name: "Frost_Bite",
-      status: "In Match",
-      rank: "Master Guardian",
-      img: "https://randomuser.me/api/portraits/women/23.jpg",
-      online: true,
-      game: "de_mirage",
-    },
-  ];
-
   const leaderboard = [
     {
       name: "APEX_PREDATOR",
@@ -293,6 +279,26 @@ export default function Home() {
       img: "https://randomuser.me/api/portraits/men/28.jpg",
     },
   ];
+
+  const toggleMatchmaking = () => {
+    if (!connected) return;
+
+    if (!searching) {
+      sendEvent({
+        type: "join_queue",
+        payload: { mode: "ranked" },
+      });
+
+      setSearching(true);
+    } else {
+      console.log("sending leave queue")
+      sendEvent({
+        type: "leave_queue",
+      });
+
+      setSearching(false);
+    }
+  };
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % featuredMatches.length);
@@ -940,10 +946,17 @@ export default function Home() {
                           >
                             <div
                               className={`card relative h-80 rounded-2xl overflow-hidden border transition-all duration-500 shadow-2xl ${
+                                selectCard === idx
+                                  ? "border-2 border-red-500"
+                                  : ""
+                              } ${
                                 hoveredCard === idx
                                   ? "border-black  transform scale-105"
                                   : "border-gray-800"
                               }`}
+                              onClick={() => {
+                                setSelectCard(idx);
+                              }}
                             >
                               {/* Full background image */}
                               <div className="absolute inset-0">
@@ -972,46 +985,7 @@ export default function Home() {
                                   </div>
                                 </div>
 
-                                {/* Bottom section - Luxury action buttons */}
-                                <div className="card-actions justify-between gap-4">
-                                  <button
-                                    className={`btn flex-1 font-bold transition-all duration-300 shadow-xl border-0 tracking-wide
-                              bg-white text-black shadow-black/50"
-                          `}
-                                  >
-                                    <svg
-                                      className="w-4 h-4 mr-2"
-                                      fill="currentColor"
-                                      viewBox="0 0 20 20"
-                                    >
-                                      <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
-                                    </svg>
-                                    <div
-                                      onClick={() => {
-                                        router.push("/app/matchmaking");
-                                      }}
-                                    >
-                                      START MATCH
-                                    </div>
-                                  </button>
-                                  <button
-                                    className={`btn backdrop-blur-sm bg-black/50 border-2 border-white/80 text-white hover:bg-white hover:text-black hover:border-white transition-all duration-300 shadow-lg `}
-                                  >
-                                    <svg
-                                      className="w-4 h-4"
-                                      fill="none"
-                                      stroke="currentColor"
-                                      viewBox="0 0 24 24"
-                                    >
-                                      <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                                      />
-                                    </svg>
-                                  </button>
-                                </div>
+
                               </div>
                             </div>
                           </div>
@@ -1062,47 +1036,6 @@ export default function Home() {
                                     </h3>
                                   </div>
                                 </div>
-
-                                {/* Bottom section - Luxury action buttons */}
-                                <div className="card-actions justify-between gap-4">
-                                  <button
-                                    className={`btn flex-1 font-bold transition-all duration-300 shadow-xl border-0 tracking-wide
-                              bg-white text-black shadow-black/50"
-                          `}
-                                  >
-                                    <svg
-                                      className="w-4 h-4 mr-2"
-                                      fill="currentColor"
-                                      viewBox="0 0 20 20"
-                                    >
-                                      <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
-                                    </svg>
-                                    <div
-                                      onClick={() => {
-                                        router.push("/matchmaking");
-                                      }}
-                                    >
-                                      START MATCH
-                                    </div>
-                                  </button>
-                                  <button
-                                    className={`btn backdrop-blur-sm bg-black/50 border-2 border-white/80 text-white hover:bg-white hover:text-black hover:border-white transition-all duration-300 shadow-lg `}
-                                  >
-                                    <svg
-                                      className="w-4 h-4"
-                                      fill="none"
-                                      stroke="currentColor"
-                                      viewBox="0 0 24 24"
-                                    >
-                                      <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                                      />
-                                    </svg>
-                                  </button>
-                                </div>
                               </div>
                             </div>
                           </div>
@@ -1134,12 +1067,30 @@ export default function Home() {
                 <div className="flex-grow p-2 overflow-y-auto">
                   {!userfriendLoading &&
                     userfriendData?.map((friend: AddFriendCardProps) => (
-                      <AddFriendCard
-                        key={friend.friend_id}
-                        user={friend}
-                      />
+                      <AddFriendCard key={friend.friend_id} user={friend} />
                     ))}
                 </div>
+              </div>
+              <div className="bg-white text-black flex justify-center items-center cursor-pointer">
+                <button
+                  className="p-2 text-2xl font-semibold cursor-pointer w-full"
+                  disabled={!connected}
+                  onClick={toggleMatchmaking}
+                >
+                  {!connected
+                    ? "Connecting..."
+                    : searching
+                    ? "Cancel Matchmaking"
+                    : "Start Match"}
+                  <div className="text-sm justify-center flex">
+                    {searching && (
+                      <div className="flex gap-2">
+                        <div className="animate-spin rounded-full h-4 w-4  border-b-2 border-black"></div>
+                        <p>Searching for opponent...</p>
+                      </div>
+                    )}
+                  </div>
+                </button>
               </div>
             </aside>
           </div>

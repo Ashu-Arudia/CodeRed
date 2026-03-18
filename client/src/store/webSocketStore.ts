@@ -19,6 +19,7 @@ interface WebSocketState {
   connected: boolean;
   reconnectAttempts: number;
   manualClose: boolean;
+  matchSource: "found" | "resume" | null;
 
   matchId: string | null;
 
@@ -36,6 +37,7 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => ({
   connected: false,
   reconnectAttempts: 0,
   manualClose: false,
+  matchSource: null,
 
   matchId: null,
 
@@ -74,9 +76,6 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => ({
         manualClose: false,
       });
 
-      // resume active match if exists
-      ws.send(JSON.stringify({ type: "resume_request" }));
-
       // heartbeat
       pingInterval = setInterval(() => {
         if (ws.readyState === WebSocket.OPEN) {
@@ -103,6 +102,7 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => ({
         case "match_found":
           set({
             matchId: data.payload.match_id,
+            matchSource: data.payload.matchSource,
             opponent_info: {
               id: data.payload?.opponent?.id,
               username: data.payload?.opponent?.username,
@@ -112,13 +112,49 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => ({
           });
           break;
 
-        case "match_resume":
-          set({ matchId: data.payload.match_id });
+        case "resume_match":
+          set({
+            matchId: data.payload.match_id,
+            matchSource: data.payload.matchSource,
+            opponent_info: {
+              id: data.payload?.opponent?.id,
+              username: data.payload?.opponent?.username,
+              avatar: data.payload?.opponent?.avatar,
+              rank: data.payload?.opponent?.rank,
+            },
+          });
+          break
+
+        case "resume_match_not_found":
+          set({
+            matchId: null,
+            opponent_info: null,
+            matchSource: null
+          });
           break;
 
         case "match_end":
-          set({ matchId: null });
+          console.log("match end here:: ",data)
+          set({
+            matchId: null,
+            opponent_info: null,
+            matchSource: null
+           });
           break;
+
+        case "submit_successful":
+          console.log("Submit successful!!")
+          set({
+            matchId: null,
+            opponent_info: null,
+            matchSource: null
+           });
+          break;
+
+        case "submit_successful":
+          console.log("Opponent has submitted!!")
+          break;
+
 
         case "opponent_progress":
           console.log("Opponent progress:", data.payload.progress);
@@ -188,7 +224,7 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => ({
   sendEvent: (event: WSEvent) => {
     const socket = get().socket;
 
-    if (socket && socket.readyState === WebSocket.OPEN) {
+    if (socket?.readyState === WebSocket.OPEN) {
       socket.send(JSON.stringify(event));
     } else {
       set((state) => ({

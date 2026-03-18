@@ -6,38 +6,14 @@ import axios from "axios";
 import { div } from "framer-motion/client";
 import { number } from "framer-motion";
 import { useWebSocketStore } from "@/store/webSocketStore";
+import { useParams, useRouter } from "next/navigation"
+import { useRunCodeMutation,useSubmitCodeMutation } from "@/features/match/mutations";
+import { useFetchQuestion } from "@/features/match/queries";
 
 const metalMania = Metal_Mania({
   subsets: ["latin"],
   weight: "400",
 });
-
-const backendUrl = process.env.NEXT_PUBLIC_API_URL;
-const token = localStorage.getItem("token");
-
-export default function CodeEditor() {
-
-  const [code, setCode] = useState<string>("");
-  const [message, setMessage] = useState<string | null>(null);
-
-  const [isOpen, setIsOpen] = useState(false);
-
-  //flower
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-  const [isShiftHeld, setIsShiftHeld] = useState(false);
-  const editorRef = useRef<any>(null);
-  const monacoDisposableRef = useRef<any[]>([]);
-  const [counter, setCounter] = useState(0);
-  const [showTestCase, setShowTestCase] = useState(true);
-
-  //language_Id
-  const [languageId, setLanguageId] = useState<50 | 54 | 62 | 63 | 71>(50)
-  const [Language, setLanguage] = useState<"c" | "cpp" | "python" | "javascript" | "java">("c")
-
-  const [showQuestion, setShowQuestion] = useState<Boolean>(true);
-  const opponentInfo = useWebSocketStore((s) => s.opponent_info);
-
 
   // question
   interface SampleTestCase {
@@ -54,26 +30,25 @@ export default function CodeEditor() {
     time_Limit: number;
     sample_test_cases: SampleTestCase[];
   }
-  const [question, setQuestion] = useState<Question>({
-    title: "Sum of Two Numbers",
-    description:
-      "Given two integers A and B, return their sum. The input contains two integers separated by space. Output the sum as a single integer.",
-    difficulty_Level: "easy",
-    topic_id: 1,
-    time_Limit: 1,
-    sample_test_cases: [
-      {
-        test_cases_id: 1,
-        input: "3 5",
-        output: "8",
-      },
-      {
-        test_cases_id: 2,
-        input: "10 20",
-        output: "30",
-      },
-    ],
-  });
+
+  interface SubmitResult {
+    submission_id: number;
+    passed: boolean;
+    problem_id: number;
+    verdict: string;
+    execution_time: number;
+    memory_used: number;
+    test_cases_passed: number;
+    total_test_cases: number;
+    stderr: string;
+    output_mismatch?: {
+      input: string;
+      expected: string;
+      actual: string;
+    };
+    time_complexity?: string;
+    space_complexity?: string;
+  }
 
 
   interface result {
@@ -85,7 +60,48 @@ export default function CodeEditor() {
     stderr: null;
     test_case_index: number;
   }
+
+export default function CodeEditor() {
+
+  const [code, setCode] = useState<string>("");
+  const [message, setMessage] = useState<string | null>(null);
+
+  const [isOpen, setIsOpen] = useState(false);
+
+  // for confirmation exit
+  const [showExitModal, setShowExitModal] = useState(false);
+  const [nextRoute, setNextRoute] = useState(null);
+
+  //flower
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const [isShiftHeld, setIsShiftHeld] = useState(false);
+  const editorRef = useRef<any>(null);
+  const monacoDisposableRef = useRef<any[]>([]);
+  const [counter, setCounter] = useState(0);
+  const [showTestCase, setShowTestCase] = useState(true);
+
+  //language_Id
+  const [languageId, setLanguageId] = useState<50 | 54 | 62 | 63 | 71>(50)
+  const [Language, setLanguage] = useState<"c" | "cpp" | "python" | "javascript" | "java">("c")
+
+  const [showQuestion, setShowQuestion] = useState<Boolean>(true);
+  const [showDescription, setShowDescription] = useState<Boolean>(true);
+  const opponentInfo = useWebSocketStore((s) => s.opponent_info);
+  const matchId = useWebSocketStore((s) => s.matchId);
+  const sendEvent = useWebSocketStore((s) => s.sendEvent);
+  const params = useParams();
+  const router = useRouter();
+  const {
+        data: questionData,
+        isLoading: questionDataLoading,
+        isError: questionDataError,
+  } = useFetchQuestion();
+
+  const question = questionData;
+
   const [result, setResult] = useState<result[]>();
+  const [submitResult, setSubmitResult] = useState<SubmitResult | null>(null);
 
   const [activeIndex, setActiveIndex] = useState<number>(0);
 
@@ -95,19 +111,83 @@ export default function CodeEditor() {
     seconds: 0,
   });
 
+  const runCodeMutation = useRunCodeMutation(setResult);
+  const submitCodeMutation = useSubmitCodeMutation(setSubmitResult);
+
+  const endMatch = () => {
+    if (!showExitModal) {
+      setShowExitModal(true);
+      return;
+    }
+
+    if (!matchId) return;
+
+    sendEvent({
+      type: "submit_code",
+      payload: { match_id: matchId },
+    });
+
+    setShowExitModal(false);
+    router.replace("/app/home");
+  };
+
+  // match presence
+  useEffect(() => {
+    if (!matchId) return;
+
+    sendEvent({
+      type: "match_presence",
+      payload: { status: "enter", match_id: matchId },
+    });
+
+    return () => {
+      sendEvent({
+        type: "match_presence",
+        payload: { status: "leave", match_id: matchId },
+      });
+    };
+  }, [matchId]);
+
+  // check if match is there or not
+  useEffect(() => {
+    if (matchId) return;
+
+    const timer = setTimeout(() => {
+      router.replace("/app/home");
+    }, 10000);
+
+    return () => clearTimeout(timer);
+  }, [matchId, router]);
+
+  // useEffect(() => {
+  //   return () =>
+  //     sendEvent({
+  //       type: "end_match",
+  //       payload: {
+  //         "match_id": matchId
+  //       }
+  //     });
+  // }, [])
+
+
+  // useEffect(() => {
+  //   if (params.matchId != matchId)
+  //     router.replace("/app/home");
+  // },[params.matchId])
+
   // questions default code
   useEffect(() => {
     if (languageId === 54) {
       setCode(`#include <iostream>
+using namespace std;
 
 int main() {
-    std::cout << "Hello, C++ World!";
+    cout << "Hello, C++ World!";
     return 0;
 }`);
     }
     if (languageId === 50) {
       setCode(`#include <stdio.h>
-using namespace std;
 
 int main() {
     printf("Hello, World!");
@@ -235,36 +315,6 @@ int main() {
     return () => document.removeEventListener("click", onDocClick);
   }, []);
 
-  // random question
-  useEffect(() => {
-    const fun = async () => {
-      try {
-        const config = {
-          headers: {
-            "ngrok-skip-browser-warning": "true",
-          },
-        };
-        const response = await axios.get(`${backendUrl}/api/v1/problems/35`, config);
-
-        setQuestion({
-          title: response.data.title,
-          description: response.data.description,
-          difficulty_Level: response.data.difficulty_Level,
-          topic_id: response.data.topic_id,
-          time_Limit: response.data.time_Limit,
-          sample_test_cases: response.data.sample_test_cases ?? [],
-        });
-
-        console.log("response from backend : ", response.data);
-
-      } catch (err)
-      {
-        console.log("Error in fetching questions : ", err);
-      }
-    }
-    fun();
-  },[])
-
 
   useEffect(() => {
     console.log("Cureent result: ",result);
@@ -305,8 +355,6 @@ int main() {
   }
 
   const runCode = () => {
-    const fun = async () => {
-      try {
         const rawCode = editorRef.current?.getValue() ?? code;
         const formattedCode = rawCode.replace(/\n/g, "\n");
 
@@ -317,31 +365,27 @@ int main() {
           language_id: languageId,
           problem_id: 35,
         };
+        runCodeMutation.mutate(data)
+  }
 
-        const config = {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "ngrok-skip-browser-warning": "true",
-          },
+  const submitCode = () => {
+  const rawCode = editorRef.current?.getValue() ?? code;
+    const formattedCode = rawCode.replace(/\n/g, "\n");
+
+    localStorage.setItem("userCode", rawCode);
+    const data = {
+          source_code: formattedCode,
+          language_id: languageId,
+          problem_id: 35,
+          match_id: matchId
         };
-
-        console.log("code data: ", data);
-
-        const response = await axios.post(
-          `${backendUrl}/api/v1/submission/run`,
-          data,
-          config
-        );
-
-        console.log("Result from backend: ", response.data);
-        setResult(response.data.results);
-      } catch (err) {
-        setMessage("Failed to save locally.");
+    submitCodeMutation.mutate(data, {
+      onSuccess: () => {
+        setShowDescription(false)
+        console.log("submit result is :: ",submitResult)
       }
-    };
-    fun();
-  };
-
+  });
+};
 
   function handleEditorMount(editor: any, monaco: any) {
     editorRef.current = editor;
@@ -385,11 +429,44 @@ int main() {
     monacoDisposableRef.current.push(d1, d2);
   }
 
+     if (questionDataLoading) {
+       return <div className="text-white p-10">Loading question...</div>;
+     }
+
+     if (questionDataError || !question) {
+       return <div className="text-red-500 p-10">Failed to load question</div>;
+     }
+
   return (
     <div
       className="h-screen flex flex-col bg-zinc-950 text-white"
       ref={containerRef}
     >
+      {/* exit modal  */}
+      {showExitModal &&
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="bg-zinc-900 w-[420px] rounded-xl shadow-xl p-6 text-center">
+            <h2 className="text-xl font-semibold mb-3">Leave this match?</h2>
+
+            <p className="text-gray-200 mb-6">
+              If you exit now, your answers will be submitted automatically. Do
+              you really want to leave?
+            </p>
+
+            <div className="flex justify-center gap-4">
+              <button className="px-5 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-black"
+              onClick={()=>{setShowExitModal(false)}}>
+                Stay
+              </button>
+
+              <button className="px-5 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600"
+              onClick={endMatch}>
+                Exit Match
+              </button>
+            </div>
+          </div>
+        </div>
+      }
       {/* header */}
       <div className="w-full bg-zinc-950 h-10 my-2 items-center flex justify-between px-2">
         <div
@@ -415,10 +492,14 @@ int main() {
         </div>
 
         <div className="flex gap-3">
-          <div className=" text-white cursor-pointer p-1 px-3 rounded-lg bg-red-600">
+          <div className=" text-white cursor-pointer p-1 px-3 rounded-lg bg-red-600"
+          onClick={endMatch}>
             Exit
           </div>
-          <div className=" text-black cursor-pointer p-1 px-2 rounded-lg bg-white">
+          <div
+            className=" text-black cursor-pointer p-1 px-2 rounded-lg bg-white"
+            onClick={submitCode}
+          >
             Submit
           </div>
         </div>
@@ -428,7 +509,6 @@ int main() {
         {/* main area */}
         <div className="flex-1 h-full  flex px-2 pb-2 gap-2">
           {/* Question area */}
-
           <div className="flex">
             <div className="w-12 h-full bg-zinc-800 rounded-tl-lg rounded-bl-lg flex flex-col items-center p-3 border-r border-r-black">
               {/* buttons  */}
@@ -451,112 +531,252 @@ int main() {
                 </svg>
               </div>
             </div>
-
             {/* display area  */}
-            {showQuestion && (
-              <div className="w-[20vw] h-[90vh] bg-zinc-900 rounded-tr-lg rounded-br-lg">
-                <div className="h-full w-full py-4 pl-4 flex justify-center items-center">
-                  <div className=" w-full h-full rounded-lg">
-                    <div className="w-full h-full bg-zinc-900 text-gray-200 rounded-lg overflow-y-auto font-sans">
-                      {/* Problem Title */}
-                      <div className="flex justify-between items-center">
-                        <h1 className="text-lg font-bold text-white mb-4">
-                          1. {question.title}
-                        </h1>
-                        <span className="px-2 py-1 text-sm rounded-full bg-green-900 text-green-300 font-medium">
-                          {question.difficulty_Level}
-                        </span>
-                      </div>
-
-                      {/* Problem Description */}
-                      <p className=" text-sm leading-relaxed mb-4">
-                        {question.description}
-                      </p>
-
-                      <div className="bg-zinc-800 rounded-lg p-4 mb-4">
-                        <h2 className="text-lg font-semibold text-white mb-2">
-                          Example 1:
-                        </h2>
-                        <pre className="bg-zinc-900 p-3 rounded text-sm text-gray-300 whitespace-pre-wrap flex flex-col">
-                          <div className="flex ">
-                            <div>Input: </div>
-                            <div>
-                              {`${question.sample_test_cases[0].input.replace(
-                                /\\n/g,
-                                "\n"
-                              )}`}
-                            </div>
+            <div className="flex flex-col">
+              <div className="bg-zinc-800 p-1 text-sm items-center justify-between flex rounded-tr-lg">
+                <div
+                  className={`justify-center flex-1 p-1 flex cursor-pointer hover:bg-zinc-700 rounded-md ${
+                    showDescription ? "scale-110 text-white" : "text-gray-400"
+                  }`}
+                  onClick={() => {
+                    setShowDescription(true);
+                  }}
+                >
+                  Description
+                </div>
+                <div
+                  className={`justify-center flex-1 p-1 flex cursor-pointer hover:bg-zinc-700 rounded-md ${
+                    !showDescription ? "scale-110 text-white" : "text-gray-400"
+                  }`}
+                  onClick={() => {
+                    setShowDescription(false);
+                  }}
+                >
+                  Submission
+                </div>
+              </div>
+              <div>
+                {showQuestion && showDescription && (
+                  <div className="w-[20vw] h-[90vh] bg-zinc-900  rounded-br-lg">
+                    <div className="h-full w-full py-4 pl-4 flex justify-center items-center">
+                      <div className=" w-full h-full rounded-lg">
+                        <div className="w-full h-full bg-zinc-900 text-gray-200 rounded-lg overflow-y-auto font-sans">
+                          {/* Problem Title */}
+                          <div className="flex justify-between items-center">
+                            <h1 className="text-lg font-bold text-white mb-4">
+                              1. {question.title}
+                            </h1>
+                            <span className="px-2 py-1 text-sm rounded-full bg-green-900 text-green-300 font-medium">
+                              {question.difficulty_Level}
+                            </span>
                           </div>
 
-                          <div className="flex">
-                            <div>Output: </div>
-                            {`${question.sample_test_cases[0].output.replace(
-                              /\\n/g,
-                              "\n"
-                            )}`}
+                          {/* Problem Description */}
+                          <p className=" text-sm leading-relaxed mb-4">
+                            {question.description}
+                          </p>
+
+                          <div className="bg-zinc-800 rounded-lg p-4 mb-4">
+                            <h2 className="text-lg font-semibold text-white mb-2">
+                              Example 1:
+                            </h2>
+                            <pre className="bg-zinc-900 p-3 rounded text-sm text-gray-300 whitespace-pre-wrap flex flex-col">
+                              <div className="flex ">
+                                <div>Input: </div>
+                                <div>
+                                  {`${question.sample_test_cases[0].input.replace(
+                                    /\\n/g,
+                                    "\n"
+                                  )}`}
+                                </div>
+                              </div>
+
+                              <div className="flex">
+                                <div>Output: </div>
+                                {`${question.sample_test_cases[0].output.replace(
+                                  /\\n/g,
+                                  "\n"
+                                )}`}
+                              </div>
+                            </pre>
                           </div>
-                        </pre>
-                      </div>
 
-                      <div className="bg-zinc-800 rounded-lg p-4 mb-4">
-                        <h2 className="text-lg font-semibold text-white mb-2">
-                          Example 2:
-                        </h2>
-                        <pre className="bg-zinc-900 p-3 rounded text-sm text-gray-300 whitespace-pre-wrap flex flex-col">
-                          <div className="flex ">
-                            <div>Input: </div>
-                            <div>
-                              {`${question.sample_test_cases[1].input.replace(
-                                /\\n/g,
-                                "\n"
-                              )}`}
-                            </div>
+                          <div className="bg-zinc-800 rounded-lg p-4 mb-4">
+                            <h2 className="text-lg font-semibold text-white mb-2">
+                              Example 2:
+                            </h2>
+                            <pre className="bg-zinc-900 p-3 rounded text-sm text-gray-300 whitespace-pre-wrap flex flex-col">
+                              <div className="flex ">
+                                <div>Input: </div>
+                                <div>
+                                  {`${question.sample_test_cases[1].input.replace(
+                                    /\\n/g,
+                                    "\n"
+                                  )}`}
+                                </div>
+                              </div>
+
+                              <div className="flex">
+                                <div>Output: </div>
+                                {`${question.sample_test_cases[1].output.replace(
+                                  /\\n/g,
+                                  "\n"
+                                )}`}
+                              </div>
+                            </pre>
                           </div>
 
-                          <div className="flex">
-                            <div>Output: </div>
-                            {`${question.sample_test_cases[1].output.replace(
-                              /\\n/g,
-                              "\n"
-                            )}`}
+                          {/* Constraints */}
+                          <div className="bg-zinc-800 rounded-lg p-4 mb-6">
+                            <h2 className="text-lg font-semibold text-white mb-2">
+                              Constraints:
+                            </h2>
+                            <ul className="list-disc list-inside text-sm text-gray-300 space-y-1">
+                              <li>2 ≤ nums.length ≤ 10⁴</li>
+                              <li>-10⁹ ≤ nums[i] ≤ 10⁹</li>
+                              <li>-10⁹ ≤ target ≤ 10⁹</li>
+                              <li>Only one valid answer exists.</li>
+                            </ul>
                           </div>
-                        </pre>
-                      </div>
 
-                      {/* Constraints */}
-                      <div className="bg-zinc-800 rounded-lg p-4 mb-6">
-                        <h2 className="text-lg font-semibold text-white mb-2">
-                          Constraints:
-                        </h2>
-                        <ul className="list-disc list-inside text-sm text-gray-300 space-y-1">
-                          <li>2 ≤ nums.length ≤ 10⁴</li>
-                          <li>-10⁹ ≤ nums[i] ≤ 10⁹</li>
-                          <li>-10⁹ ≤ target ≤ 10⁹</li>
-                          <li>Only one valid answer exists.</li>
-                        </ul>
-                      </div>
-
-                      {/* Complexity Analysis */}
-                      <div className="bg-zinc-800 rounded-lg p-4">
-                        <h2 className="text-lg font-semibold text-white mb-2">
-                          Complexity Analysis:
-                        </h2>
-                        <ul className="list-disc list-inside text-sm text-gray-300 space-y-1">
-                          <li>
-                            <strong>Time Complexity:</strong> O(n) — Each
-                            element is visited at most once.
-                          </li>
-                          <li>
-                            <strong>Space Complexity:</strong> O(n) — Hash map
-                            stores at most n elements.
-                          </li>
-                        </ul>
+                          {/* Complexity Analysis */}
+                          <div className="bg-zinc-800 rounded-lg p-4">
+                            <h2 className="text-lg font-semibold text-white mb-2">
+                              Complexity Analysis:
+                            </h2>
+                            <ul className="list-disc list-inside text-sm text-gray-300 space-y-1">
+                              <li>
+                                <strong>Time Complexity:</strong> O(n) — Each
+                                element is visited at most once.
+                              </li>
+                              <li>
+                                <strong>Space Complexity:</strong> O(n) — Hash
+                                map stores at most n elements.
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                )}
+                {!showDescription && submitResult && (
+                  <div className="w-[20vw] h-[90vh] bg-zinc-900 rounded-br-lg p-2">
+                    <div className="h-full w-full py-4  flex justify-center items-center">
+                      <div className="w-full h-full rounded-lg">
+                        <div className="w-full h-full bg-zinc-900 text-gray-200 rounded-lg overflow-y-auto font-sans">
+                          {/* Header */}
+                          <div className="flex justify-between items-center mb-4">
+                            <h1 className="text-lg font-bold text-white">
+                              Submission Result
+                            </h1>
+
+                            <span
+                              className={`px-2 py-1 text-sm rounded-full font-medium
+            ${
+              submitResult?.passed
+                ? "bg-green-900 text-green-300"
+                : "bg-red-900 text-red-300"
+            }`}
+                            >
+                              {submitResult?.verdict}
+                            </span>
+                          </div>
+
+                          {/* Test Case Summary */}
+                          <div className="bg-zinc-800 rounded-lg p-4 mb-4">
+                            <div className="text-sm mb-2">
+                              Passed{" "}
+                              <span className="text-green-400 font-semibold">
+                                {submitResult?.test_cases_passed}
+                              </span>{" "}
+                              / {submitResult?.total_test_cases} Test Cases
+                            </div>
+
+                            {/* Progress bar */}
+                            <div className="w-full bg-zinc-700 h-3 rounded">
+                              <div
+                                className="bg-green-500 h-3 rounded"
+                                style={{
+                                  width: `${
+                                    (submitResult?.test_cases_passed /
+                                      submitResult?.total_test_cases) *
+                                    100
+                                  }%`,
+                                }}
+                              />
+                            </div>
+                          </div>
+
+                          {/* Performance */}
+                          <div className="bg-zinc-800 rounded-lg p-4 mb-4">
+                            <div className="text-sm mb-2">
+                              <strong>Runtime:</strong>{" "}
+                              {submitResult?.execution_time}s
+                            </div>
+
+                            <div className="text-sm">
+                              <strong>Memory:</strong>{" "}
+                              {Math.round(submitResult?.memory_used / 1000)} KB
+                            </div>
+                          </div>
+
+                          {/* Failed Test Case */}
+                          {!submitResult?.passed &&
+                            submitResult?.output_mismatch && (
+                              <div className="bg-zinc-800 rounded-lg p-4 mb-4">
+                                <h2 className="text-lg font-semibold text-red-400 mb-2">
+                                  Failed Test Case
+                                </h2>
+
+                                <div className="mb-3">
+                                  <div className="text-xs text-gray-400 mb-1">
+                                    Input
+                                  </div>
+                                  <pre className="bg-zinc-900 p-3 rounded text-sm whitespace-pre-wrap">
+                                    {submitResult.output_mismatch.input}
+                                  </pre>
+                                </div>
+
+                                <div className="mb-3">
+                                  <div className="text-xs text-gray-400 mb-1">
+                                    Expected Output
+                                  </div>
+                                  <pre className="bg-zinc-900 p-3 rounded text-sm whitespace-pre-wrap">
+                                    {submitResult.output_mismatch.expected}
+                                  </pre>
+                                </div>
+
+                                <div>
+                                  <div className="text-xs text-gray-400 mb-1">
+                                    Your Output
+                                  </div>
+                                  <pre className="bg-zinc-900 p-3 rounded text-sm text-red-400 whitespace-pre-wrap">
+                                    {submitResult.output_mismatch.actual}
+                                  </pre>
+                                </div>
+                              </div>
+                            )}
+
+                          {/* time and space complexity  */}
+                          {submitResult?.space_complexity && (
+                            <div className="bg-zinc-800 rounded-lg p-4 mb-4 text-sm">
+                              <div>
+                                Time Complexity - {submitResult.time_complexity}
+                              </div>
+                              <div>
+                                Space Complexity -{" "}
+                                {submitResult.space_complexity}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
 
           {/* Center: editor */}
@@ -694,29 +914,31 @@ int main() {
                 <div className="flex items-center gap-2 px-3 py-2 overflow-x-auto no-scrollbar justify-between">
                   <div>
                     {/* render case tabs */}
-                    {question.sample_test_cases.map((c, idx) => {
-                      const active = activeIndex === idx;
-                      const status = result?.[idx]?.status;
+                    {question.sample_test_cases.map(
+                      (c: SampleTestCase, idx: number) => {
+                        const active = activeIndex === idx;
+                        const status = result?.[idx]?.status;
 
-                      return (
-                        <button
-                          key={idx}
-                          onClick={() => setActiveIndex(idx)}
-                          className={`
+                        return (
+                          <button
+                            key={c.test_cases_id}
+                            onClick={() => setActiveIndex(idx)}
+                            className={`
         flex-shrink-0 px-3 py-1 rounded-md text-sm font-medium transition mr-2
         ${
           active
             ? " text-white shadow"
             : "text-white hover:text-white opacity-70"
         }
-        ${status === "Accepted" ? "bg-green-700" : ""}
+        ${status === "Accepted" ? "bg-green-600" : ""}
         ${status === "Wrong Answer" ? "bg-red-700" : ""}
       `}
-                        >
-                          {`Case ${idx + 1}`}
-                        </button>
-                      );
-                    })}
+                          >
+                            {`Case ${idx + 1}`}
+                          </button>
+                        );
+                      }
+                    )}
                   </div>
 
                   {/* Submit  */}
@@ -765,33 +987,35 @@ int main() {
                       {/* Expected Output and your output  */}
                       <div className="flex flex-col gap-3 ">
                         {/* Expected output  */}
-                        <div className="bg-zinc-800 rounded p-3">
+                        { !result && <div className="bg-zinc-800 rounded p-3">
                           <div className="text-xs text-white mb-1">
                             Expected Output
                           </div>
-                          <pre className="whitespace-pre-wrap text-sm bg-zinc-900 p-3 rounded text-zinc-200">
+                          <pre
+                            className={`whitespace-pre-wrap text-sm bg-zinc-900 p-3 rounded text-zinc-200`}
+                          >
                             {t.output}
                           </pre>
-                        </div>
+                        </div>}
+                        {result && <div className="bg-zinc-800 rounded p-3">
+                          <div className="text-xs  mb-1">
+                            Expected Output
+                          </div>
+                          <pre
+                            className={`whitespace-pre-wrap text-sm bg-zinc-900 p-3 rounded
+                            ${result[activeIndex]?.status === "Wrong Answer"
+                                ? "text-green-500"
+                                : ""
+                              }`}
+                          >
+                            {t.output}
+                          </pre>
+                        </div>}
                         {/* user output  */}
                         {result &&
                           (result[activeIndex]?.status === "Accepted" ||
                             result[activeIndex]?.status === "Wrong Answer") && (
-                            <div
-                              className={`rounded p-3
-
-                             ${
-                               result[activeIndex]?.status === "Accepted"
-                                 ? "bg-green-700 text-white"
-                                 : ""
-                             }
-                            ${
-                              result[activeIndex]?.status === "Wrong Answer"
-                                ? "bg-red-500 text-white"
-                                : ""
-                            }
-                            `}
-                            >
+                            <div className={`rounded p-3 bg-zinc-800`}>
                               <div className="text-xs mb-1">
                                 Your Output (
                                 {result[activeIndex]?.status === "Accepted"
@@ -802,7 +1026,14 @@ int main() {
                                   : ""}
                                 )
                               </div>
-                              <pre className="whitespace-pre-wrap text-sm h-fit bg-zinc-900 p-3 rounded text-zinc-200 max-h-[150px] overflow-y-auto ">
+                              <pre
+                                className={`whitespace-pre-wrap text-sm h-fit bg-zinc-900 p-3 rounded  max-h-[150px] overflow-y-auto
+                            ${
+                              result[activeIndex]?.status === "Wrong Answer"
+                                ? "text-red-500"
+                                : ""
+                            }`}
+                              >
                                 {result[activeIndex]?.actual_output}
                               </pre>
                             </div>

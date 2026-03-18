@@ -54,7 +54,6 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -62,6 +61,8 @@ export default function LoginPage() {
   const router = useRouter();
   const signupMutation = useSignUp();
   const loginMutation = useLogin();
+
+  const isLoading = signupMutation.isPending || loginMutation.isPending;
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -85,6 +86,9 @@ export default function LoginPage() {
       signupMutation.mutate({ email, password }, {
         onSuccess: () => {
           router.replace("/app/profile");
+        },
+        onError: (error: any) => {
+          setError(error?.response?.data?.message || "Signup failed");
         }
       })
     }
@@ -93,9 +97,10 @@ export default function LoginPage() {
         { email, password },
         {
           onSuccess: () => {
-            console.log("yeahh");
             router.replace(`/app/home`);
-            console.log("maa chuda");
+          },
+          onError: (error: any) => {
+            setError(error?.response?.data?.message || "Login failed");
           },
         }
       );
