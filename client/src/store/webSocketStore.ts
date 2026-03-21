@@ -14,6 +14,29 @@ type Opponent = {
   rank: string;
 };
 
+type SubmissionResult = {
+  submission_id: number | null;
+  passed: boolean | null;
+  problem_id: number | null;
+  verdict: string;
+  execution_time: number;
+  memory_used: number;
+  output_mismatch: string | null;
+  stderr: string | null;
+  test_cases_passed: number;
+  total_test_cases: number;
+  time_complexity: string | null;
+  space_complexity: string | null;
+  source_code: string | null;
+};
+
+type MatchResult = {
+  results: SubmissionResult[];
+  winner_id: number;
+  losser_id: number;
+  reason: string;
+};
+
 interface WebSocketState {
   socket: WebSocket | null;
   connected: boolean;
@@ -22,10 +45,13 @@ interface WebSocketState {
   matchSource: "found" | "resume" | null;
 
   matchId: string | null;
+  question_no: number;
 
   pendingEvents: WSEvent[];
 
   opponent_info: Opponent | null;
+  matchResult: MatchResult | null;
+  setMatchEnd: () => void;
 
   connect: () => void;
   disconnect: () => void;
@@ -40,9 +66,21 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => ({
   matchSource: null,
 
   matchId: null,
+  question_no:-1,
 
   pendingEvents: [],
   opponent_info: null,
+  matchResult: null,
+
+  setMatchEnd: () => {
+    if (typeof window === "undefined") return;
+    set({
+      matchId: null,
+      question_no: -1,
+      opponent_info: null,
+      matchSource: null,
+    });
+  },
 
   connect: () => {
     if (typeof window === "undefined") return;
@@ -103,6 +141,7 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => ({
           set({
             matchId: data.payload.match_id,
             matchSource: data.payload.matchSource,
+            question_no: data.payload?.question_no,
             opponent_info: {
               id: data.payload?.opponent?.id,
               username: data.payload?.opponent?.username,
@@ -113,9 +152,11 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => ({
           break;
 
         case "resume_match":
+          console.log("resume match found:: ",data.payload)
           set({
             matchId: data.payload.match_id,
             matchSource: data.payload.matchSource,
+            question_no: data.payload?.question_no,
             opponent_info: {
               id: data.payload?.opponent?.id,
               username: data.payload?.opponent?.username,
@@ -136,10 +177,11 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => ({
         case "match_end":
           console.log("match end here:: ",data)
           set({
+            matchResult: data.payload,
             matchId: null,
             opponent_info: null,
-            matchSource: null
-           });
+            matchSource: null,
+          });
           break;
 
         case "submit_successful":
@@ -151,10 +193,9 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => ({
            });
           break;
 
-        case "submit_successful":
+        case "opponent_submitted":
           console.log("Opponent has submitted!!")
           break;
-
 
         case "opponent_progress":
           console.log("Opponent progress:", data.payload.progress);

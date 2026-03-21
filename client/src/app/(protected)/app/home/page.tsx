@@ -75,6 +75,7 @@ export default function Home() {
   const connected = useWebSocketStore((s) => s.connected);
   const matchId = useWebSocketStore((s) => s.matchId);
   const matchSource = useWebSocketStore((s) => s.matchSource);
+  const showResult = useWebSocketStore((s) => s.matchResult);
 
   //user state for settings and community
   const community = userState((s) => s.communityState);

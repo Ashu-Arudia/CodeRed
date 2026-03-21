@@ -11,12 +11,14 @@ export default function ResumeMatchModal() {
   const opponent = useWebSocketStore((s) => s.opponent_info);
   const sendEvent = useWebSocketStore((s) => s.sendEvent);
   const matchSource = useWebSocketStore((s) => s.matchSource);
+  const setMatchEnd = useWebSocketStore((s) => s.setMatchEnd);
 
   if (!matchId) return null;
 
   const matchRoute = `/app/match/${matchId}`;
+  const matchRoute2 = `/app/matchmaking`;
 
-  if (pathname === matchRoute || matchSource === "found") return null;
+  if (pathname === matchRoute || pathname === matchRoute2 || matchSource === "found") return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 ">
@@ -39,10 +41,10 @@ export default function ResumeMatchModal() {
             className="px-4 py-2 bg-red-500 text-white rounded"
             onClick={() => {
               sendEvent({
-                type: "end_match",
+                type: "submit_code",
                 payload: { match_id: matchId },
               });
-
+              setMatchEnd();
               router.replace("/app/home");
             }}
           >

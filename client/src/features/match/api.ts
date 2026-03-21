@@ -46,13 +46,12 @@ export const submitCodeApi = async ({
   return res.data;
 };
 
-export const fetchQuestionApi = async () => {
-  const res = await axios.get(`${backendUrl}/api/v1/problems/35`, {
+export const fetchQuestionApi = async (question_no : number) => {
+  const res = await axios.get(`${backendUrl}/api/v1/problems/${question_no}`, {
     withCredentials: true,
     headers: {
       "ngrok-skip-browser-warning": "true",
     },
   });
-  console.log("repsonse i;:",res.data)
   return res.data;
 }

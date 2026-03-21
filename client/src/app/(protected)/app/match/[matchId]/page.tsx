@@ -87,18 +87,17 @@ export default function CodeEditor() {
 
   const [showQuestion, setShowQuestion] = useState<Boolean>(true);
   const [showDescription, setShowDescription] = useState<Boolean>(true);
+
+  // websocket details
   const opponentInfo = useWebSocketStore((s) => s.opponent_info);
   const matchId = useWebSocketStore((s) => s.matchId);
   const sendEvent = useWebSocketStore((s) => s.sendEvent);
+  const question_no = useWebSocketStore((s) => s.question_no);
+  const setMatchEnd = useWebSocketStore((s) => s.setMatchEnd);
+
+
   const params = useParams();
   const router = useRouter();
-  const {
-        data: questionData,
-        isLoading: questionDataLoading,
-        isError: questionDataError,
-  } = useFetchQuestion();
-
-  const question = questionData;
 
   const [result, setResult] = useState<result[]>();
   const [submitResult, setSubmitResult] = useState<SubmitResult | null>(null);
@@ -114,6 +113,7 @@ export default function CodeEditor() {
   const runCodeMutation = useRunCodeMutation(setResult);
   const submitCodeMutation = useSubmitCodeMutation(setSubmitResult);
 
+  // end match
   const endMatch = () => {
     if (!showExitModal) {
       setShowExitModal(true);
@@ -126,10 +126,20 @@ export default function CodeEditor() {
       type: "submit_code",
       payload: { match_id: matchId },
     });
-
+    setMatchEnd();
     setShowExitModal(false);
     router.replace("/app/home");
   };
+
+  const {
+    data: questionData,
+    isLoading: questionDataLoading,
+    isError: questionDataError,
+  } = useFetchQuestion(question_no, {
+    enabled: !!matchId && question_no!==-1
+  });
+
+  const question = questionData;
 
   // match presence
   useEffect(() => {
@@ -158,17 +168,6 @@ export default function CodeEditor() {
 
     return () => clearTimeout(timer);
   }, [matchId, router]);
-
-  // useEffect(() => {
-  //   return () =>
-  //     sendEvent({
-  //       type: "end_match",
-  //       payload: {
-  //         "match_id": matchId
-  //       }
-  //     });
-  // }, [])
-
 
   // useEffect(() => {
   //   if (params.matchId != matchId)
@@ -363,7 +362,7 @@ int main() {
         const data = {
           source_code: formattedCode,
           language_id: languageId,
-          problem_id: 35,
+          problem_id: question_no,
         };
         runCodeMutation.mutate(data)
   }
@@ -376,7 +375,7 @@ int main() {
     const data = {
           source_code: formattedCode,
           language_id: languageId,
-          problem_id: 35,
+          problem_id: question_no,
           match_id: matchId
         };
     submitCodeMutation.mutate(data, {
@@ -385,7 +384,11 @@ int main() {
         console.log("submit result is :: ",submitResult)
       }
   });
-};
+  };
+
+  useEffect(() => {
+    if(questionData) console.log("quesiton is", questionData)
+  },[questionData])
 
   function handleEditorMount(editor: any, monaco: any) {
     editorRef.current = editor;
@@ -428,13 +431,66 @@ int main() {
 
     monacoDisposableRef.current.push(d1, d2);
   }
+  const Skeleton = ({ className }: { className?: string }) => {
+    return <div className={`skeleton rounded ${className}`} />;
+  };
 
-     if (questionDataLoading) {
-       return <div className="text-white p-10">Loading question...</div>;
+     if (!matchId || question_no==-1 || !question) {
+       return (
+         <div className="h-screen flex bg-zinc-950 text-white">
+           {/* LEFT PANEL (Question) */}
+           <div className="w-[20vw] bg-zinc-900 p-4 space-y-4">
+             <Skeleton className="h-6 w-3/4" />
+             <Skeleton className="h-4 w-full" />
+             <Skeleton className="h-4 w-5/6" />
+             <Skeleton className="h-4 w-4/6" />
+
+             <div className="space-y-2">
+               <Skeleton className="h-4 w-1/4" />
+               <Skeleton className="h-20 w-full" />
+             </div>
+
+             <div className="space-y-2">
+               <Skeleton className="h-4 w-1/4" />
+               <Skeleton className="h-20 w-full" />
+             </div>
+           </div>
+
+           {/* CENTER (Editor) */}
+           <div className="flex-1 p-2">
+             <div className="bg-zinc-900 rounded-lg h-full flex flex-col">
+               {/* top bar */}
+               <div className="flex justify-between p-3">
+                 <Skeleton className="h-4 w-20" />
+                 <Skeleton className="h-4 w-32" />
+               </div>
+
+               {/* code lines */}
+               <div className="p-4 space-y-2">
+                 {Array.from({ length: 12 }).map((_, i) => (
+                   <Skeleton
+                     key={i}
+                     className={`h-3 ${
+                       i % 3 === 0 ? "w-3/4" : i % 3 === 1 ? "w-1/2" : "w-5/6"
+                     }`}
+                   />
+                 ))}
+               </div>
+             </div>
+           </div>
+
+           {/* RIGHT PANEL (Test cases) */}
+           <div className="w-[25vw] bg-zinc-900 p-4 space-y-4">
+             <Skeleton className="h-6 w-1/2" />
+             <Skeleton className="h-24 w-full" />
+             <Skeleton className="h-24 w-full" />
+           </div>
+         </div>
+       );
      }
 
-     if (questionDataError || !question) {
-       return <div className="text-red-500 p-10">Failed to load question</div>;
+     if (questionDataError) {
+       return <div className="text-red-500 p-10 w-screen h-screen">Failed to load question</div>;
      }
 
   return (
@@ -443,7 +499,7 @@ int main() {
       ref={containerRef}
     >
       {/* exit modal  */}
-      {showExitModal &&
+      {showExitModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
           <div className="bg-zinc-900 w-[420px] rounded-xl shadow-xl p-6 text-center">
             <h2 className="text-xl font-semibold mb-3">Leave this match?</h2>
@@ -454,19 +510,25 @@ int main() {
             </p>
 
             <div className="flex justify-center gap-4">
-              <button className="px-5 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-black"
-              onClick={()=>{setShowExitModal(false)}}>
+              <button
+                className="px-5 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-black"
+                onClick={() => {
+                  setShowExitModal(false);
+                }}
+              >
                 Stay
               </button>
 
-              <button className="px-5 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600"
-              onClick={endMatch}>
+              <button
+                className="px-5 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600"
+                onClick={endMatch}
+              >
                 Exit Match
               </button>
             </div>
           </div>
         </div>
-      }
+      )}
       {/* header */}
       <div className="w-full bg-zinc-950 h-10 my-2 items-center flex justify-between px-2">
         <div
@@ -492,8 +554,10 @@ int main() {
         </div>
 
         <div className="flex gap-3">
-          <div className=" text-white cursor-pointer p-1 px-3 rounded-lg bg-red-600"
-          onClick={endMatch}>
+          <div
+            className=" text-white cursor-pointer p-1 px-3 rounded-lg bg-red-600"
+            onClick={endMatch}
+          >
             Exit
           </div>
           <div
@@ -564,67 +628,92 @@ int main() {
                           {/* Problem Title */}
                           <div className="flex justify-between items-center">
                             <h1 className="text-lg font-bold text-white mb-4">
-                              1. {question.title}
+                              {questionDataLoading ? (
+                                <Skeleton className="h-5 w-40" />
+                              ) : (
+                                `1. ${question?.title}`
+                              )}
                             </h1>
                             <span className="px-2 py-1 text-sm rounded-full bg-green-900 text-green-300 font-medium">
-                              {question.difficulty_Level}
+                              {questionDataLoading ? (
+                                <Skeleton className="h-5 w-40" />
+                              ) : (
+                                `${question.difficulty_level}`
+                              )}
+
                             </span>
                           </div>
 
                           {/* Problem Description */}
                           <p className=" text-sm leading-relaxed mb-4">
-                            {question.description}
+                            {questionDataLoading ? (
+                              <div className="space-y-2">
+                                <Skeleton className="h-4 w-full" />
+                                <Skeleton className="h-4 w-5/6" />
+                                <Skeleton className="h-4 w-4/6" />
+                              </div>
+                            ) : (
+                              question.description
+                            )}
                           </p>
 
-                          <div className="bg-zinc-800 rounded-lg p-4 mb-4">
-                            <h2 className="text-lg font-semibold text-white mb-2">
-                              Example 1:
-                            </h2>
-                            <pre className="bg-zinc-900 p-3 rounded text-sm text-gray-300 whitespace-pre-wrap flex flex-col">
-                              <div className="flex ">
-                                <div>Input: </div>
-                                <div>
-                                  {`${question.sample_test_cases[0].input.replace(
+                          {questionDataLoading ? (
+                            <Skeleton className="h-32 w-full" />
+                          ) : (
+                            <div className="bg-zinc-800 rounded-lg p-4 mb-4">
+                              <h2 className="text-lg font-semibold text-white mb-2">
+                                Example 1:
+                              </h2>
+                              <pre className="bg-zinc-900 p-3 rounded text-sm text-gray-300 whitespace-pre-wrap flex flex-col">
+                                <div className="flex ">
+                                  <div>Input: </div>
+                                  <div>
+                                    {`${question?.sample_test_cases[0].input.replace(
+                                      /\\n/g,
+                                      "\n"
+                                    )}`}
+                                  </div>
+                                </div>
+
+                                <div className="flex">
+                                  <div>Output: </div>
+                                  {`${question?.sample_test_cases[0].output.replace(
                                     /\\n/g,
                                     "\n"
                                   )}`}
                                 </div>
-                              </div>
+                              </pre>
+                            </div>
+                          )}
 
-                              <div className="flex">
-                                <div>Output: </div>
-                                {`${question.sample_test_cases[0].output.replace(
-                                  /\\n/g,
-                                  "\n"
-                                )}`}
-                              </div>
-                            </pre>
-                          </div>
+                          {questionDataLoading ? (
+                            <Skeleton className="h-32 w-full" />
+                          ) : (
+                            <div className="bg-zinc-800 rounded-lg p-4 mb-4">
+                              <h2 className="text-lg font-semibold text-white mb-2">
+                                Example 2:
+                              </h2>
+                              <pre className="bg-zinc-900 p-3 rounded text-sm text-gray-300 whitespace-pre-wrap flex flex-col">
+                                <div className="flex ">
+                                  <div>Input: </div>
+                                  <div>
+                                    {`${question.sample_test_cases[1].input.replace(
+                                      /\\n/g,
+                                      "\n"
+                                    )}`}
+                                  </div>
+                                </div>
 
-                          <div className="bg-zinc-800 rounded-lg p-4 mb-4">
-                            <h2 className="text-lg font-semibold text-white mb-2">
-                              Example 2:
-                            </h2>
-                            <pre className="bg-zinc-900 p-3 rounded text-sm text-gray-300 whitespace-pre-wrap flex flex-col">
-                              <div className="flex ">
-                                <div>Input: </div>
-                                <div>
-                                  {`${question.sample_test_cases[1].input.replace(
+                                <div className="flex">
+                                  <div>Output: </div>
+                                  {`${question.sample_test_cases[1].output.replace(
                                     /\\n/g,
                                     "\n"
                                   )}`}
                                 </div>
-                              </div>
-
-                              <div className="flex">
-                                <div>Output: </div>
-                                {`${question.sample_test_cases[1].output.replace(
-                                  /\\n/g,
-                                  "\n"
-                                )}`}
-                              </div>
-                            </pre>
-                          </div>
+                              </pre>
+                            </div>
+                          )}
 
                           {/* Constraints */}
                           <div className="bg-zinc-800 rounded-lg p-4 mb-6">
@@ -987,30 +1076,33 @@ int main() {
                       {/* Expected Output and your output  */}
                       <div className="flex flex-col gap-3 ">
                         {/* Expected output  */}
-                        { !result && <div className="bg-zinc-800 rounded p-3">
-                          <div className="text-xs text-white mb-1">
-                            Expected Output
+                        {!result && (
+                          <div className="bg-zinc-800 rounded p-3">
+                            <div className="text-xs text-white mb-1">
+                              Expected Output
+                            </div>
+                            <pre
+                              className={`whitespace-pre-wrap text-sm bg-zinc-900 p-3 rounded text-zinc-200`}
+                            >
+                              {t.output}
+                            </pre>
                           </div>
-                          <pre
-                            className={`whitespace-pre-wrap text-sm bg-zinc-900 p-3 rounded text-zinc-200`}
-                          >
-                            {t.output}
-                          </pre>
-                        </div>}
-                        {result && <div className="bg-zinc-800 rounded p-3">
-                          <div className="text-xs  mb-1">
-                            Expected Output
-                          </div>
-                          <pre
-                            className={`whitespace-pre-wrap text-sm bg-zinc-900 p-3 rounded
-                            ${result[activeIndex]?.status === "Wrong Answer"
+                        )}
+                        {result && (
+                          <div className="bg-zinc-800 rounded p-3">
+                            <div className="text-xs  mb-1">Expected Output</div>
+                            <pre
+                              className={`whitespace-pre-wrap text-sm bg-zinc-900 p-3 rounded
+                            ${
+                              result[activeIndex]?.status === "Wrong Answer"
                                 ? "text-green-500"
                                 : ""
-                              }`}
-                          >
-                            {t.output}
-                          </pre>
-                        </div>}
+                            }`}
+                            >
+                              {t.output}
+                            </pre>
+                          </div>
+                        )}
                         {/* user output  */}
                         {result &&
                           (result[activeIndex]?.status === "Accepted" ||
@@ -1124,7 +1216,7 @@ int main() {
                   1. {question.title}
                 </h1>
                 <span className="px-3 py-1 text-sm rounded-full bg-green-900 text-green-300 font-medium">
-                  {question.difficulty_Level}
+                  {question.difficulty_level}
                 </span>
               </div>
 

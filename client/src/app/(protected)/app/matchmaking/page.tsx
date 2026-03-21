@@ -1,47 +1,24 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useWebSocketStore } from "@/store/webSocketStore";
 import { useUserDetails } from "@/features/auth/queries";
+import { motion } from "framer-motion";
 
 interface Player {
   username: string;
   avatar: string;
   rank: string;
+  level?: number;
+  specialty?: string;
+  region?: string;
 }
-
-const dummyOpponents: Player[] = [
-  {
-    username: "ByteProwler",
-    avatar: "https://i.pravatar.cc/150?u=user3",
-    rank: "Silver II",
-  },
-  {
-    username: "GlitchHop",
-    avatar: "https://i.pravatar.cc/150?u=user4",
-    rank: "Platinum I",
-  },
-  {
-    username: "DataWraith",
-    avatar: "https://i.pravatar.cc/150?u=user5",
-    rank: "Gold IV",
-  },
-  {
-    username: "NullPointer",
-    avatar: "https://i.pravatar.cc/150?u=user6",
-    rank: "Bronze I",
-  },
-];
 
 export default function MatchmakingProPage() {
   const router = useRouter();
   const matchId = useWebSocketStore((s) => s.matchId);
   const opponentInfo = useWebSocketStore((s) => s.opponent_info);
-
-  const [isSearching, setIsSearching] = useState(true);
-  const [status, setStatus] = useState("Connecting to matchmaking...");
-  const [opponent, setOpponent] = useState<Player | null>(null);
 
   const { data: userData, isLoading } = useUserDetails();
 
@@ -50,140 +27,164 @@ export default function MatchmakingProPage() {
         username: userData.username,
         avatar: userData.profile_picture,
         rank: userData.current_rank,
+        level: userData.level,
+        specialty: userData.specialty,
+        region: userData.region,
       }
     : null;
 
-  // set opponent from websocket
-  useEffect(() => {
-    if (!opponentInfo) return;
+  const opponent: Player | null = opponentInfo
+    ? {
+        username: opponentInfo.username,
+        avatar: opponentInfo.avatar ?? "",
+        rank: opponentInfo.rank,
+        level: 1,
+        specialty: "C++",
+        region: "India",
+      }
+    : null;
 
-    setOpponent({
-      username: opponentInfo.username,
-      avatar: opponentInfo.avatar ?? "",
-      rank: opponentInfo.rank,
-    });
-  }, [opponentInfo]);
-
-  // sending to  match
   useEffect(() => {
     if (!matchId) return;
-
-    setIsSearching(false);
-    setStatus("Opponent found! Preparing match...");
-
     const timer = setTimeout(() => {
       router.replace(`match/${matchId}`);
     }, 10000);
-
     return () => clearTimeout(timer);
   }, [matchId, router]);
 
-  if (isLoading || !currentUser) return null;
+  if (isLoading || !currentUser || !opponent) return null;
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-zinc-900 text-white p-8 font-sans overflow-hidden">
-      <div className="w-full max-w-5xl flex items-center justify-around">
-        <div className="border flex justify-center items-center rounded-lg bg-gray-500">
-          <Player1Card player={currentUser} />
-        </div>
+    <div className="min-h-screen bg-[#0d0e12] text-white flex flex-col items-center  relative overflow-hidden font-[Barlow_Condensed]">
+      {/* LIGHT GLOW */}
+      <div className="absolute w-[600px] h-[600px] bg-cyan-500/10 blur-[120px] left-[-100px] top-[20%]" />
+      <div className="absolute w-[600px] h-[600px] bg-red-500/10 blur-[120px] right-[-100px] top-[40%]" />
 
-        <div className="text-7xl font-extrabold mx-8 flex gap-1">
-          <div>V</div>
-          <div className="text-red-600">S</div>
-        </div>
-
-        <OpponentSlot isSearching={isSearching} opponent={opponent} />
+      {/* TIMER */}
+      <div className="text-[clamp(3rem,8vw,5rem)] font-bold font-[Rajdhani] mb-6 animate-fadeIn">
+        <CountdownTimer seconds={10} />
       </div>
 
-      <div className="w-full max-w-xl mt-16">
-        <div className="text-center text-xl text-gray-400 mb-3">{status}</div>
+      {/* ARENA */}
+      <div className="flex items-center justify-center w-full max-w-6xl px-6 animate-fadeIn">
+        {/* PLAYER */}
+        <PlayerCard player={currentUser} side="left" />
 
-        <div className="w-full bg-gray-700 rounded-full h-2.5 shadow-inner overflow-hidden">
-          <div
-            className={`h-2.5 rounded-full ${
-              isSearching ? "animate-loading-bar" : "w-full bg-red-600"
-            }`}
-            style={isSearching ? {} : { transition: "width 0.5s ease-out" }}
-          />
+        {/* VS */}
+        <div className="mx-10 flex flex-col items-center">
+          <div className="w-20 h-20 rounded-full border border-white/10 bg-zinc-900 flex items-center justify-center font-[Rajdhani] tracking-widest text-white/60 relative">
+            VS
+            <div className="absolute -top-16 w-[1px] h-14 bg-gradient-to-b from-transparent via-white/10 to-transparent" />
+            <div className="absolute -bottom-16 w-[1px] h-14 bg-gradient-to-b from-transparent via-white/10 to-transparent" />
+          </div>
         </div>
+
+        {/* OPPONENT */}
+        <motion.div
+          initial={{ scale: 0.7, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 200 }}
+        >
+          <PlayerCard player={opponent} side="right" />
+        </motion.div>
+      </div>
+
+      <div className="flex-1 justify-end flex items-center">
+        <p>Bonus Tip: Submit Code every time even if some test case are failing</p>
       </div>
     </div>
   );
 }
 
-const Player1Card: React.FC<{ player: Player }> = ({ player }) => (
-  <div className="flex flex-col items-center p-6 w-96">
-    <img
-      src={player.avatar}
-      alt={player.username}
-      className="w-32 h-32 rounded-full border-4 border-cyan-500"
-    />
+function PlayerCard({ player, side }: any) {
+  const isRight = side === "right";
 
-    <div className="text-3xl font-bold mt-4">{player.username}</div>
-    <div className="text-xl text-cyan-300 mt-1">{player.rank}</div>
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: isRight ? 120 : -120, scale: 0.9 }}
+      animate={{ opacity: 1, x: 0, scale: 1 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+      className="w-[320px]"
+    >
+      <div className="relative rounded-xl">
 
-    <div className="text-lg text-green-400 mt-4 font-semibold px-4 py-1 bg-gray-700 rounded-full">
-      READY
-    </div>
-  </div>
-);
+        {/* 🔥 BASE BORDER */}
+        <div className="absolute inset-0 rounded-xl border border-white/10" />
 
-const OpponentSlot: React.FC<{
-  isSearching: boolean;
-  opponent: Player | null;
-}> = ({ isSearching, opponent }) => (
-  <div className="w-96 h-64 relative">
-    <div className="absolute inset-0 h-full w-full overflow-hidden">
-      {isSearching ? (
-        <SpinningReel />
-      ) : opponent ? (
-        <FoundOpponentCard player={opponent} />
-      ) : null}
-    </div>
-  </div>
-);
+        <motion.div
 
-const SpinningReel = () => (
-  <div className="w-full animate-reel">
-    {dummyOpponents.map((p) => (
-      <ReelPlayerCard key={p.username} player={p} />
-    ))}
+          className="relative h-[380px] rounded-xl overflow-hidden bg-zinc-900 backdrop-blur-xl"
+        >
+          {/* IMAGE */}
+          <img
+            src={player.avatar}
+            className="w-full h-full object-cover object-top opacity-60"
+          />
 
-    {dummyOpponents.map((p) => (
-      <ReelPlayerCard key={`${p.username}-2`} player={p} />
-    ))}
-  </div>
-);
+          {/* OVERLAY */}
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/90" />
 
-const ReelPlayerCard: React.FC<{ player: Player }> = ({ player }) => (
-  <div className="flex flex-col items-center justify-center w-full h-64 p-6 text-center">
-    <img
-      src={player.avatar}
-      alt={player.username}
-      className="w-24 h-24 rounded-full border-4 border-gray-600"
-    />
+          {/* INFO */}
+          <div className="absolute bottom-0 p-4 w-full bg-black/25">
+            <div className="text-xl font-bold font-[Rajdhani]">
+              {player.username}
+            </div>
 
-    <div className="text-3xl font-bold mt-4 text-gray-400">
-      {player.username}
-    </div>
+            <div className="text-xs mt-2 space-y-1 flex gap-3">
+              <div>
+                <span className="text-gray-400">Skill:</span>{" "}
+                {player.specialty}
+              </div>
+              <div>
+                <span className="text-gray-400">Rank:</span>{" "}
+                <span className="text-blue-400">{player.rank}</span>
+              </div>
+              <div>
+                <span className="text-gray-400">Region:</span>{" "}
+                {player.region}
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </motion.div>
+  );
+}
+/* ── Countdown ── */
+function CountdownTimer({ seconds }: { seconds: number }) {
+  const [remaining, setRemaining] = React.useState(seconds);
 
-    <div className="text-xl text-gray-500 mt-1">{player.rank}</div>
-  </div>
-);
+  useEffect(() => {
+    if (remaining <= 0) return;
+    const t = setTimeout(() => setRemaining((r) => r - 1), 1000);
+    return () => clearTimeout(t);
+  }, [remaining]);
 
-const FoundOpponentCard: React.FC<{ player: Player }> = ({ player }) => (
-  <div className="flex flex-col items-center justify-center w-full h-64 p-6 text-center animate-land">
-    <img
-      src={player.avatar}
-      alt={player.username}
-      className="w-32 h-32 rounded-full border-4 border-red-500"
-    />
+  const m = Math.floor(remaining / 60);
+  const s = remaining % 60;
+  return (
+    <span>
+      <span className="mm-timer-num">{m}</span>:
+      <span className="mm-timer-num">{String(s).padStart(2, "0")}</span>
+    </span>
+  );
+}
 
-    <div className="text-3xl font-bold mt-4">{player.username}</div>
-    <div className="text-xl text-red-400 mt-1">{player.rank}</div>
-
-    <div className="text-lg text-yellow-400 mt-4 font-semibold">
-      OPPONENT FOUND
-    </div>
-  </div>
-);
+/* ── Small terminal icon ── */
+function TerminalIcon() {
+  return (
+    <svg
+      width="12"
+      height="12"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <polyline points="4 17 10 11 4 5" />
+      <line x1="12" y1="19" x2="20" y2="19" />
+    </svg>
+  );
+}
