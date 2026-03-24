@@ -51,6 +51,8 @@ interface WebSocketState {
 
   opponent_info: Opponent | null;
   matchResult: MatchResult | null;
+  playerSubmit: Boolean;
+  setPlayerSubmit: () => void;
   setMatchEnd: () => void;
 
   connect: () => void;
@@ -64,13 +66,19 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => ({
   reconnectAttempts: 0,
   manualClose: false,
   matchSource: null,
-
+  playerSubmit:false,
   matchId: null,
   question_no:-1,
 
   pendingEvents: [],
   opponent_info: null,
   matchResult: null,
+
+  setPlayerSubmit: () => {
+    set({
+      playerSubmit:true
+    })
+  },
 
   setMatchEnd: () => {
     if (typeof window === "undefined") return;
@@ -151,12 +159,20 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => ({
           });
           break;
 
+        case "player_submit":
+          console.log("Player has submitted!!:  ",data.payload?.player_submit)
+          set({
+            playerSubmit: data.payload?.player_submit
+          })
+          break;
+
         case "resume_match":
           console.log("resume match found:: ",data.payload)
           set({
-            matchId: data.payload.match_id,
-            matchSource: data.payload.matchSource,
+            matchId: data.payload?.match_id,
+            matchSource: data.payload?.matchSource,
             question_no: data.payload?.question_no,
+            playerSubmit: (data.payload?.player1_submit || data.payload?.player2_submit),
             opponent_info: {
               id: data.payload?.opponent?.id,
               username: data.payload?.opponent?.username,
