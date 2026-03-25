@@ -7,7 +7,7 @@ export const useFetchFriends = () =>
     queryFn: fetchFriends,
   })
 
-export const useFetchUserFriends = () => 
+export const useFetchUserFriends = () =>
   useQuery({
     queryKey: ["UserFriends"],
     queryFn: fetchUserFriends,

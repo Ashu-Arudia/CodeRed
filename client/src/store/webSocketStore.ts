@@ -54,7 +54,7 @@ interface WebSocketState {
   playerSubmit: Boolean;
   setPlayerSubmit: () => void;
   setMatchEnd: () => void;
-
+  setResultErase: () => void;
   connect: () => void;
   disconnect: () => void;
   sendEvent: (event: WSEvent) => void;
@@ -73,6 +73,12 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => ({
   pendingEvents: [],
   opponent_info: null,
   matchResult: null,
+
+  setResultErase: () => {
+    set({
+      matchResult: null
+    })
+  },
 
   setPlayerSubmit: () => {
     set({

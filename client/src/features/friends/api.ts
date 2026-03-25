@@ -21,6 +21,16 @@ export const fetchUserFriends = async () => {
   });
   return res.data;
 }
+export const fetchOtherUserDetails = async (user_id : number) => {
+  const res = await axios.get(`${backendUrl}/api/v2/user/user-details`, {
+    params: { user_id },
+    withCredentials: true,
+    headers: {
+      "ngrok-skip-browser-warning": "true",
+    },
+  });
+  return res.data;
+}
 
 // //POST
 // export const completeProfile = async (formData: FormData) => {

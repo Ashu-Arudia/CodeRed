@@ -14,8 +14,7 @@ import Settings from "../settings/setting";
 import { useUserDetails } from "@/features/auth/queries";
 import { useFetchUserFriends } from "@/features/friends/queries";
 import { useWebSocketStore } from "@/store/webSocketStore";
-import { start } from "repl";
-import { div } from "framer-motion/client";
+import ShowResult from "@/components/show_result/show_result"
 
 const metalMania = Metal_Mania({
   subsets: ["latin"],
@@ -60,7 +59,7 @@ export default function Home() {
   const [nav, setNav] = useState<"home" | "hackathon" | "bonus">("home");
   const [addedFriends, setAddedFriends] = useState<String[]>([]);
   const [selectCard, setSelectCard] = useState<number>(0);
-
+  const [showRes, setShowRes] = useState<Boolean>(false);
   const [searching, setSearching] = useState(false);
 
 
@@ -87,13 +86,19 @@ export default function Home() {
   const { data, isLoading, isError } = useUserDetails();
   const user = data;
 
-  const inputclick = () => {
-    inputRef.current?.click();
-  };
+  useEffect(() => {
+    if (!showResult) {
+      setShowRes(false);
+    }
+    else {
+      setShowRes(true);
+    }
+  },[showResult])
 
-  const setnav = (para: "home" | "hackathon" | "bonus") => {
-    setNav(para);
-  };
+
+  // const setnav = (para: "home" | "hackathon" | "bonus") => {
+  //   setNav(para);
+  // };
 
   const shownotification = () => {
     setNotification(true);
@@ -532,7 +537,7 @@ export default function Home() {
                 d="M23.005 12.003v2c0 3.314-4.925 6-11 6c-5.967 0-10.824-2.591-10.995-5.823l-.005-.177v-2c0 3.313 4.925 6 11 6s11-2.687 11-6m-11-8c6.075 0 11 2.686 11 6s-4.925 6-11 6s-11-2.687-11-6s4.925-6 11-6"
               />
             </svg>
-            <div className="hover:scale-101">Bonus</div>
+            <div className="hover:scale-101">History</div>
           </div>
 
           <div className="flex-1"></div>
@@ -985,8 +990,6 @@ export default function Home() {
                                     </h3>
                                   </div>
                                 </div>
-
-
                               </div>
                             </div>
                           </div>
@@ -1097,6 +1100,15 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {/* Show result  */}
+      {showRes && (
+        <div className="w-full absolute top-0 z-10 flex justify-center items-center  h-full ">
+          <div className="overflow-auto  absolute z-20 flex  items-center scrollbar-hide min-w-[80vw] justify-center rounded-lg">
+            <ShowResult />
+          </div>
+        </div>
+      )}
 
       {/* Notifications List */}
       {notification && (

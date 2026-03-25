@@ -113,6 +113,8 @@ export default function CodeEditor() {
   const runCodeMutation = useRunCodeMutation(setResult);
   const submitCodeMutation = useSubmitCodeMutation(setSubmitResult);
 
+  const [canShowSubmission, setCanShowSubmission] = useState(true);
+
   // end match
   const endMatch = () => {
     if (!showExitModal) {
@@ -377,10 +379,11 @@ int main() {
           language_id: languageId,
           problem_id: question_no,
           match_id: matchId
-        };
+    };
+    setCanShowSubmission(false);
+    setShowDescription(false);
     submitCodeMutation.mutate(data, {
       onSuccess: () => {
-        setShowDescription(false)
         console.log("submit result is :: ",submitResult)
       }
   });
@@ -435,7 +438,7 @@ int main() {
     return <div className={`skeleton rounded ${className}`} />;
   };
 
-     if (!matchId || question_no==-1 || !question) {
+     if (!matchId || question_no == -1 || questionDataLoading) {
        return (
          <div className="h-screen flex bg-zinc-950 text-white">
            {/* LEFT PANEL (Question) */}
@@ -595,275 +598,154 @@ int main() {
                 </svg>
               </div>
             </div>
+
             {/* display area  */}
             <div className="flex flex-col">
+              {/* Tabs */}
               <div className="bg-zinc-800 p-1 text-sm items-center justify-between flex rounded-tr-lg">
                 <div
                   className={`justify-center flex-1 p-1 flex cursor-pointer hover:bg-zinc-700 rounded-md ${
                     showDescription ? "scale-110 text-white" : "text-gray-400"
                   }`}
-                  onClick={() => {
-                    setShowDescription(true);
-                  }}
+                  onClick={() => setShowDescription(true)}
                 >
                   Description
                 </div>
-                <div
+
+                <button
                   className={`justify-center flex-1 p-1 flex cursor-pointer hover:bg-zinc-700 rounded-md ${
                     !showDescription ? "scale-110 text-white" : "text-gray-400"
                   }`}
-                  onClick={() => {
-                    setShowDescription(false);
-                  }}
+                  onClick={() => setShowDescription(false)}
+                  disabled={canShowSubmission}
                 >
                   Submission
-                </div>
+                </button>
               </div>
+
+              {/* Content */}
               <div>
-                {showQuestion && showDescription && (
-                  <div className="w-[20vw] h-[90vh] bg-zinc-900  rounded-br-lg">
-                    <div className="h-full w-full py-4 pl-4 flex justify-center items-center">
-                      <div className=" w-full h-full rounded-lg">
-                        <div className="w-full h-full bg-zinc-900 text-gray-200 rounded-lg overflow-y-auto font-sans">
-                          {/* Problem Title */}
-                          <div className="flex justify-between items-center">
-                            <h1 className="text-lg font-bold text-white mb-4">
-                              {questionDataLoading ? (
-                                <Skeleton className="h-5 w-40" />
-                              ) : (
-                                `1. ${question?.title}`
-                              )}
-                            </h1>
-                            <span className="px-2 py-1 text-sm rounded-full bg-green-900 text-green-300 font-medium">
-                              {questionDataLoading ? (
-                                <Skeleton className="h-5 w-40" />
-                              ) : (
-                                `${question.difficulty_level}`
-                              )}
+                {/* ================= DESCRIPTION ================= */}
+                {showQuestion &&
+                  showDescription &&
+                  (questionDataLoading ? (
+                    <div className="w-[20vw] h-[90vh] bg-zinc-900 rounded-br-lg p-4 space-y-4 animate-pulse">
+                      <div className="flex justify-between">
+                        <div className="h-5 w-40 bg-zinc-700 rounded" />
+                        <div className="h-5 w-20 bg-zinc-700 rounded" />
+                      </div>
 
-                            </span>
-                          </div>
+                      <div className="space-y-2">
+                        <div className="h-4 w-full bg-zinc-700 rounded" />
+                        <div className="h-4 w-5/6 bg-zinc-700 rounded" />
+                        <div className="h-4 w-4/6 bg-zinc-700 rounded" />
+                      </div>
 
-                          {/* Problem Description */}
-                          <p className=" text-sm leading-relaxed mb-4">
-                            {questionDataLoading ? (
-                              <div className="space-y-2">
-                                <Skeleton className="h-4 w-full" />
-                                <Skeleton className="h-4 w-5/6" />
-                                <Skeleton className="h-4 w-4/6" />
-                              </div>
-                            ) : (
-                              question.description
-                            )}
-                          </p>
+                      <div className="h-32 w-full bg-zinc-700 rounded" />
+                      <div className="h-32 w-full bg-zinc-700 rounded" />
+                      <div className="h-24 w-full bg-zinc-700 rounded" />
+                      <div className="h-24 w-full bg-zinc-700 rounded" />
+                    </div>
+                  ) : (
+                    /* ✅ ORIGINAL UI */
+                    <div className="w-[20vw] h-[90vh] bg-zinc-900 rounded-br-lg">
+                      <div className="h-full w-full py-4 pl-4 flex justify-center items-center">
+                        <div className="w-full h-full rounded-lg">
+                          <div className="w-full h-full bg-zinc-900 text-gray-200 rounded-lg overflow-y-auto font-sans">
+                            {/* Title */}
+                            <div className="flex justify-between items-center">
+                              <h1 className="text-lg font-bold text-white mb-4">
+                                {`1. ${question?.title}`}
+                              </h1>
 
-                          {questionDataLoading ? (
-                            <Skeleton className="h-32 w-full" />
-                          ) : (
+                              <span className="px-2 py-1 text-sm rounded-full bg-green-900 text-green-300 font-medium">
+                                {question.difficulty_level}
+                              </span>
+                            </div>
+
+                            {/* Description */}
+                            <p className="text-sm leading-relaxed mb-4">
+                              {question.description}
+                            </p>
+
+                            {/* Example 1 */}
                             <div className="bg-zinc-800 rounded-lg p-4 mb-4">
                               <h2 className="text-lg font-semibold text-white mb-2">
                                 Example 1:
                               </h2>
-                              <pre className="bg-zinc-900 p-3 rounded text-sm text-gray-300 whitespace-pre-wrap flex flex-col">
-                                <div className="flex ">
-                                  <div>Input: </div>
-                                  <div>
-                                    {`${question?.sample_test_cases[0].input.replace(
-                                      /\\n/g,
-                                      "\n"
-                                    )}`}
-                                  </div>
-                                </div>
-
-                                <div className="flex">
-                                  <div>Output: </div>
-                                  {`${question?.sample_test_cases[0].output.replace(
-                                    /\\n/g,
-                                    "\n"
-                                  )}`}
-                                </div>
+                              <pre className="bg-zinc-900 p-3 rounded text-sm whitespace-pre-wrap">
+                                Input: {question?.sample_test_cases[0].input}
+                                {"\n"}
+                                Output: {question?.sample_test_cases[0].output}
                               </pre>
                             </div>
-                          )}
 
-                          {questionDataLoading ? (
-                            <Skeleton className="h-32 w-full" />
-                          ) : (
+                            {/* Example 2 */}
                             <div className="bg-zinc-800 rounded-lg p-4 mb-4">
                               <h2 className="text-lg font-semibold text-white mb-2">
                                 Example 2:
                               </h2>
-                              <pre className="bg-zinc-900 p-3 rounded text-sm text-gray-300 whitespace-pre-wrap flex flex-col">
-                                <div className="flex ">
-                                  <div>Input: </div>
-                                  <div>
-                                    {`${question.sample_test_cases[1].input.replace(
-                                      /\\n/g,
-                                      "\n"
-                                    )}`}
-                                  </div>
-                                </div>
-
-                                <div className="flex">
-                                  <div>Output: </div>
-                                  {`${question.sample_test_cases[1].output.replace(
-                                    /\\n/g,
-                                    "\n"
-                                  )}`}
-                                </div>
+                              <pre className="bg-zinc-900 p-3 rounded text-sm whitespace-pre-wrap">
+                                Input: {question.sample_test_cases[1].input}
+                                {"\n"}
+                                Output: {question.sample_test_cases[1].output}
                               </pre>
                             </div>
-                          )}
-
-                          {/* Constraints */}
-                          <div className="bg-zinc-800 rounded-lg p-4 mb-6">
-                            <h2 className="text-lg font-semibold text-white mb-2">
-                              Constraints:
-                            </h2>
-                            <ul className="list-disc list-inside text-sm text-gray-300 space-y-1">
-                              <li>2 ≤ nums.length ≤ 10⁴</li>
-                              <li>-10⁹ ≤ nums[i] ≤ 10⁹</li>
-                              <li>-10⁹ ≤ target ≤ 10⁹</li>
-                              <li>Only one valid answer exists.</li>
-                            </ul>
-                          </div>
-
-                          {/* Complexity Analysis */}
-                          <div className="bg-zinc-800 rounded-lg p-4">
-                            <h2 className="text-lg font-semibold text-white mb-2">
-                              Complexity Analysis:
-                            </h2>
-                            <ul className="list-disc list-inside text-sm text-gray-300 space-y-1">
-                              <li>
-                                <strong>Time Complexity:</strong> O(n) — Each
-                                element is visited at most once.
-                              </li>
-                              <li>
-                                <strong>Space Complexity:</strong> O(n) — Hash
-                                map stores at most n elements.
-                              </li>
-                            </ul>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                )}
-                {!showDescription && submitResult && (
-                  <div className="w-[20vw] h-[90vh] bg-zinc-900 rounded-br-lg p-2">
-                    <div className="h-full w-full py-4  flex justify-center items-center">
-                      <div className="w-full h-full rounded-lg">
-                        <div className="w-full h-full bg-zinc-900 text-gray-200 rounded-lg overflow-y-auto font-sans">
-                          {/* Header */}
-                          <div className="flex justify-between items-center mb-4">
-                            <h1 className="text-lg font-bold text-white">
-                              Submission Result
-                            </h1>
+                  ))}
 
-                            <span
-                              className={`px-2 py-1 text-sm rounded-full font-medium
-            ${
-              submitResult?.passed
-                ? "bg-green-900 text-green-300"
-                : "bg-red-900 text-red-300"
-            }`}
-                            >
-                              {submitResult?.verdict}
-                            </span>
-                          </div>
+                {/* ================= SUBMISSION ================= */}
+                {!showDescription &&
+                  (submitCodeMutation.isPending ? (
+                    <div className="w-[20vw] h-[90vh] bg-zinc-900 rounded-br-lg p-4 space-y-4 animate-pulse">
+                      <div className="flex justify-between">
+                        <div className="h-5 w-40 bg-zinc-700 rounded" />
+                        <div className="h-5 w-20 bg-zinc-700 rounded" />
+                      </div>
 
-                          {/* Test Case Summary */}
-                          <div className="bg-zinc-800 rounded-lg p-4 mb-4">
-                            <div className="text-sm mb-2">
-                              Passed{" "}
-                              <span className="text-green-400 font-semibold">
-                                {submitResult?.test_cases_passed}
-                              </span>{" "}
-                              / {submitResult?.total_test_cases} Test Cases
-                            </div>
+                      <div className="h-16 w-full bg-zinc-700 rounded" />
+                      <div className="h-20 w-full bg-zinc-700 rounded" />
+                      <div className="h-40 w-full bg-zinc-700 rounded" />
+                    </div>
+                  ) : (
+                    submitResult && (
+                      <div className="w-[20vw] h-[90vh] bg-zinc-900 rounded-br-lg p-2">
+                        <div className="h-full w-full py-4 flex justify-center items-center">
+                          <div className="w-full h-full rounded-lg">
+                            <div className="w-full h-full bg-zinc-900 text-gray-200 rounded-lg overflow-y-auto font-sans">
+                              <div className="flex justify-between mb-4">
+                                <h1 className="text-lg font-bold text-white">
+                                  Submission Result
+                                </h1>
 
-                            {/* Progress bar */}
-                            <div className="w-full bg-zinc-700 h-3 rounded">
-                              <div
-                                className="bg-green-500 h-3 rounded"
-                                style={{
-                                  width: `${
-                                    (submitResult?.test_cases_passed /
-                                      submitResult?.total_test_cases) *
-                                    100
-                                  }%`,
-                                }}
-                              />
-                            </div>
-                          </div>
-
-                          {/* Performance */}
-                          <div className="bg-zinc-800 rounded-lg p-4 mb-4">
-                            <div className="text-sm mb-2">
-                              <strong>Runtime:</strong>{" "}
-                              {submitResult?.execution_time}s
-                            </div>
-
-                            <div className="text-sm">
-                              <strong>Memory:</strong>{" "}
-                              {Math.round(submitResult?.memory_used / 1000)} KB
-                            </div>
-                          </div>
-
-                          {/* Failed Test Case */}
-                          {!submitResult?.passed &&
-                            submitResult?.output_mismatch && (
-                              <div className="bg-zinc-800 rounded-lg p-4 mb-4">
-                                <h2 className="text-lg font-semibold text-red-400 mb-2">
-                                  Failed Test Case
-                                </h2>
-
-                                <div className="mb-3">
-                                  <div className="text-xs text-gray-400 mb-1">
-                                    Input
-                                  </div>
-                                  <pre className="bg-zinc-900 p-3 rounded text-sm whitespace-pre-wrap">
-                                    {submitResult.output_mismatch.input}
-                                  </pre>
-                                </div>
-
-                                <div className="mb-3">
-                                  <div className="text-xs text-gray-400 mb-1">
-                                    Expected Output
-                                  </div>
-                                  <pre className="bg-zinc-900 p-3 rounded text-sm whitespace-pre-wrap">
-                                    {submitResult.output_mismatch.expected}
-                                  </pre>
-                                </div>
-
-                                <div>
-                                  <div className="text-xs text-gray-400 mb-1">
-                                    Your Output
-                                  </div>
-                                  <pre className="bg-zinc-900 p-3 rounded text-sm text-red-400 whitespace-pre-wrap">
-                                    {submitResult.output_mismatch.actual}
-                                  </pre>
-                                </div>
+                                <span
+                                  className={`px-2 py-1 text-sm rounded-full ${
+                                    submitResult?.passed
+                                      ? "bg-green-900 text-green-300"
+                                      : "bg-red-900 text-red-300"
+                                  }`}
+                                >
+                                  {submitResult?.verdict}
+                                </span>
                               </div>
-                            )}
 
-                          {/* time and space complexity  */}
-                          {submitResult?.space_complexity && (
-                            <div className="bg-zinc-800 rounded-lg p-4 mb-4 text-sm">
-                              <div>
-                                Time Complexity - {submitResult.time_complexity}
+                              <div className="bg-zinc-800 p-4 mb-4 rounded">
+                                Passed {submitResult?.test_cases_passed} /{" "}
+                                {submitResult?.total_test_cases}
                               </div>
-                              <div>
-                                Space Complexity -{" "}
-                                {submitResult.space_complexity}
+
+                              <div className="bg-zinc-800 p-4 rounded">
+                                Runtime: {submitResult?.execution_time}s
                               </div>
                             </div>
-                          )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                )}
+                    )
+                  ))}
               </div>
             </div>
           </div>
