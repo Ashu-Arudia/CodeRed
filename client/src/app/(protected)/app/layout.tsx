@@ -28,6 +28,7 @@ export default function ProtectedLayout({
   //check user is valid or not
   useEffect(() => {
     if (userError) {
+      console.log("User error in login page")
       router.replace("/login");
     }
   }, [userError,router]);

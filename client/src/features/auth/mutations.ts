@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { completeProfile , Signup, Login} from "./api";
+import { completeProfile , Signup, Login, verify_Otp, send_Otp} from "./api";
 
 export const useCompleteProfile = () => {
   const queryClient = useQueryClient();
@@ -29,7 +29,6 @@ export const useSignUp = () => {
 
 export const useLogin = () => {
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: Login,
     onSuccess: () => {
@@ -39,3 +38,18 @@ export const useLogin = () => {
     },
   });
 };
+
+export const useVerifyOtp = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: verify_Otp
+  });
+}
+export const useSendOtp = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn : send_Otp
+  })
+}

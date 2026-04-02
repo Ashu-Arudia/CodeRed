@@ -13,6 +13,21 @@ export const userDetails = async () => {
   return res.data;
 }
 
+export const send_Otp = async ({ email }: any) => {
+  const res = await axios.post(
+    `${backendUrl}/api/v2/auth/send-otp`,
+    {},
+    {
+      params: { email },
+      withCredentials: true,
+      headers: {
+        "ngrok-skip-browser-warning": "true",
+      },
+    }
+  );
+  return res.data;
+};
+
 //POST
 export const completeProfile = async (formData: FormData) => {
   const res = await axios.post(
@@ -26,7 +41,7 @@ export const completeProfile = async (formData: FormData) => {
     }
   )
 }
-export const Signup = async({email, password} : any) => {
+export const Signup = async ({ email, password }: { email: string, password: string }) => {
   const res = await axios.post(
     `${backendUrl}/api/v1/auth/register`,
     { email, password },
@@ -37,9 +52,14 @@ export const Signup = async({email, password} : any) => {
       },
     }
   );
-}
-
-export const Login = async({email, password} : any) => {
+};
+export const Login = async ({
+  email,
+  password,
+}: {
+  email: string,
+  password: string
+}) => {
   const res = await axios.post(
     `${backendUrl}/api/v1/auth/login`,
     { email, password },
@@ -50,4 +70,17 @@ export const Login = async({email, password} : any) => {
       },
     }
   );
-}
+};
+export const verify_Otp = async ({ email,otp} : {email : string, otp : string}) => {
+  const res = await axios.post(
+    `${backendUrl}/api/v2/auth/verify-otp`,
+    {},
+    {
+      params: { email,otp },
+      withCredentials: true,
+      headers: {
+        "ngrok-skip-browser-warning": "true",
+      },
+    }
+  );
+};

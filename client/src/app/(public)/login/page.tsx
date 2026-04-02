@@ -13,6 +13,8 @@ import {
   Users,
 } from "lucide-react";
 import { useSignUp, useLogin } from "@/features/auth/mutations";
+import { useSendOtp } from "@/features/auth/mutations";
+import { useAuthStore } from "@/store/otp/otpStore";
 
 import { Metal_Mania } from "next/font/google";
 
@@ -59,8 +61,14 @@ export default function LoginPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const router = useRouter();
+
+  // API
   const signupMutation = useSignUp();
   const loginMutation = useLogin();
+  const sendOtpMutation = useSendOtp();
+
+  // zustand otp store
+  const setEmailOtp = useAuthStore((s) => s.setEmail);
 
   const isLoading = signupMutation.isPending || loginMutation.isPending;
 
@@ -83,16 +91,26 @@ export default function LoginPage() {
   const handlesubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!isLogin) {
-      signupMutation.mutate({ email, password }, {
-        onSuccess: () => {
-          router.replace("/app/profile");
-        },
-        onError: (error: any) => {
-          setError(error?.response?.data?.message || "Signup failed");
+      signupMutation.mutate(
+        { email, password },
+        {
+          onSuccess: () => {
+            sendOtpMutation.mutate(
+              { email },
+              {
+                onSuccess: () => {
+                  setEmailOtp(email);
+                  router.replace("/login/otp");
+                },
+              }
+            );
+          },
+          onError: (error: any) => {
+            setError(error?.response?.data?.message || "Signup failed");
+          },
         }
-      })
-    }
-    else {
+      );
+    } else {
       loginMutation.mutate(
         { email, password },
         {
@@ -105,17 +123,15 @@ export default function LoginPage() {
         }
       );
     }
-
   };
 
-  const googleAuth = async() => {
-    window.location.href = `${backendUrl}/api/v1/auth/google/login`
-  }
+  const googleAuth = async () => {
+    window.location.href = `${backendUrl}/api/v1/auth/google/login`;
+  };
 
   return (
     <div className="min-h-screen bg-white text-gray-100 flex items-center justify-center p-4">
       <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 bg-gray-900/90 backdrop-blur-md rounded-xl shadow-2xl overflow-hidden max-w-6xl w-full">
-
         {/* Left Section - Marketing Content */}
         <div className="bg-red-800/10 p-8 md:p-12 lg:p-16 flex flex-col justify-between relative overflow-hidden">
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-red-600/10 rounded-full mix-blend-multiply filter blur-xl animate-blob opacity-50"></div>
@@ -346,7 +362,6 @@ export default function LoginPage() {
 
           <div className="space-y-4">
             <button
-
               className="w-full flex items-center justify-center bg-gray-700 hover:bg-gray-600 text-white font-medium py-3 rounded-md transition-colors duration-300 border border-gray-600 shadow-sm"
               onClick={googleAuth}
             >

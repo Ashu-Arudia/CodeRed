@@ -14,7 +14,7 @@ import {
   Code, // For Code Editor
   Trophy, // For Achievements
   Zap, // For "The Idea" icons
-  Heart, 
+  Heart,
   Award,
   Check,
   ArrowRight,
@@ -25,10 +25,13 @@ import {
 import { Metal_Mania } from "next/font/google";
 import { useRouter } from "next/navigation";
 
+
 const metalMania = Metal_Mania({
   subsets: ["latin"],
   weight: "400",
 });
+
+
 
 // Main App Component (Page Component for Next.js)
 export default function App() {
