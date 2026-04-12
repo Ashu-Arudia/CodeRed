@@ -83,7 +83,7 @@ export default function CodeEditor() {
 
   //language_Id
   const [languageId, setLanguageId] = useState<50 | 54 | 62 | 63 | 71>(50)
-  const [Language, setLanguage] = useState<"c" | "cpp" | "python" | "javascript" | "java">("c")
+  const [Language, setLanguage] = useState<"c" | "cpp" | "java" | "javascript" | "python">("c")
 
   const [showQuestion, setShowQuestion] = useState<Boolean>(true);
   const [showDescription, setShowDescription] = useState<Boolean>(true);
@@ -724,22 +724,43 @@ int main() {
                                 <span
                                   className={`px-2 py-1 text-sm rounded-full ${
                                     submitResult?.passed
-                                      ? "bg-green-900 text-green-300"
-                                      : "bg-red-900 text-red-300"
+                                      ? " text-green-600"
+                                      : " text-red-600"
                                   }`}
                                 >
                                   {submitResult?.verdict}
                                 </span>
                               </div>
 
-                              <div className="bg-zinc-800 p-4 mb-4 rounded">
-                                Passed {submitResult?.test_cases_passed} /{" "}
-                                {submitResult?.total_test_cases}
+                              <div className="bg-zinc-800 p-4 mb-4 rounded flex gap-2">
+                                Passed{" "}
+                                <div className=" bg-gray-300 text-black flex-1 px-2">
+                                  {submitResult?.test_cases_passed}/
+                                  {submitResult?.total_test_cases}
+                                </div>
                               </div>
 
-                              <div className="bg-zinc-800 p-4 rounded">
-                                Runtime: {submitResult?.execution_time}s
+                              <div className="bg-zinc-800 p-4 mb-4 rounded flex gap-2">
+                                Runtime
+                                <div className=" bg-gray-300 text-black flex-1 px-2">{submitResult?.execution_time}s
+                                  </div>
                               </div>
+
+                              { submitResult?.time_complexity &&
+                                <div className="bg-zinc-800 p-4 rounded flex gap-2">
+                                  Time Complexity
+                                  <div className=" bg-gray-300 text-black flex-1 px-2">{submitResult?.time_complexity}
+                                  </div>
+                                </div>
+                              }
+                              { submitResult?.space_complexity &&
+                                <div className="bg-zinc-800 p-4 rounded flex gap-2">
+                                  Space Complexity{" "}
+                                  <div className=" bg-gray-300 text-black flex-1 px-2">
+                                    {submitResult?.space_complexity}
+                                  </div>
+                                </div>
+                              }
                             </div>
                           </div>
                         </div>
